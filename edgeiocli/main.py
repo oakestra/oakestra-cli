@@ -1,7 +1,11 @@
-import pyfiglet
+import json
 
+import pyfiglet
+import typer
+import requests
 import edgeiocli.job
-from edgeiocli.token_helper import *
+from edgeiocli.token_helper import getTokenExpirationDate, send_auth_post_request, get_username, delete_token, \
+    set_user_id, send_auth_get_request, set_token, valid_ip
 
 app = typer.Typer()
 app.add_typer(edgeiocli.user.app, name="user")
@@ -11,6 +15,7 @@ app.add_typer(edgeiocli.application.app, name="application")
 
 @app.command()
 def login(username: str,
+          system_manager_ip: str = typer.Option(..., prompt=True),
           password: str = typer.Option(
               ..., prompt=True, hide_input=True)
           ):
@@ -18,7 +23,14 @@ def login(username: str,
         'username': username,
         'password': password
     }
-    response = requests.post(api_ip + "/frontend/auth/login", json=login_request)
+    ip = 'http://' + system_manager_ip
+
+    if not valid_ip(ip):
+        msg = typer.style("Wrong IP. System Manager is not available", fg=typer.colors.RED, bold=True)
+        typer.echo(msg)
+        return
+
+    response = requests.post(ip + "/frontend/auth/login", json=login_request)
 
     stud_obj = json.loads(response.text)
     set_token(stud_obj)

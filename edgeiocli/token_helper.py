@@ -8,7 +8,7 @@ import requests
 # from edgeIoCLI import api_ip
 import typer
 
-api_ip = "http://127.0.0.1:10000"
+# api_ip = "http://127.0.0.1:10000"
 
 
 def get_header():
@@ -16,23 +16,23 @@ def get_header():
 
 
 def send_auth_get_request(url):
-    return requests.get(api_ip + url, headers=get_header())
+    return requests.get(get_sm_ip() + url, headers=get_header())
 
 
 def send_auth_post_request(url, data):
-    return requests.post(api_ip + url, headers=get_header(), json=data)
+    return requests.post(get_sm_ip() + url, headers=get_header(), json=data)
 
 
 def send_auth_post_file_request(url, file):
-    return requests.post(api_ip + url, headers=get_header(), files=file)
+    return requests.post(get_sm_ip() + url, headers=get_header(), files=file)
 
 
 def send_auth_put_request(url, data):
-    return requests.put(api_ip + url, headers=get_header(), json=data)
+    return requests.put(get_sm_ip()  + url, headers=get_header(), json=data)
 
 
 def send_auth_del_request(url):
-    return requests.delete(api_ip + url, headers=get_header())
+    return requests.delete(get_sm_ip()  + url, headers=get_header())
 
 
 def decode_token():
@@ -79,8 +79,10 @@ def token_exists():
 
 # stores the token in the file
 def set_token(token):
+    obj = get_storage()
+    obj['token'] = token['token']
     with open('edgeio.json', 'w') as outfile:
-        json.dump(token, outfile)
+        json.dump(obj, outfile)
 
 
 # stores the token in the file
@@ -96,6 +98,11 @@ def get_user_id():
     return obj['id']
 
 
+def get_sm_ip():
+    obj = get_storage()
+    return obj['ip']
+
+
 def getTokenExpirationDate():
     decoded = decode_token()
     if decoded['exp'] == None:
@@ -109,3 +116,18 @@ def isTokenExpired():
         return False
     # Token expired?
     return d < datetime.today()
+
+
+def valid_ip(ip):
+    try:
+        resp = requests.get(ip)
+    except:
+        return False
+
+    if resp.status_code != 200:
+        return False
+    else:
+        obj = { 'ip' : ip}
+        with open('edgeio.json', 'w') as outfile:
+            json.dump(obj, outfile)
+        return True
