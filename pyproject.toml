@@ -2,7 +2,7 @@
 name = "edgeiocli"
 version = "0.1.0"
 description = "The first version of the EdgeIO CLI"
-authors = ["danimair9 <danimair9@gmail.com>"]
+authors = ["Daniel Mair <edgeio.team@gmail.com>"]
 packages = [
     { include = "edgeiocli" }
     ]
@@ -12,14 +12,13 @@ include = ["edgeiocli/user.py"]
 edgeiocli = "edgeiocli.main:app"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6"
 typer = "^0.4.0"
 requests = "^2.27.1"
 PyJWT = "^2.3.0"
 tabulate = "^0.8.9"
 figlet = "^0.0.1"
 pyfiglet = "^0.8.post1"
-
 
 [tool.poetry.dev-dependencies]
 

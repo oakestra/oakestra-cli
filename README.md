@@ -1,6 +1,6 @@
 # EdgeIO CLI
 
-**edgeiocli** is a command line tool for controlling the EdgeIO framework.
+**edgeiocli** is a simple command line tool for controlling the EdgeIO framework.
 
 ## Installation
 
@@ -11,17 +11,36 @@ edgeiocli.
 pip install edgeiocli-0.1.0-py3-none-any.whl
 ```
 
+## Build
+
+Use the package [poetry](https://python-poetry.org/) to build the tool and create a new .whl file.
+
+Updates the dependency's: 
+```bash
+poetry update
+```
+
+Installs the package:
+```bash
+poetry install
+```
+
+Creates the .whl file:
+```bash
+poetry build
+```
+
 ## Usage
 
 ```bash
-edgeiocli [OPTIONS] COMMAND [ARGS]
+edgeiocli COMMAND [ARGS] [OPTIONS] 
 
 # Try 'edgeiocli --help' for help.
 ```
 
 ## Available Commands
 
-- `login [USERNAME]` logs the user into the system and creates a token
+- `login [USERNAME]` logs the user into the system and creates access token
 - `logout` logs out the user and deletes the token
 - `change-password` changes the password of the user
 - `application [COMMAND]`
