@@ -4,11 +4,7 @@ from datetime import datetime
 
 import jwt
 import requests
-
-# from edgeIoCLI import api_ip
 import typer
-
-# api_ip = "http://127.0.0.1:10000"
 
 
 def get_header():
@@ -28,11 +24,11 @@ def send_auth_post_file_request(url, file):
 
 
 def send_auth_put_request(url, data):
-    return requests.put(get_sm_ip()  + url, headers=get_header(), json=data)
+    return requests.put(get_sm_ip() + url, headers=get_header(), json=data)
 
 
 def send_auth_del_request(url):
-    return requests.delete(get_sm_ip()  + url, headers=get_header())
+    return requests.delete(get_sm_ip() + url, headers=get_header())
 
 
 def decode_token():
@@ -127,7 +123,7 @@ def valid_ip(ip):
     if resp.status_code != 200:
         return False
     else:
-        obj = { 'ip' : ip}
+        obj = {'ip': ip}
         with open('edgeio.json', 'w') as outfile:
             json.dump(obj, outfile)
         return True

@@ -15,24 +15,12 @@ def deploy(file: Path):
         print(files.values())
         resp = send_auth_post_file_request("/api/deploy", files)
         if resp.status_code == 200:
-            msg = typer.style("Job deleted successful", fg=typer.colors.GREEN, bold=True)
+            msg = typer.style("Job registered successfully, trying to deploy it ", fg=typer.colors.GREEN, bold=True)
+            # TODO print result of the job deployment
         else:
             msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
             print(resp.text)
         typer.echo(msg)
-    # obj = {
-    #     'name': name,
-    #     'namespace': namespace,
-    #     'description': description,
-    #     'userId': get_user_id()
-    # }
-    # resp = send_auth_post_request("/frontend/application", obj)
-    # if (resp.status_code == 200):
-    #     msg = typer.style("Application created successful", fg=typer.colors.GREEN, bold=True)
-    # else:
-    #     msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
-    #     print(resp.text)
-    # typer.echo(msg)
 
 
 @app.command()

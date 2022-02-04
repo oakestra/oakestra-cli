@@ -3,6 +3,7 @@ from edgeiocli.token_helper import *
 
 app = typer.Typer()
 
+
 @app.command()
 def create(name=typer.Option(..., prompt="What's the name of the application?"),
            namespace=typer.Option(..., prompt="What's the application namespace?"),
@@ -15,7 +16,7 @@ def create(name=typer.Option(..., prompt="What's the name of the application?"),
         'userId': get_user_id()
     }
     resp = send_auth_post_request("/frontend/application", obj)
-    if (resp.status_code == 200):
+    if resp.status_code == 200:
         msg = typer.style("Application created successful", fg=typer.colors.GREEN, bold=True)
     else:
         msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)

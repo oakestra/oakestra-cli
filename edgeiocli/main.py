@@ -1,8 +1,9 @@
 import json
 
 import pyfiglet
-import typer
 import requests
+import typer
+
 import edgeiocli.job
 from edgeiocli.token_helper import getTokenExpirationDate, send_auth_post_request, get_username, delete_token, \
     set_user_id, send_auth_get_request, set_token, valid_ip
