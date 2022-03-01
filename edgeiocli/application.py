@@ -54,5 +54,9 @@ def list_jobs(application_id: str):
         apps = json.loads(response.text)
         table = []
         for a in apps:
-            table.append([a['job_name'], (a['_id'])['$oid'], a['status']])
-        print(tabulate(table, headers=['Name', 'ID', 'Status']))
+            if 'usage' in a:
+                usage = a['usage']
+                table.append([a['job_name'], (a['_id'])['$oid'], a['status'], (usage['currentCPU'])[-1], (usage['currentMemory'])[-1]])
+            else:
+                table.append([a['job_name'], (a['_id'])['$oid'], a['status'], "-", "-"])
+        print(tabulate(table, headers=['Name', 'ID', 'Status', 'CPU', 'Memory']))
