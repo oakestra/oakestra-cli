@@ -43,7 +43,7 @@ def create(name=typer.Option(..., prompt="What's the name of the new user?"),
         }
 
         resp = send_auth_post_request("/frontend/auth/register", obj)
-        if (resp.status_code == 200):
+        if resp.status_code == 200:
             msg = typer.style("User added successfully", fg=typer.colors.GREEN, bold=True)
         else:
             msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
@@ -57,7 +57,7 @@ def delete(username: str,
     if is_logged_in():
         if force:
             resp = send_auth_del_request("/frontend/user/" + username)
-            if (resp.status_code == 200):
+            if resp.status_code == 200:
                 msg = typer.style("User deleted successfully", fg=typer.colors.GREEN, bold=True)
             else:
                 msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
@@ -101,7 +101,7 @@ def set_roles(username: str,
         }
 
         resp = send_auth_put_request("/frontend/user/" + username, obj)
-        if (resp.status_code == 200):
+        if resp.status_code == 200:
             msg = typer.style("Roles changed successfully", fg=typer.colors.GREEN, bold=True)
         else:
             msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)

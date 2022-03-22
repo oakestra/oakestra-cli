@@ -1,6 +1,6 @@
 # EdgeIO CLI
 
-**edgeiocli** is a simple command line tool for controlling the EdgeIO framework.
+**edgeiocli** is a very basic command line tool for controlling the EdgeIO framework.
 
 ## Installation
 
@@ -59,5 +59,7 @@ edgeiocli COMMAND [ARGS] [OPTIONS]
 
 ## Contributing
 
-Pull requests are welcome. This is the first version of **edgeiocli** and does not yet offer all features, also there
-might be some bugs, if you find one please report it 
+This is the first version of **edgeiocli** and does not yet offer all features, also there
+might be some bugs, if you find one please report it or fix it. 
+
+To add a new command create a function in the main.py file and add the `@app.command()` annotation to the function. If you want to create sub commands, create the command in the corresponding file. 

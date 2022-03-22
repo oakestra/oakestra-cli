@@ -60,7 +60,7 @@ def delete_token():
 def is_logged_in():
     val = False
     if token_exists():
-        val = not isTokenExpired()
+        val = not is_token_expired()
 
     if not val:
         msg = typer.style("You must be logged in to execute commands", fg=typer.colors.RED, bold=True)
@@ -81,7 +81,7 @@ def set_token(token):
         json.dump(obj, outfile)
 
 
-# stores the token in the file
+# stores the id in the file
 def set_user_id(id):
     obj = get_storage()
     obj['id'] = id
@@ -99,16 +99,16 @@ def get_sm_ip():
     return obj['ip']
 
 
-def getTokenExpirationDate():
+def get_token_expiration_date():
     decoded = decode_token()
-    if decoded['exp'] == None:
+    if decoded['exp'] is None:
         return None
     return datetime.fromtimestamp(decoded['exp'])
 
 
-def isTokenExpired():
-    d = getTokenExpirationDate();
-    if d == None:
+def is_token_expired():
+    d = get_token_expiration_date();
+    if d is None:
         return False
     # Token expired?
     return d < datetime.today()

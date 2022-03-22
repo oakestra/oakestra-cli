@@ -54,7 +54,7 @@ def deploy(file: Path, application_id: str):
 def delete(id: str):
     if is_logged_in():
         resp = send_auth_del_request("/frontend/job/" + id)
-        if (resp.status_code == 200):
+        if resp.status_code == 200:
             msg = typer.style("Job deleted successful", fg=typer.colors.GREEN, bold=True)
         else:
             msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)

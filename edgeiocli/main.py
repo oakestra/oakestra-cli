@@ -5,7 +5,7 @@ import requests
 import typer
 
 import edgeiocli.job
-from edgeiocli.token_helper import getTokenExpirationDate, send_auth_post_request, get_username, delete_token, \
+from edgeiocli.token_helper import get_token_expiration_date, send_auth_post_request, get_username, delete_token, \
     set_user_id, send_auth_get_request, set_token, valid_ip
 
 app = typer.Typer()
@@ -47,7 +47,7 @@ def login(username: str,
         f = pyfiglet.Figlet(font='slant')
         print(f.renderText('EdgeIO CLI !'))
         print(f"Hello {username} welcome to the EdgeIO CLI!")
-        time = getTokenExpirationDate().strftime("%d/%m/%Y %H:%M")
+        time = get_token_expiration_date().strftime("%d/%m/%Y %H:%M")
         print("You are now logged in and can use the cli until your token expires (" + time + ")")
     else:
         print(response.text)
