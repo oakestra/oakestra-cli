@@ -57,6 +57,21 @@ edgeiocli COMMAND [ARGS] [OPTIONS]
     - `list` displays all user of the system
     - `set-roles [USERNAME] --role [Admin | Application_Provider | Infrastructure_Provider]`
 
+## Deployment
+The given json file should contain only a microservice configuration, as in the example, all the application and user information will be added automatically.  
+
+```
+{
+      ...
+      "microservice_name": "service",
+      "microservice_namespace": "dev",
+      "virtualization": "docker",
+      "memory": 100,
+      ...
+}
+
+```
+
 ## Contributing
 
 This is the first version of **edgeiocli** and does not yet offer all features, also there

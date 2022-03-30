@@ -38,7 +38,9 @@ def deploy(file: Path, application_id: str):
             }
             with open('tmp.json', 'w') as outfile:
                 json.dump(sla, outfile)
-            files = {'file': open('tmp.json', 'rb')}
+                outfile.close()
+            f = open('tmp.json', 'rb')
+            files = {'file': f}
             resp = send_auth_post_file_request("/api/deploy", files)
             if resp.status_code == 200:
                 msg = typer.style("Job registered successfully, trying to deploy it ", fg=typer.colors.GREEN,
@@ -46,6 +48,7 @@ def deploy(file: Path, application_id: str):
             else:
                 msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
                 print(resp.text)
+            f.close()
             os.remove("tmp.json")
             typer.echo(msg)
 
