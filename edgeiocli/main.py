@@ -4,13 +4,13 @@ import pyfiglet
 import requests
 import typer
 
-import edgeiocli.job
+import edgeiocli.service
 from edgeiocli.token_helper import get_token_expiration_date, send_auth_post_request, get_username, delete_token, \
     set_user_id, send_auth_get_request, set_token, valid_ip
 
 app = typer.Typer()
 app.add_typer(edgeiocli.user.app, name="user")
-app.add_typer(edgeiocli.job.app, name="job")
+app.add_typer(edgeiocli.service.app, name="service")
 app.add_typer(edgeiocli.application.app, name="application")
 
 
@@ -31,14 +31,14 @@ def login(username: str,
         typer.echo(msg)
         return
 
-    response = requests.post(ip + "/frontend/auth/login", json=login_request)
+    response = requests.post(ip + "/api/auth/login", json=login_request)
 
     stud_obj = json.loads(response.text)
     set_token(stud_obj)
 
     if response.status_code == 200:
 
-        res = send_auth_get_request("/frontend/user/" + username)
+        res = send_auth_get_request("/api/user/" + username)
         user_obj = json.loads(res.text)
         id_obj = user_obj['_id']
         id = id_obj['$oid']
@@ -68,7 +68,7 @@ def change_password(old=typer.Option(..., prompt="Old password: "),
         'newPassword': new
     }
 
-    resp = send_auth_post_request("/frontend/changePassword/" + get_username(), obj)
+    resp = send_auth_post_request("/api/changePassword/" + get_username(), obj)
     if resp.status_code == 200:
         msg = typer.style("Password changed successfully", fg=typer.colors.GREEN, bold=True)
     else:

@@ -42,7 +42,7 @@ def create(name=typer.Option(..., prompt="What's the name of the new user?"),
             'created_at': d.strftime("%d/%m/%Y %H:%M")
         }
 
-        resp = send_auth_post_request("/frontend/auth/register", obj)
+        resp = send_auth_post_request("/api/auth/register", obj)
         if resp.status_code == 200:
             msg = typer.style("User added successfully", fg=typer.colors.GREEN, bold=True)
         else:
@@ -56,7 +56,7 @@ def delete(username: str,
            force: bool = typer.Option(..., prompt="Are you sure you want to delete the user?"), ):
     if is_logged_in():
         if force:
-            resp = send_auth_del_request("/frontend/user/" + username)
+            resp = send_auth_del_request("/api/user/" + username)
             if resp.status_code == 200:
                 msg = typer.style("User deleted successfully", fg=typer.colors.GREEN, bold=True)
             else:
@@ -68,7 +68,7 @@ def delete(username: str,
 @app.command()
 def list():
     if is_logged_in():
-        response = send_auth_get_request("/frontend/users")
+        response = send_auth_get_request("/api/users")
         users = json.loads(response.text)
         table = []
 
@@ -100,7 +100,7 @@ def set_roles(username: str,
             'roles': user_roles,
         }
 
-        resp = send_auth_put_request("/frontend/user/" + username, obj)
+        resp = send_auth_put_request("/api/user/" + username, obj)
         if resp.status_code == 200:
             msg = typer.style("Roles changed successfully", fg=typer.colors.GREEN, bold=True)
         else:

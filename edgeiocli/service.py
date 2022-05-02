@@ -14,7 +14,7 @@ app = typer.Typer()
 def deploy(file: Path, application_id: str):
     if is_logged_in():
 
-        response = send_auth_get_request("/frontend/application/" + application_id)
+        response = send_auth_get_request("/api/application/" + application_id)
         app = json.loads(response.text)
         if response.status_code != 200:
             msg = typer.style("Application does not exist", fg=typer.colors.RED, bold=True)
@@ -36,14 +36,14 @@ def deploy(file: Path, application_id: str):
                         "microservices": [data]
                     }]
             }
-            with open('tmp.json', 'w') as outfile:
-                json.dump(sla, outfile)
-                outfile.close()
-            f = open('tmp.json', 'rb')
-            files = {'file': f}
-            resp = send_auth_post_file_request("/api/deploy", files)
+            # with open('tmp.json', 'w') as outfile:
+            #     json.dump(sla, outfile)
+            #     outfile.close()
+            # f = open('tmp.json', 'rb')
+            # files = {'file': f}
+            resp = send_auth_post_file_request("/api/create", sla)
             if resp.status_code == 200:
-                msg = typer.style("Job registered successfully, trying to deploy it ", fg=typer.colors.GREEN,
+                msg = typer.style("Service registered successfully, trying to deploy it ", fg=typer.colors.GREEN,
                                   bold=True)
             else:
                 msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
@@ -56,7 +56,7 @@ def deploy(file: Path, application_id: str):
 @app.command()
 def delete(id: str):
     if is_logged_in():
-        resp = send_auth_del_request("/frontend/job/" + id)
+        resp = send_auth_del_request("/api/service/" + id)
         if resp.status_code == 200:
             msg = typer.style("Job deleted successful", fg=typer.colors.GREEN, bold=True)
         else:

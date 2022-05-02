@@ -15,7 +15,7 @@ def create(name=typer.Option(..., prompt="What's the name of the application?"),
         'description': description,
         'userId': get_user_id()
     }
-    resp = send_auth_post_request("/frontend/application", obj)
+    resp = send_auth_post_request("/api/application", obj)
     if resp.status_code == 200:
         msg = typer.style("Application created successful", fg=typer.colors.GREEN, bold=True)
     else:
@@ -27,7 +27,7 @@ def create(name=typer.Option(..., prompt="What's the name of the application?"),
 @app.command()
 def delete(id: str):
     if is_logged_in():
-        resp = send_auth_del_request("/frontend/application/" + id)
+        resp = send_auth_del_request("/api/application/" + id)
         if resp.status_code == 200:
             msg = typer.style("Application deleted successful", fg=typer.colors.GREEN, bold=True)
         else:
@@ -39,7 +39,7 @@ def delete(id: str):
 @app.command()
 def list():
     if is_logged_in():
-        response = send_auth_get_request("/frontend/applications/" + get_user_id())
+        response = send_auth_get_request("/api/applications/" + get_user_id())
         apps = json.loads(response.text)
         table = []
         for a in apps:
@@ -50,7 +50,7 @@ def list():
 @app.command()
 def list_jobs(application_id: str):
     if is_logged_in():
-        response = send_auth_get_request("/frontend/jobs/" + application_id)
+        response = send_auth_get_request("/api/services/" + application_id)
         apps = json.loads(response.text)
         table = []
         for a in apps:
