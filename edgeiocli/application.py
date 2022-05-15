@@ -10,12 +10,12 @@ def create(name=typer.Option(..., prompt="What's the name of the application?"),
            description=typer.Option(..., prompt="Description of the application?")
            ):
     obj = {
-        'name': name,
-        'namespace': namespace,
-        'description': description,
+        'application_name': name,
+        'application_namespace': namespace,
+        'application_desc': description,
         'userId': get_user_id()
     }
-    resp = send_auth_post_request("/api/application", obj)
+    resp = send_auth_post_request("/api/application", {'applications': [obj]})
     if resp.status_code == 200:
         msg = typer.style("Application created successful", fg=typer.colors.GREEN, bold=True)
     else:
@@ -40,10 +40,11 @@ def delete(id: str):
 def list():
     if is_logged_in():
         response = send_auth_get_request("/api/applications/" + get_user_id())
-        apps = json.loads(response.text)
+        tmp = json.loads(response.text)
+        apps = json.loads(tmp)
         table = []
         for a in apps:
-            table.append([a['name'], (a['_id'])['$oid']])
+            table.append([a['application_name'], (a['_id'])['$oid']])
         print(tabulate(table, headers=['Name', 'ID']))
 
 
@@ -51,12 +52,13 @@ def list():
 def list_jobs(application_id: str):
     if is_logged_in():
         response = send_auth_get_request("/api/services/" + application_id)
-        apps = json.loads(response.text)
+        tmp = json.loads(response.text)
+        apps = json.loads(tmp)
         table = []
         for a in apps:
             if 'usage' in a:
                 usage = a['usage']
-                table.append([a['job_name'], (a['_id'])['$oid'], a['status'], (usage['currentCPU'])[-1], (usage['currentMemory'])[-1]])
+                table.append([a['service_name'], (a['_id'])['$oid'], a['status'], (usage['currentCPU'])[-1], (usage['currentMemory'])[-1]])
             else:
-                table.append([a['job_name'], (a['_id'])['$oid'], a['status'], "-", "-"])
+                table.append([a['service_name'], (a['_id'])['$oid'], a['status'], "-", "-"])
         print(tabulate(table, headers=['Name', 'ID', 'Status', 'CPU', 'Memory']))

@@ -23,7 +23,7 @@ def create(name=typer.Option(..., prompt="What's the name of the new user?"),
            role: Optional[List[str]] = typer.Option(..., callback=role_callback),
            ):
     if is_logged_in():
-        d = datetime.datetime.now()
+        d = datetime.now()
         user_roles = []
 
         for r in role:

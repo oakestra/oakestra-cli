@@ -19,10 +19,6 @@ def send_auth_post_request(url, data):
     return requests.post(get_sm_ip() + url, headers=get_header(), json=data)
 
 
-def send_auth_post_file_request(url, file):
-    return requests.post(get_sm_ip() + url, headers=get_header(), files=file)
-
-
 def send_auth_put_request(url, data):
     return requests.put(get_sm_ip() + url, headers=get_header(), json=data)
 
@@ -116,7 +112,7 @@ def is_token_expired():
 
 def valid_ip(ip):
     try:
-        resp = requests.get(ip)
+        resp = requests.get(ip + "/api/docs")
     except:
         return False
 

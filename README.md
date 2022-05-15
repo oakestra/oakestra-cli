@@ -48,9 +48,10 @@ edgeiocli COMMAND [ARGS] [OPTIONS]
     - `delete [APPLICATION_ID]` deletes a application
     - `list-jobs [APPLICATION_ID]` displays all jobs in the application
     - `list` displays all applications of the user
-- `job [COMMAND]`
-    - `delete [JOB_ID]` deletes the job
-    - `deploy [PATH]` tries to deploy the file in EdgeIO
+- `service [COMMAND]`
+    - `delete [SERVICE_ID]` deletes the job
+    - `create [PATH]` creates a new service
+    - `deploy [SERVICE_ID]` tries to deploy a service
 - `user  [COMMAND]`
     - `create --role [Admin | Application_Provider | Infrastructure_Provider]` creates a new user
     - `delete [USERNAME] deletes the user`

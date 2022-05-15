@@ -5,17 +5,18 @@ from pathlib import Path
 import typer
 
 from edgeiocli.token_helper import send_auth_del_request, \
-    is_logged_in, send_auth_post_file_request, send_auth_get_request, get_user_id
+    is_logged_in, send_auth_get_request, get_user_id, send_auth_post_request
 
 app = typer.Typer()
 
 
 @app.command()
-def deploy(file: Path, application_id: str):
+def create(file: Path, application_id: str):
     if is_logged_in():
 
         response = send_auth_get_request("/api/application/" + application_id)
-        app = json.loads(response.text)
+        tmp = json.loads(response.text)
+        app = json.loads(tmp)
         if response.status_code != 200:
             msg = typer.style("Application does not exist", fg=typer.colors.RED, bold=True)
             typer.echo(msg)
@@ -25,31 +26,25 @@ def deploy(file: Path, application_id: str):
             data['applicationID'] = application_id
 
             sla = {
-                "api_version": "v0.3.0",
+                "sla_version": "v2.0",
                 "customerID": get_user_id(),
                 "applications": [
                     {
                         "applicationID": application_id,
-                        "application_name": app['name'],
-                        "application_namespace": app['namespace'],
-                        "application_desc": app['description'],
+                        "application_name": app['application_name'],
+                        "application_namespace": app['application_namespace'],
+                        "application_desc": app['application_desc'],
                         "microservices": [data]
                     }]
             }
-            # with open('tmp.json', 'w') as outfile:
-            #     json.dump(sla, outfile)
-            #     outfile.close()
-            # f = open('tmp.json', 'rb')
-            # files = {'file': f}
-            resp = send_auth_post_file_request("/api/create", sla)
+            resp = send_auth_post_request("/api/service/", sla)
             if resp.status_code == 200:
-                msg = typer.style("Service registered successfully, trying to deploy it ", fg=typer.colors.GREEN,
+                msg = typer.style("Service created successfully", fg=typer.colors.GREEN,
                                   bold=True)
             else:
                 msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
                 print(resp.text)
             f.close()
-            os.remove("tmp.json")
             typer.echo(msg)
 
 
@@ -62,4 +57,20 @@ def delete(id: str):
         else:
             msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
             print(resp.text)
+        typer.echo(msg)
+
+
+@app.command()
+def deploy(id: str):
+    if is_logged_in():
+        resp = send_auth_get_request("/api/service/" + id)
+        if resp.status_code == 200:
+            service = json.loads(resp.text)
+            deployresp = send_auth_post_request("/api/service/" + id + "/instance", service)
+            if deployresp.status_code == 200:
+                msg = typer.style("Service deployed successfully", fg=typer.colors.GREEN, bold=True)
+            else:
+                msg = typer.style("Error occured: " + deployresp.text, fg=typer.colors.RED, bold=True)
+        else:
+            msg = typer.style("Service with this id does not exist", fg=typer.colors.RED, bold=True)
         typer.echo(msg)

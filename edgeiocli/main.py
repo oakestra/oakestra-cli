@@ -6,7 +6,7 @@ import typer
 
 import edgeiocli.service
 from edgeiocli.token_helper import get_token_expiration_date, send_auth_post_request, get_username, delete_token, \
-    set_user_id, send_auth_get_request, set_token, valid_ip
+    set_user_id, send_auth_get_request, set_token, valid_ip, is_logged_in
 
 app = typer.Typer()
 app.add_typer(edgeiocli.user.app, name="user")
@@ -63,18 +63,19 @@ def logout():
 def change_password(old=typer.Option(..., prompt="Old password: "),
                     new=typer.Option(..., prompt="New Password: ", confirmation_prompt=True),
                     ):
-    obj = {
-        'oldPassword': old,
-        'newPassword': new
-    }
+    if is_logged_in():
+        obj = {
+            'oldPassword': old,
+            'newPassword': new
+        }
 
-    resp = send_auth_post_request("/api/changePassword/" + get_username(), obj)
-    if resp.status_code == 200:
-        msg = typer.style("Password changed successfully", fg=typer.colors.GREEN, bold=True)
-    else:
-        msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
-        print(resp.text)
-    typer.echo(msg)
+        resp = send_auth_post_request("/api/user/" + get_username(), obj)
+        if resp.status_code == 200:
+            msg = typer.style("Password changed successfully", fg=typer.colors.GREEN, bold=True)
+        else:
+            msg = typer.style("Error occurred", fg=typer.colors.RED, bold=True)
+            print(resp.text)
+        typer.echo(msg)
 
 
 if __name__ == '__main__':
