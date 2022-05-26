@@ -1,6 +1,8 @@
-# EdgeIO CLI
+# Oakestra CLI
 
-**edgeiocli** is a very basic command line tool for controlling the EdgeIO framework.
+> NM: Rename system commands to Oakestra
+
+**oakestra-cli** is a very basic command line tool for controlling the EdgeIO framework.
 
 ## Installation
 
@@ -75,7 +77,7 @@ The given json file should contain only a microservice configuration, as in the 
 
 ## Contributing
 
-This is the first version of **edgeiocli** and does not yet offer all features, also there
+This is the first version of **oakestra-cli** and does not yet offer all features, also there
 might be some bugs, if you find one please report it or fix it. 
 
 To add a new command create a function in the main.py file and add the `@app.command()` annotation to the function. If you want to create sub commands, create the command in the corresponding file. 
