@@ -82,6 +82,7 @@ def handle_request(
         if response_status == HTTPStatus.OK:
             if show_msg_on_success:
                 logger.info(f"Success: {what_should_happen}")
+
             response = response.json()
             if isinstance(response, str):
                 response = json.loads(response)

@@ -33,7 +33,6 @@ class CustomFormatter(logging.Formatter):
 
 
 _LOGGER_NAME = "logger"
-
 _FORMAT = "%(message)s"
 
 logger = logging.getLogger(_LOGGER_NAME)
