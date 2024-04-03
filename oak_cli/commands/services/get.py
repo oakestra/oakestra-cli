@@ -1,18 +1,21 @@
 from typing import List
 
-from oak_cli.utils.api.common import SYSTEM_MANAGER_URL, HttpMethod
-from oak_cli.utils.api.main import handle_request
+import oak_cli.utils.api.custom_requests as custom_requests
+from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.logging import logger
 from oak_cli.utils.types import Service, ServiceId
 
 
 def get_single_service(service_id: ServiceId) -> Service:
-    service = handle_request(
-        base_url=SYSTEM_MANAGER_URL,
-        http_method=HttpMethod.GET,
-        api_endpoint=f"/api/service/{service_id}",
-        what_should_happen=f"Get single service '{service_id}'",
-    )
-    return service
+    return custom_requests.CustomRequest(
+        custom_requests.RequestCore(
+            base_url=SYSTEM_MANAGER_URL,
+            api_endpoint=f"/api/service/{service_id}",
+        ),
+        custom_requests.RequestAuxiliaries(
+            what_should_happen=f"Get single service '{service_id}'",
+        ),
+    ).execute()
 
 
 def get_all_services(app_id: ServiceId = None) -> List[Service]:
@@ -20,10 +23,16 @@ def get_all_services(app_id: ServiceId = None) -> List[Service]:
     if app_id:
         what_should_happen += f" of app '{app_id}'"
 
-    services = handle_request(
-        base_url=SYSTEM_MANAGER_URL,
-        http_method=HttpMethod.GET,
-        api_endpoint=f"/api/services/{app_id or ''}",
-        what_should_happen=what_should_happen,
-    )
+    services = custom_requests.CustomRequest(
+        custom_requests.RequestCore(
+            base_url=SYSTEM_MANAGER_URL,
+            api_endpoint=f"/api/services/{app_id or ''}",
+        ),
+        custom_requests.RequestAuxiliaries(
+            what_should_happen=what_should_happen,
+        ),
+    ).execute()
+
+    if not services:
+        logger.info("No applications exist yet")
     return services

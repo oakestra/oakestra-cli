@@ -1,4 +1,7 @@
-import oak_cli.utils.api as oak_api
+import oak_cli.utils.api.custom_requests as custom_requests
+from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.api.custom_http import HttpMethod
+from oak_cli.utils.exceptions import LoginException
 
 _login_token = ""
 
@@ -8,20 +11,22 @@ class LoginFailed(Exception):
 
 
 def _login_and_set_token() -> str:
-    data = {"username": "Admin", "password": "Admin"}
-    headers = {"accept": "application/json", "Content-Type": "application/json"}
-
-    json_data = oak_api.main.handle_request(
-        base_url=oak_api.common.SYSTEM_MANAGER_URL,
-        http_method=oak_api.common.HttpMethod.POST,
-        api_endpoint="/api/auth/login",
-        headers=headers,
-        data=data,
-        what_should_happen="Login",
-    )
+    response = custom_requests.CustomRequest(
+        custom_requests.RequestCore(
+            http_method=HttpMethod.POST,
+            base_url=SYSTEM_MANAGER_URL,
+            api_endpoint="/api/auth/login",
+            data={"username": "Admin", "password": "Admin"},
+            custom_headers={"accept": "application/json", "Content-Type": "application/json"},
+        ),
+        custom_requests.RequestAuxiliaries(
+            what_should_happen="Login",
+            exception=LoginException,
+        ),
+    ).execute()
 
     global _login_token
-    _login_token = json_data["token"]
+    _login_token = response["token"]
     return _login_token
 
 
