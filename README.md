@@ -1,83 +1,90 @@
-# Oakestra CLI
+# [Oakestra CLI](https://github.com/oakestra/oakestra-cli)
 
-> NM: Rename system commands to Oakestra
+**oakestra-cli** is a very basic command line tool for controlling your [Oakestra](https://github.com/oakestra/oakestra) setup. 
 
-**oakestra-cli** is a very basic command line tool for controlling the EdgeIO framework.
+It is intended to be an interface for the API as well as a development tool.
 
-## Installation
+The CLI supports command (tab) autocompletion.
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) and the .whl file in the dist directory to install
-edgeiocli.
+## Usage
+The package can be called via `oak`.
 
-```bash
-pip install edgeiocli-0.1.0-py3-none-any.whl
+Currently, it supports the creation, deletion, inspection, and (un)deployment of applications and services.
+
+E.g. To deploy a default application with two services:
+```
+oak applications create default_app_with_services --deploy
+```
+Note: The CLI supports short command aliases. The command above can be shortened like this:
+```
+oak a c default_app_with_services -d
 ```
 
-## Build
-
-Use the package [poetry](https://python-poetry.org/) to build the tool and create a new .whl file.
-
-Updates the dependency's: 
+You should see a similar output if the command was successful:
 ```bash
-poetry update
+Success: Create new application based on 'default_app_with_services'
+Success: Deploy a new instance for the service '66040243c7723114bb83b914'
+Success: Deploy a new instance for the service '66040243c7723114bb83b919'
+```
+You can inspect the services like this:
+```bash
+oak services status
+```
+Or like this: `oak s s`
+
+Service status output:
+```yaml
+All current services: '2'
+ Service '0':
+   - microservice -
+   id: '66040243c7723114bb83b914'
+   name: 'curl'
+   ns: 'test'
+   parent app: 'clientsrvr: 660402439df62d60bb95452b'
+   - resources -
+   memory: '100'
+   vcpus: '1'
+   - container -
+   image: 'docker.io/curlimages/curl:7.82.0'
+   - networking -
+   port: '9080'
+   - instances -
+   instances: '1'
+ Service '1':
+   - microservice -
+   id: '66040243c7723114bb83b919'
+   name: 'nginx'
+   ns: 'test'
+   parent app: 'clientsrvr: 660402439df62d60bb95452b'
+   - resources -
+   memory: '100'
+   vcpus: '1'
+   - container -
+   image: 'docker.io/library/nginx:latest'
+   - networking -
+   port: '6080:60/tcp'
+   - instances -
+   instances: '1'
 ```
 
-Installs the package:
+For a more detailed explanation try out the CLI and use the `-h` flag.
+
+## [Installation](https://pypi.org/project/oak-cli/)
+```
+pip install oak-cli
+```
+
+# For CLI Contributors/Developers
+For local development with "hot-reload" functionality simply install the package via poetry.
+
+## Useful commands
+
 ```bash
 poetry install
 ```
-
-Creates the .whl file:
 ```bash
 poetry build
 ```
-
-## Usage
-
-```bash
-edgeiocli COMMAND [ARGS] [OPTIONS] 
-
-# Try 'edgeiocli --help' for help.
 ```
-
-## Available Commands
-
-- `login [USERNAME]` logs the user into the system and creates access token
-- `logout` logs out the user and deletes the token
-- `change-password` changes the password of the user
-- `application [COMMAND]`
-    - `create` creates a new application
-    - `delete [APPLICATION_ID]` deletes a application
-    - `list-jobs [APPLICATION_ID]` displays all jobs in the application
-    - `list` displays all applications of the user
-- `service [COMMAND]`
-    - `delete [SERVICE_ID]` deletes the job
-    - `create [PATH]` creates a new service
-    - `deploy [SERVICE_ID]` tries to deploy a service
-- `user  [COMMAND]`
-    - `create --role [Admin | Application_Provider | Infrastructure_Provider]` creates a new user
-    - `delete [USERNAME] deletes the user`
-    - `list` displays all user of the system
-    - `set-roles [USERNAME] --role [Admin | Application_Provider | Infrastructure_Provider]`
-
-## Deployment
-The given json file should contain only a microservice configuration, as in the example, all the application and user information will be added automatically.  
-
+twine upload dist/*
 ```
-{
-      ...
-      "microservice_name": "service",
-      "microservice_namespace": "dev",
-      "virtualization": "docker",
-      "memory": 100,
-      ...
-}
-
-```
-
-## Contributing
-
-This is the first version of **oakestra-cli** and does not yet offer all features, also there
-might be some bugs, if you find one please report it or fix it. 
-
-To add a new command create a function in the main.py file and add the `@app.command()` annotation to the function. If you want to create sub commands, create the command in the corresponding file. 

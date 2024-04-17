@@ -1,0 +1,18 @@
+version: "3.3"
+
+services:
+
+  node_engine_log_observer:
+    image: node_engine_log_observer
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM alpine
+        CMD tail -f node_engine_logs
+    hostname: node_engine_log_observer
+    container_name: node_engine_log_observer
+    volumes:
+      - /tmp/node_engine_logs:/node_engine_logs
+
+volumes:
+  node_engine_logs:
