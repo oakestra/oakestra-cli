@@ -2,5 +2,3 @@
 poetry.lock
 __pycache__
 dist
-oak_cli/utils/SLAs
-oak_cli/**/docker
