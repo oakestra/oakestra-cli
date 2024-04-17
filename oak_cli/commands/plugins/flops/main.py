@@ -4,6 +4,7 @@ import pathlib
 
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.custom_http import HttpMethod
+from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 
 ROOT_FL_MANAGER_URL = f"http://{os.environ.get('SYSTEM_MANAGER_URL')}:5072"
 
@@ -23,7 +24,8 @@ def create_new_fl_service() -> None:
             data=SLA,
         ),
         custom_requests.RequestAuxiliaries(
-            what_should_happen="Init new FLOps processes",
+            what_should_happen="Init new FLOps project",
             show_msg_on_success=True,
+            oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),
     ).execute()

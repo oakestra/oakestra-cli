@@ -1,7 +1,7 @@
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
-from oak_cli.utils.exceptions import LoginException
+from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 
 _login_token = ""
 
@@ -21,7 +21,7 @@ def _login_and_set_token() -> str:
         ),
         custom_requests.RequestAuxiliaries(
             what_should_happen="Login",
-            exception=LoginException,
+            oak_cli_exception_type=OakCLIExceptionTypes.LOGIN,
         ),
     ).execute()
 

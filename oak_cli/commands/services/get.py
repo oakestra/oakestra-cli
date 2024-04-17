@@ -2,6 +2,7 @@ from typing import List
 
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
 from oak_cli.utils.types import Service, ServiceId
 
@@ -14,6 +15,7 @@ def get_single_service(service_id: ServiceId) -> Service:
         ),
         custom_requests.RequestAuxiliaries(
             what_should_happen=f"Get single service '{service_id}'",
+            oak_cli_exception_type=OakCLIExceptionTypes.SERVICE_GET,
         ),
     ).execute()
 
@@ -30,6 +32,7 @@ def get_all_services(app_id: ServiceId = None) -> List[Service]:
         ),
         custom_requests.RequestAuxiliaries(
             what_should_happen=what_should_happen,
+            oak_cli_exception_type=OakCLIExceptionTypes.SERVICE_GET,
         ),
     ).execute()
 

@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass, field
 from http import HTTPStatus
 from typing import NamedTuple
 
@@ -6,7 +7,8 @@ import requests
 
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.api.login import get_login_token
-from oak_cli.utils.exceptions import OakCliException
+from oak_cli.utils.exceptions.main import OakCLIException
+from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
 
 
@@ -21,19 +23,23 @@ class RequestCore(NamedTuple):
 
 class RequestAuxiliaries(NamedTuple):
     what_should_happen: str
-    exception: OakCliException = OakCliException
+    oak_cli_exception_type: OakCLIExceptionTypes
     show_msg_on_success: bool = False
     is_oakestra_api: bool = True
 
 
+# Note: The use of Pydantic here leads to strange validation errors.
+@dataclass
 class CustomRequest:
-    def __init__(self, core: RequestCore, aux: RequestAuxiliaries):
-        self.core = core
-        self.aux = aux
-        self.headers = None
-        self.url = None
-        self.args = None
-        self.response = None
+    core: RequestCore
+    aux: RequestAuxiliaries
+
+    headers: dict = field(default=None, init=False)
+    url: str = field(default=None, init=False)
+    args: dict = field(default=None, init=False)
+    response: requests.Response = field(default=None, init=False)
+
+    def __post_init__(self):
         self._prepare()
 
     def _prepare(self) -> None:
@@ -88,7 +94,9 @@ class CustomRequest:
 
         error_msg += self._create_failure_msg()
 
-        raise self.aux.exception(
-            msg=error_msg,
+        raise OakCLIException(
+            flops_exception_type=self.aux.flops_exception_type,
+            text=error_msg,
             http_status=self.response.status if self.response else None,
+            flops_project_id=self.aux.flops_project_id,
         )

@@ -15,7 +15,7 @@ def prepare_applications_deletion_argparser(
     applications_subparsers: Subparsers,
 ) -> None:
     def aux_delete_applications(args: Any):
-        if args.all:
+        if args.all or not args.app_id:
             delete_all_applications()
         else:
             delete_application(args.app_id)

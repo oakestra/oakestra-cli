@@ -5,6 +5,7 @@ from typing import List
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
+from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
 from oak_cli.utils.SLAs.common import get_SLAs_path
 from oak_cli.utils.types import Application, ApplicationId
@@ -18,6 +19,7 @@ def get_application(app_id: ApplicationId) -> Application:
         ),
         custom_requests.RequestAuxiliaries(
             what_should_happen=f"Get application '{app_id}'",
+            oak_cli_exception_type=OakCLIExceptionTypes.APP_GET,
         ),
     ).execute()
 
@@ -30,6 +32,7 @@ def get_applications() -> List[Application]:
         ),
         custom_requests.RequestAuxiliaries(
             what_should_happen="Get all applications",
+            oak_cli_exception_type=OakCLIExceptionTypes.APP_GET,
         ),
     ).execute()
     if not apps:
@@ -55,6 +58,7 @@ def send_sla(sla_enum: enum) -> List[Application]:
         custom_requests.RequestAuxiliaries(
             what_should_happen=f"Create new application based on '{sla_enum}'",
             show_msg_on_success=True,
+            oak_cli_exception_type=OakCLIExceptionTypes.APP_CREATE,
         ),
     ).execute()
 
@@ -72,6 +76,7 @@ def delete_application(app_id: ApplicationId) -> None:
         custom_requests.RequestAuxiliaries(
             what_should_happen=f"Delete application '{app_id}'",
             show_msg_on_success=True,
+            oak_cli_exception_type=OakCLIExceptionTypes.APP_DELETE,
         ),
     ).execute()
 

@@ -3,7 +3,7 @@
 
 from oak_cli.args_parser.main import parse_arguments_and_execute
 from oak_cli.utils.argcomplete import handle_argcomplete
-from oak_cli.utils.exceptions import OakCliException
+from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.logging import logger
 
 
@@ -17,8 +17,8 @@ def main():
 
     try:
         parse_arguments_and_execute()
-    except OakCliException as e:
-        logger.fatal(f"{e.msg}, {e.http_status}")
+    except OakCLIException as e:
+        logger.fatal(f"{e.message}, {e.http_status}")
     except Exception as e:
         err_msg = f"Unexpected error occured: {e}"
         logger.fatal(err_msg)
