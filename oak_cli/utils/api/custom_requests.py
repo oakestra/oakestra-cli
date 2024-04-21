@@ -95,8 +95,7 @@ class CustomRequest:
         error_msg += self._create_failure_msg()
 
         raise OakCLIException(
-            flops_exception_type=self.aux.flops_exception_type,
+            oak_cli_exception_type=self.aux.oak_cli_exception_type,
             text=error_msg,
             http_status=self.response.status if self.response else None,
-            flops_project_id=self.aux.flops_project_id,
         )
