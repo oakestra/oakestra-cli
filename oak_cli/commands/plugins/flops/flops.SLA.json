@@ -1,13 +1,16 @@
 {
     "verbose": true,
     "customerID": "Admin",
-    "applicationID": "",
-    "code": "https://github.com/Malyuk-A/mlflower-test-a",
-    "memory": 100,
-    "vcpus": 1,
-    "vgpus": 0,
-    "vtpus": 0,
-    "bandwidth_in": 0,
-    "bandwidth_out": 0,
-    "storage": 0
+    "ml_repo_url": "https://github.com/Malyuk-A/mlflower-test-a",
+    "training_configuration": {
+        "training_rounds": 1,
+        "min_available_clients":2,
+        "min_fit_clients": 2,
+        "min_evaluate_clients": 2
+    },
+    "resource_constraints": {
+        "memory": 100,
+        "vcpus": 1,
+        "storage": 0
+    }
 }

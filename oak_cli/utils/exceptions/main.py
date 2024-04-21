@@ -13,5 +13,5 @@ class OakCLIException(Exception):
 
     message: str = field(init=False)
 
-    def model_post_init(self, _) -> None:
+    def __post_init__(self) -> None:
         self.message = f"'{self.oak_cli_exception_type}' exception occured: {self.text}"
