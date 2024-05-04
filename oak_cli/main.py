@@ -18,10 +18,9 @@ def main():
     try:
         parse_arguments_and_execute()
     except OakCLIException as e:
-        logger.fatal(f"{e.message}, {e.http_status}")
-    except Exception as e:
-        err_msg = f"Unexpected error occured: {e}"
-        logger.fatal(err_msg)
+        logger.exception(f"{e.message}, {e.http_status}")
+    except Exception:
+        logger.exception("Unexpected exception occurred.")
 
 
 if __name__ == "__main__":

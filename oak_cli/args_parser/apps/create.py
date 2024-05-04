@@ -3,7 +3,7 @@ from typing import Any
 
 from oak_cli.commands.apps.main import send_sla
 from oak_cli.commands.services.deployment import deploy_new_instance
-from oak_cli.utils.SLAs.common import KnownSLA
+from oak_cli.utils.SLAs.common import AppSLAs
 from oak_cli.utils.types import Subparsers
 
 
@@ -33,8 +33,8 @@ def prepare_applications_create_argparser(applications_subparsers: Subparsers) -
     applications_create_parser.add_argument(
         "sla",
         help="creates an application based on a KnowsSLA (if is has its own enum)",
-        type=KnownSLA,
-        choices=KnownSLA,
-        default=KnownSLA.DEFAULT,
+        type=AppSLAs,
+        choices=AppSLAs,
+        default=AppSLAs.DEFAULT,
     )
     applications_create_parser.set_defaults(func=_aux_create_application)

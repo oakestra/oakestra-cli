@@ -2,11 +2,12 @@
     "verbose": true,
     "customerID": "Admin",
     "ml_repo_url": "https://github.com/Malyuk-A/mlflower-test-a",
+    "ml_model_flavor": "keras",
     "training_configuration": {
-        "training_rounds": 1,
-        "min_available_clients":2,
-        "min_fit_clients": 2,
-        "min_evaluate_clients": 2
+        "training_rounds": 10,
+        "min_available_clients":3,
+        "min_fit_clients": 3,
+        "min_evaluate_clients": 3
     },
     "resource_constraints": {
         "memory": 100,

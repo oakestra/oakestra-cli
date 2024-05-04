@@ -8,6 +8,6 @@ def get_SLAs_path() -> pathlib.Path:
     return get_oak_cli_path() / "utils" / "SLAs"
 
 
-class KnownSLA(CustomEnum):
+class AppSLAs(CustomEnum):
     DEFAULT = "default_app_with_services"
     BLANK = "blank_app_without_services"
