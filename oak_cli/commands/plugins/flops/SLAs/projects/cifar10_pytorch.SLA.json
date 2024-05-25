@@ -4,6 +4,7 @@
     "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_cifar10_pytorch",
     "ml_model_flavor": "pytorch",
     "training_configuration": {
+        "data_tags": "cifar10",
         "training_rounds": 10,
         "min_available_clients":3,
         "min_fit_clients": 3,

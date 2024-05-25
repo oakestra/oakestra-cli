@@ -4,6 +4,7 @@
     "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_mnist_sklearn",
     "ml_model_flavor": "sklearn",
     "training_configuration": {
+        "data_tags": "mnist",
         "training_rounds": 15,
         "min_available_clients":4,
         "min_fit_clients": 4,
