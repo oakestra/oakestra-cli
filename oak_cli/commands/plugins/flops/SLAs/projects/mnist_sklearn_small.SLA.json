@@ -1,0 +1,18 @@
+{
+    "verbose": true,
+    "customerID": "Admin",
+    "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_mnist_sklearn",
+    "ml_model_flavor": "sklearn",
+    "use_devel_base_images": true,
+    "training_configuration": {
+        "training_rounds": 5,
+        "min_available_clients":2,
+        "min_fit_clients": 2,
+        "min_evaluate_clients": 2
+    },
+    "resource_constraints": {
+        "memory": 100,
+        "vcpus": 1,
+        "storage": 0
+    }
+}

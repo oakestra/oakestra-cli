@@ -1,0 +1,9 @@
+{
+    "customerID": "Admin",
+    "mock_data_configuration": {
+        "dataset_name": "mnist",
+        "number_of_partitions": 1,
+        "one_mock_service_per_partition": false,
+        "data_tag": "mnist"
+    }
+}

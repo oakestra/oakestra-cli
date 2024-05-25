@@ -8,10 +8,10 @@ from oak_cli.commands.docker.enums import OakestraDockerComposeService, RootOrch
 from oak_cli.utils.logging import logger
 
 ROOT_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH = pathlib.Path(
-    "/home/alex/oakestra/root_orchestrator/docker-compose.yml"
+    "/home/alex/oakestra_main_repo/root_orchestrator/docker-compose.yml"
 )
 CLUSTER_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH = pathlib.Path(
-    "/home/alex/oakestra/cluster_orchestrator/docker-compose.yml"
+    "/home/alex/oakestra_main_repo/cluster_orchestrator/docker-compose.yml"
 )
 
 

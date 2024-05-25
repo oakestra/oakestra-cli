@@ -1,8 +1,8 @@
 {
     "verbose": true,
     "customerID": "Admin",
-    "ml_repo_url": "https://github.com/Malyuk-A/flops_test_cifar10",
-    "ml_model_flavor": "pytorch",
+    "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_cifar10_keras",
+    "ml_model_flavor": "keras",
     "training_configuration": {
         "training_rounds": 10,
         "min_available_clients":3,

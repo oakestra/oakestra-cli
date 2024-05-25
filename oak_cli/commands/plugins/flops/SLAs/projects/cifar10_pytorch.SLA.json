@@ -1,8 +1,8 @@
 {
     "verbose": true,
     "customerID": "Admin",
-    "ml_repo_url": "https://github.com/Malyuk-A/mlflower-test-a",
-    "ml_model_flavor": "keras",
+    "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_cifar10_pytorch",
+    "ml_model_flavor": "pytorch",
     "training_configuration": {
         "training_rounds": 10,
         "min_available_clients":3,

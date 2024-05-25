@@ -1,7 +1,10 @@
 import argparse
 from typing import Any
 
-from oak_cli.args_parser.plugins.flops.create import prepare_flops_create_argparser
+from oak_cli.args_parser.plugins.flops.mock_data_providers import (
+    prepare_flops_mock_data_providers_argparser,
+)
+from oak_cli.args_parser.plugins.flops.projects import prepare_flops_projects_argparser
 from oak_cli.utils.types import Subparsers
 
 
@@ -22,4 +25,5 @@ def prepare_flops_argparsers(subparsers: Subparsers) -> None:
         dest="FLOps commands",
     )
 
-    prepare_flops_create_argparser(flops_subparser)
+    prepare_flops_projects_argparser(flops_subparser)
+    prepare_flops_mock_data_providers_argparser(flops_subparser)

@@ -11,3 +11,5 @@ def get_SLAs_path() -> pathlib.Path:
 class AppSLAs(CustomEnum):
     DEFAULT = "default_app_with_services"
     BLANK = "blank_app_without_services"
+
+    PYTHON = "python"
