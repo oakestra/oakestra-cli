@@ -5,6 +5,7 @@ from oak_cli.commands.plugins.flops.SLAs.common import FLOpsSLAs
 
 class FLOpsMockDataProviderSLAs(FLOpsSLAs):
     MNIST_SIMPLE = "mnist_simple"
+    CIFAR10_SIMPLE = "cifar10_simple"
 
     # Note: This should be refactored and placed in the common parent class.
     @classmethod

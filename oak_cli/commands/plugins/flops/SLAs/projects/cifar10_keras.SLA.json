@@ -3,6 +3,7 @@
     "customerID": "Admin",
     "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_cifar10_keras",
     "ml_model_flavor": "keras",
+    "use_devel_base_images": true,
     "training_configuration": {
         "data_tags": ["cifar10"],
         "training_rounds": 10,

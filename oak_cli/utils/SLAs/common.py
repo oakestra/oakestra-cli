@@ -12,4 +12,6 @@ class AppSLAs(CustomEnum):
     DEFAULT = "default_app_with_services"
     BLANK = "blank_app_without_services"
 
+    INFERENCE_TESTER_MNIST_SKLEARN = "inference_tester_mnist_sklearn"
+
     PYTHON = "python"
