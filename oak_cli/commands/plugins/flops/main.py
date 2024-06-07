@@ -2,6 +2,8 @@ import json
 import os
 import pathlib
 
+from icecream import ic
+
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.commands.plugins.flops.SLAs.common import FLOpsSLAs
 from oak_cli.commands.plugins.flops.SLAs.mocks.common import FLOpsMockDataProviderSLAs
@@ -47,3 +49,20 @@ def create_new_mock_data_service(sla: FLOpsMockDataProviderSLAs) -> None:
             oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),
     ).execute()
+
+
+def get_tracking_url() -> None:
+    result = custom_requests.CustomRequest(
+        custom_requests.RequestCore(
+            http_method=HttpMethod.GET,
+            base_url=ROOT_FL_MANAGER_URL,
+            api_endpoint="/api/flops/tracking",
+            data={"customerID": "Admin"},
+        ),
+        custom_requests.RequestAuxiliaries(
+            what_should_happen="Get Tracking (Server) URL",
+            show_msg_on_success=True,
+            oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
+        ),
+    ).execute()
+    ic(result)

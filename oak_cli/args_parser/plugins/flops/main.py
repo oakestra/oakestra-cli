@@ -5,6 +5,7 @@ from oak_cli.args_parser.plugins.flops.mock_data_providers import (
     prepare_flops_mock_data_providers_argparser,
 )
 from oak_cli.args_parser.plugins.flops.projects import prepare_flops_projects_argparser
+from oak_cli.args_parser.plugins.flops.tracking import prepare_flops_tracking_argparser
 from oak_cli.utils.types import Subparsers
 
 
@@ -27,3 +28,4 @@ def prepare_flops_argparsers(subparsers: Subparsers) -> None:
 
     prepare_flops_projects_argparser(flops_subparser)
     prepare_flops_mock_data_providers_argparser(flops_subparser)
+    prepare_flops_tracking_argparser(flops_subparser)
