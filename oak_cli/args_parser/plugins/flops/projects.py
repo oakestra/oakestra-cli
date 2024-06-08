@@ -13,7 +13,7 @@ def _aux_create_new_flops_project(args: Any) -> None:
 def prepare_flops_projects_argparser(flops_subparser: Subparsers) -> None:
     HELP_TEXT = "creates a new FLOps project - i.e. triggers the init FLOps API"
     flops_projects_parser = flops_subparser.add_parser(
-        "create",
+        "project",
         aliases=["p"],
         help=HELP_TEXT,
         description=HELP_TEXT,

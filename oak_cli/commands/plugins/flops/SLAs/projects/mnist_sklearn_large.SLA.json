@@ -11,6 +11,7 @@
         "min_fit_clients": 4,
         "min_evaluate_clients": 4
     },
+    "post_training_steps": ["build_image_for_trained_model", "deploy_trained_model_image"],
     "resource_constraints": {
         "memory": 100,
         "vcpus": 1,

@@ -13,7 +13,7 @@ def _aux_create_new_mock_data_service(args: Any) -> None:
 def prepare_flops_mock_data_providers_argparser(flops_subparser: Subparsers) -> None:
     HELP_TEXT = "creates a new FLOps Mock-Data-Provider via the FLOps API"
     flops_projects_parser = flops_subparser.add_parser(
-        "create",
+        "mock-data-provider",
         aliases=["m"],
         help=HELP_TEXT,
         description=HELP_TEXT,

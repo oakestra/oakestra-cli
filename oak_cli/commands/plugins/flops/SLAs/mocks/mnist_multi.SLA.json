@@ -2,7 +2,7 @@
     "customerID": "Admin",
     "mock_data_configuration": {
         "dataset_name": "mnist",
-        "number_of_partitions": 1,
+        "number_of_partitions": 3,
         "data_tag": "mnist"
     }
 }

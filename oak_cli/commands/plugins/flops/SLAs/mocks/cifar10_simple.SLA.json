@@ -3,7 +3,6 @@
     "mock_data_configuration": {
         "dataset_name": "cifar10",
         "number_of_partitions": 1,
-        "one_mock_service_per_partition": false,
         "data_tag": "cifar10"
     }
 }
