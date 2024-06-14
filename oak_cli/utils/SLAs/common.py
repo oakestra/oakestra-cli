@@ -15,3 +15,4 @@ class AppSLAs(CustomEnum):
     INFERENCE_TESTER_MNIST_SKLEARN = "inference_tester_mnist_sklearn"
 
     PYTHON = "python"
+    DUMMY_TESTER = "dummy_tester"

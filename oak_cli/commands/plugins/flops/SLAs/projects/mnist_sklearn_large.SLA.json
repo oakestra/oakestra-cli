@@ -6,7 +6,7 @@
     "use_devel_base_images": true,
     "training_configuration": {
         "data_tags": ["mnist"],
-        "training_rounds": 15,
+        "training_rounds": 10,
         "min_available_clients":4,
         "min_fit_clients": 4,
         "min_evaluate_clients": 4
