@@ -7,6 +7,13 @@ class CustomEnum(enum.Enum):
         return self.value
 
 
+# class Verbosity(enum.Enum):
+class Verbosity(enum.Enum):
+    SIMPLE = "simple"
+    DETAILED = "detailed"
+    EXHAUSTIVE = "exhaustive"
+
+
 Id = str
 ServiceId = Id
 ApplicationId = Id

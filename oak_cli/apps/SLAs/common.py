@@ -5,7 +5,7 @@ from oak_cli.utils.types import CustomEnum
 
 
 def get_SLAs_path() -> pathlib.Path:
-    return get_oak_cli_path() / "utils" / "SLAs"
+    return get_oak_cli_path() / "apps" / "SLAs"
 
 
 class AppSLAs(CustomEnum):

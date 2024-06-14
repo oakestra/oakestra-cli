@@ -1,22 +1,35 @@
 #!/usr/bin/env python3
-# PYTHON_ARGCOMPLETE_OK
+import typer
 
-from oak_cli.args_parser.main import parse_arguments_and_execute
-from oak_cli.utils.argcomplete import handle_argcomplete
+import oak_cli.apps.main as oak_applications
+import oak_cli.commands.services.main as oak_services
 from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.logging import logger
 
 
-def main():
-    handle_argcomplete()
-    # Potential Future Work:
-    # This implementation uses argparse & argcomplete for user friendly CLI behavior.
-    # However especially argparse comes with a lot of additional boilerplate code.
-    # It might be useful to look into more modern solutions for python CLI's like
-    # https://github.com/pallets/click
+def _help_text(subject: str) -> str:
+    return f"Command for {subject} related activities."
 
+
+app = typer.Typer(
+    help="Run Oakestra's CLI",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+app.add_typer(
+    typer_instance=oak_applications.app,
+    name="a",
+    help=_help_text("application"),
+)
+app.add_typer(
+    typer_instance=oak_services.app,
+    name="s",
+    help=_help_text("service"),
+)
+
+
+def main():
     try:
-        parse_arguments_and_execute()
+        app()
     except OakCLIException as e:
         logger.exception(f"{e.message}, {e.http_status}")
     except Exception:
