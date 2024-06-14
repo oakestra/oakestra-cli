@@ -7,16 +7,9 @@ from typing_extensions import Annotated
 
 from oak_cli.commands.services.auxiliary import add_icon_to_status, show_instances
 from oak_cli.commands.services.get import get_all_services
-from oak_cli.utils.styling import (
-    OAK_BLUE,
-    OAK_GREEN,
-    add_column,
-    add_plain_columns,
-    create_table,
-    print_table,
-)
+from oak_cli.utils.styling import OAK_BLUE, OAK_GREEN, add_column, create_table, print_table
 from oak_cli.utils.typer_augmentations import AliasGroup
-from oak_cli.utils.types import ApplicationId, Service, Verbosity
+from oak_cli.utils.types import ApplicationId, Verbosity
 
 ic.configureOutput(prefix="")
 app = typer.Typer(cls=AliasGroup)
@@ -38,8 +31,9 @@ def show_current_services(
     add_column(table, column_name="App Name", style=OAK_BLUE)
     add_column(table, column_name="App ID")
     if verbosity == Verbosity.DETAILED:
+        # FUTURE WORK / TODO: Think what properties might be interesting.
+        # Might need to simplify the SIMPLE case because the table already is quite large.
         pass
-        # add_column(table, column_name="Status")
 
     for i, service in enumerate(current_services):
         special_row_elements = []
@@ -53,20 +47,8 @@ def show_current_services(
                 ic(i, service)
                 continue
             case Verbosity.DETAILED:
+                # FUTURE WORK / TODO: Think what properties might be interesting.
                 pass
-                # special_row_elements += [
-                #     service["status"],
-                # ]
-
-        #     case Verbosity.DETAILED:
-        #         mask = [
-        #             "addresses",
-        #             "app_ns",
-        #             "one_shot",
-        #             "cmd",
-        #             "code",
-        #             "image",
-        #         ]
 
         row_elements = [
             service["microservice_name"],
