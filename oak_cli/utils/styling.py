@@ -9,6 +9,7 @@ DEFAULT_JUSTIFY_DIRECTION = "right"
 # Reference: https://rich.readthedocs.io/en/latest/appendix/colors.html
 OAK_GREEN = "light_green"
 OAK_GREY = "steel_blue"
+OAK_BLUE = "cyan1"
 
 
 def create_table(
@@ -18,7 +19,7 @@ def create_table(
     verbosity: Verbosity = None,
 ) -> rich.table.Table:
     if verbosity:
-        caption += verbosity.value
+        caption += f" (verbosity: '{verbosity.value}')"
     return rich.table.Table(
         caption=caption,
         box=box,

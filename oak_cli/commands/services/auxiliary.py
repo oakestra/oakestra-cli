@@ -1,57 +1,22 @@
-import rich
-import typer
-from icecream import ic
-
-from oak_cli.utils.typer_augmentations import AliasGroup
-from oak_cli.utils.types import Service, Verbosity
-
-ic.configureOutput(prefix="")
-app = typer.Typer(cls=AliasGroup)
+from typing import List
 
 
-def display_single_service(
-    service: Service,
-    verbosity: Verbosity = Verbosity.SIMPLE.value,
-) -> None:
-    if verbosity == Verbosity.EXHAUSTIVE:
-        for i, instance in enumerate(service["instance_list"]):
-            instance["cpu_history"] = "..."
-            instance["memory_history"] = "..."
-            instance["logs"] = "..."
-            ic(i, service)
+def add_icon_to_status(status: str) -> str:
+    STATUS_ICON_MAP = {
+        "RUNNING": "🟢",
+        "NODE_SCHEDULED": "🔵",
+        "NoActiveClusterWithCapacity": "❌",
+    }
+    return f"{status} {STATUS_ICON_MAP.get(status, '❓')}"
 
-    table = rich.table.Table(
-        caption=f"Current Applications (verbosity: '{verbosity.value}')",
-        box=rich.box.ROUNDED,
-        show_lines=True,
-    )
-    # match verbosity:
-    #     case Verbosity.SIMPLE:
-    #         name = service["microservice_name"]
-    #         instances = len(service["instance_list"])
-    #         ic(name, instance)
-    #         return
-    #     case Verbosity.EXHAUSTIVE:
-    #         for instance in service["instance_list"]:
-    #             instance["cpu_history"] = "..."
-    #             instance["memory_history"] = "..."
-    #             instance["logs"] = "..."
-    #             ic(service)
-    #     case Verbosity.DETAILED:
-    #         mask = [
-    #             "addresses",
-    #             "app_name",
-    #             "app_ns",
-    #             "applicationID",
-    #             "service_name",
-    #             "service_ns",
-    #             "service_ns",
-    #             "one_shot",
-    #             "microserviceID",
-    #             "cmd",
-    #             "code",
-    #             "image",
-    #         ]
-    #         service = {key: service[key] for key in mask if key in service}
 
-    # ic(service)
+def show_instances(instances: List[dict]) -> str:
+    instance_status_info = []
+    for i in instances:
+        info = f"{i['instance_number']}:{add_icon_to_status(i['status'])}"
+        instance_status_info.append(info)
+
+    resulting_string = f"({len(instances)})"
+    if len(instance_status_info) > 0:
+        resulting_string += f" - {instance_status_info}"
+    return resulting_string

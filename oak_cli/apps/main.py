@@ -33,7 +33,7 @@ def show_current_applications(
     current_applications = get_applications()
     table = create_table(caption="Current Applications", verbosity=verbosity)
     add_column(table, column_name="Name", style=OAK_GREEN, justify="left")
-    add_plain_columns(table=table, column_names=["# Services", "Application ID"])
+    add_plain_columns(table=table, column_names=["Services", "Application ID"])
     if verbosity == Verbosity.DETAILED:
         add_plain_columns(table=table, column_names=["Namespace", "User ID", "Description"])
 
@@ -43,8 +43,6 @@ def show_current_applications(
             case Verbosity.EXHAUSTIVE:
                 ic(i, application)
                 continue
-            case Verbosity.SIMPLE:
-                special_row_elements += []
             case Verbosity.DETAILED:
                 special_row_elements += [
                     application["application_namespace"],
@@ -54,7 +52,7 @@ def show_current_applications(
 
         row_elements = [
             application["application_name"],
-            str(len(application["microservices"])),
+            "(" + str(len(application["microservices"])) + ")",
             application["applicationID"],
         ] + special_row_elements
         table.add_row(*row_elements)
