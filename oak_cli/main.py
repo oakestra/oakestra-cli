@@ -2,14 +2,11 @@
 import typer
 
 import oak_cli.apps.main as oak_applications
+import oak_cli.commands.docker.main as oak_docker
 import oak_cli.services.main as oak_services
 from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.logging import logger
-
-
-def _help_text(subject: str) -> str:
-    return f"Command for {subject} related activities."
-
+from oak_cli.utils.typer_augmentations import typer_help_text
 
 app = typer.Typer(
     help="Run Oakestra's CLI",
@@ -18,12 +15,17 @@ app = typer.Typer(
 app.add_typer(
     typer_instance=oak_applications.app,
     name="a",
-    help=_help_text("application"),
+    help=typer_help_text("application"),
 )
 app.add_typer(
     typer_instance=oak_services.app,
     name="s",
-    help=_help_text("service"),
+    help=typer_help_text("service"),
+)
+app.add_typer(
+    typer_instance=oak_docker.app,
+    name="d",
+    help=typer_help_text("docker"),
 )
 
 
