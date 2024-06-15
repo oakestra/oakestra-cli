@@ -14,6 +14,11 @@ OAK_BLUE = "cyan1"
 OAK_WHITE = "white"
 
 
+def create_spinner(message: str, style: str = OAK_GREEN):  # NOTE: The return type is complex.
+    """Returns a spinner object that should be used via a 'with'"""
+    return rich.console.Console().status(f"[{style}]{message}")
+
+
 def create_table(
     title: str = None,
     caption: str = None,

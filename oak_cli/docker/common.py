@@ -6,6 +6,7 @@ import sys
 
 from oak_cli.docker.enums import OakestraDockerComposeService, RootOrchestratorService
 from oak_cli.utils.logging import logger
+from oak_cli.utils.styling import create_spinner
 
 ROOT_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH = pathlib.Path(
     "/home/alex/oakestra_main_repo/root_orchestrator/docker-compose.yml"
@@ -41,13 +42,14 @@ def check_docker_service_status(
 
 def restart_docker_service(docker_compose_service: OakestraDockerComposeService) -> None:
     docker_cmd = f"docker restart {docker_compose_service}"
-    subprocess.run(
-        shlex.split(docker_cmd),
-        check=True,
-        stderr=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        text=True,
-    )
+    with create_spinner(message=f"Restarting '{docker_compose_service}'"):
+        subprocess.run(
+            shlex.split(docker_cmd),
+            check=True,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
+        )
     check_docker_service_status(docker_compose_service, "restarted")
 
 
@@ -74,9 +76,13 @@ def rebuild_docker_compose_service(
     else:
         compose_path = CLUSTER_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH
 
+    spinner_msg = f"Rebuilding '{compose_service}'"
     if cache_less:
-        run_shell_cmd(f"docker compose -f {compose_path} build --no-cache {compose_service}")
-    re_up_flags = "--detach --build --no-deps --force-recreate"
-    run_shell_cmd(f"docker compose -f {compose_path} up {re_up_flags} {compose_service}")
+        spinner_msg += " without cache"
+    with create_spinner(message=spinner_msg):
+        if cache_less:
+            run_shell_cmd(f"docker compose -f {compose_path} build --no-cache {compose_service}")
+        re_up_flags = "--detach --build --no-deps --force-recreate"
+        run_shell_cmd(f"docker compose -f {compose_path} up {re_up_flags} {compose_service}")
 
     check_docker_service_status(compose_service, "rebuild")
