@@ -68,6 +68,7 @@ def show_current_services(
     ] = None,
     verbosity: Annotated[Optional[Verbosity], typer.Option("-v")] = Verbosity.SIMPLE.value,
 ) -> None:
+
     current_services = get_all_services(app_id)
     if not current_services:
         return
@@ -94,7 +95,7 @@ def show_current_services(
                 # NOTE: Hide information that is too verbose.
                 HIDDEN_TEXT = "(hidden by CLI)"
                 for instance in service["instance_list"]:
-                    instance["cpu_history"] = HIDDEN_TEXT
+                    # instance["cpu_history"] = HIDDEN_TEXT
                     instance["memory_history"] = HIDDEN_TEXT
                     instance["logs"] = HIDDEN_TEXT
                 ic(i, service)
