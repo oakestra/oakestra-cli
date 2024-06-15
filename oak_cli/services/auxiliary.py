@@ -21,6 +21,7 @@ def add_icon_to_status(status: str) -> str:
         "ACTIVE": "🔷",
         "CLUSTER_SCHEDULED": "🟣",
         "NODE_SCHEDULED": "🔵",
+        "DEAD": "💀",
         "NoActiveClusterWithCapacity": "❌",
     }
     return f"{status} {STATUS_ICON_MAP.get(status, '❓')}"
@@ -108,7 +109,7 @@ def generate_service_inspection_table(
     caption = " | ".join(
         (
             f"image: {service['image']}",
-            f"cmd: {' '.join(service['cmd']) if service['cmd'] else '-'}",
+            f"cmd: {' '.join(service.get('cmd')) if service.get('cmd') else '-'}",
         )
     )
     table = create_table(title=title, caption=caption, live=live)

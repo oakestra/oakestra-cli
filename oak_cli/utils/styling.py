@@ -1,3 +1,4 @@
+import subprocess
 import time
 from typing import Any, Callable, List
 
@@ -73,6 +74,8 @@ def display_table(live: bool, table_generator: Callable[[Any], Any]) -> None:
     if not live:
         print_table(table=table_generator())
     else:
+        # Clear the terminal to have the live-view in a clean isolated view.
+        subprocess.run(["clear", "-x"])
         with Live(auto_refresh=False) as live:
             while True:
                 live.update(table_generator(), refresh=True)
