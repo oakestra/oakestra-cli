@@ -32,8 +32,6 @@ def get_applications() -> List[Application]:
             oak_cli_exception_type=OakCLIExceptionTypes.APP_GET,
         ),
     ).execute()
-    if not apps:
-        logger.info("No applications exist yet")
     return apps
 
 

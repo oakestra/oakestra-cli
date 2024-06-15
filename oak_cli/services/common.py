@@ -4,7 +4,6 @@ import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
-from oak_cli.utils.logging import logger
 from oak_cli.utils.types import ApplicationId, Id, Service, ServiceId
 
 
@@ -39,9 +38,6 @@ def get_all_services(app_id: ApplicationId = None) -> List[Service]:
     # It seems to NOT only return services of the provided app but more.
     if app_id:
         services = [service for service in services if service["applicationID"] == app_id]
-
-    if not services:
-        logger.info("No applications exist yet")
     return services
 
 

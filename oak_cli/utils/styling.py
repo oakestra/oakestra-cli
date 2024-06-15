@@ -4,6 +4,9 @@ import rich
 
 from oak_cli.utils.types import Verbosity
 
+LIVE_REFRESH_RATE = 3  # Seconds
+LIVE_HELP_TEXT = "Use dynamic Live-Display. (Exit view e.g. via 'Ctr+c')"
+
 DEFAULT_JUSTIFY_DIRECTION = "left"
 DEFAULT_CELL_OVERFLOW = "fold"
 

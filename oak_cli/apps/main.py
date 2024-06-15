@@ -1,24 +1,22 @@
 import json
+import time
 from typing import List, Optional
 
 import typer
 from icecream import ic
+from rich.live import Live
 from typing_extensions import Annotated
 
 import oak_cli.utils.api.custom_requests as custom_requests
+from oak_cli.apps.auxiliary import generate_current_application_table
 from oak_cli.apps.common import delete_application, get_applications
 from oak_cli.apps.SLAs.common import AppSLAs, get_SLAs_path
 from oak_cli.services.main import deploy_new_instance
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
-from oak_cli.utils.styling import (
-    OAK_GREEN,
-    add_column,
-    add_plain_columns,
-    create_table,
-    print_table,
-)
+from oak_cli.utils.logging import logger
+from oak_cli.utils.styling import LIVE_HELP_TEXT, LIVE_REFRESH_RATE, print_table
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.utils.types import Application, ApplicationId, Verbosity
 
@@ -27,42 +25,30 @@ app = typer.Typer(cls=AliasGroup)
 
 @app.command("show, s", help="Shows current applications")
 def show_current_applications(
+    live: Annotated[Optional[bool], typer.Option("-l", help=LIVE_HELP_TEXT)] = False,
     verbosity: Annotated[Optional[Verbosity], typer.Option("-v")] = Verbosity.SIMPLE.value,
 ) -> None:
     current_applications = get_applications()
-    if not current_applications:
+    if not live and not current_applications:
+        logger.info("No applications exist yet")
         return
-
-    table = create_table(caption="Current Applications", verbosity=verbosity)
-    add_column(table, column_name="Name", style=OAK_GREEN)
-    add_plain_columns(table=table, column_names=["Services", "Application ID"])
-    if verbosity == Verbosity.DETAILED:
-        add_plain_columns(table=table, column_names=["Namespace", "User ID", "Description"])
-
-    for i, application in enumerate(current_applications):
-        special_row_elements = []
-        match verbosity:
-            case Verbosity.EXHAUSTIVE:
-                ic(i, application)
-                continue
-            case Verbosity.DETAILED:
-                special_row_elements += [
-                    application["application_namespace"],
-                    application["userId"],
-                    application["application_desc"],
-                ]
-
-        row_elements = [
-            application["application_name"],
-            "(" + str(len(application["microservices"])) + ")",
-            application["applicationID"],
-        ] + special_row_elements
-        table.add_row(*row_elements)
 
     if verbosity == Verbosity.EXHAUSTIVE:
+        for i, application in enumerate(current_applications):
+            ic(i, application)
         return
 
-    print_table(table)
+    if not live:
+        print_table(table=generate_current_application_table(verbosity))
+        return
+
+    with Live(
+        generate_current_application_table(verbosity),
+        auto_refresh=False,
+    ) as live:
+        while True:
+            time.sleep(LIVE_REFRESH_RATE)
+            live.update(generate_current_application_table(verbosity), refresh=True)
 
 
 @app.command("create, c", help="Creates one or multiple apps based on a SLA")
