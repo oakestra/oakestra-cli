@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
-from oak_cli.utils.types import Service, ServiceId
+from oak_cli.utils.types import Id, Service, ServiceId
 
 
 def get_single_service(service_id: ServiceId) -> Service:
@@ -39,3 +40,18 @@ def get_all_services(app_id: ServiceId = None) -> List[Service]:
     if not services:
         logger.info("No applications exist yet")
     return services
+
+
+def undeploy_instance(service_id: ServiceId, instance_id: Optional[Id] = None) -> None:
+    custom_requests.CustomRequest(
+        custom_requests.RequestCore(
+            http_method=HttpMethod.DELETE,
+            base_url=SYSTEM_MANAGER_URL,
+            api_endpoint=f"/api/service/{service_id}/instance/{instance_id or 0}",
+        ),
+        custom_requests.RequestAuxiliaries(
+            what_should_happen=f"Undeploy instance '{instance_id or 0}' for service '{service_id}'",
+            show_msg_on_success=True,
+            oak_cli_exception_type=OakCLIExceptionTypes.SERVICE_UNDEPLOYMENT,
+        ),
+    ).execute()

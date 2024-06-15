@@ -5,6 +5,7 @@ def add_icon_to_status(status: str) -> str:
     STATUS_ICON_MAP = {
         "RUNNING": "🟢",
         "ACTIVE": "❇️",
+        "CLUSTER_SCHEDULED": "🟣",
         "NODE_SCHEDULED": "🔵",
         "NoActiveClusterWithCapacity": "❌",
     }
@@ -14,7 +15,10 @@ def add_icon_to_status(status: str) -> str:
 def show_instances(instances: List[dict]) -> str:
     instance_status_info = []
     for i in instances:
-        info = f"{i['instance_number']}:{add_icon_to_status(i['status'])}"
+        status = i.get("status")
+        info = (
+            f"{i['instance_number']}:{add_icon_to_status(status) if status else 'No Status Yet ⚪'}"
+        )
         instance_status_info.append(info)
 
     resulting_string = f"({len(instances)})"

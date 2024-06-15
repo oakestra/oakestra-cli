@@ -9,7 +9,6 @@ from typing_extensions import Annotated
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.apps.common import delete_application, get_applications
 from oak_cli.apps.SLAs.common import AppSLAs, get_SLAs_path
-from oak_cli.commands.services.deployment import deploy_new_instance
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
