@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import typer
 
+import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
 import oak_cli.docker.main as oak_docker
 import oak_cli.services.main as oak_services
@@ -25,7 +26,12 @@ app.add_typer(
 app.add_typer(
     typer_instance=oak_docker.app,
     name="d",
-    help=typer_help_text("docker"),
+    help=typer_help_text("docker(compose)"),
+)
+app.add_typer(
+    typer_instance=oak_addons.app,
+    name="ad",
+    help=typer_help_text("addon"),
 )
 
 

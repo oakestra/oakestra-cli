@@ -1,6 +1,6 @@
 import pathlib
 
-from oak_cli.commands.plugins.flops.SLAs.common import FLOpsSLAs
+from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
 
 
 class FLOpsMockDataProviderSLAs(FLOpsSLAs):
