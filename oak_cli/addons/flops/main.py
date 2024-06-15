@@ -5,7 +5,6 @@ from typing import Optional
 
 import typer
 from icecream import ic
-from typing_extensions import Annotated
 
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
