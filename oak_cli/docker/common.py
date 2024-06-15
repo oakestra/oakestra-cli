@@ -4,7 +4,7 @@ import shlex
 import subprocess
 import sys
 
-from oak_cli.commands.docker.enums import OakestraDockerComposeService, RootOrchestratorService
+from oak_cli.docker.enums import OakestraDockerComposeService, RootOrchestratorService
 from oak_cli.utils.logging import logger
 
 ROOT_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH = pathlib.Path(

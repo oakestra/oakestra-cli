@@ -2,7 +2,7 @@
 import typer
 
 import oak_cli.apps.main as oak_applications
-import oak_cli.commands.docker.main as oak_docker
+import oak_cli.docker.main as oak_docker
 import oak_cli.services.main as oak_services
 from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.logging import logger
