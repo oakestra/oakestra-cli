@@ -4,12 +4,13 @@ import rich
 
 from oak_cli.utils.types import Verbosity
 
-DEFAULT_JUSTIFY_DIRECTION = "right"
+DEFAULT_JUSTIFY_DIRECTION = "left"
 
 # Reference: https://rich.readthedocs.io/en/latest/appendix/colors.html
 OAK_GREEN = "light_green"
 OAK_GREY = "steel_blue"
 OAK_BLUE = "cyan1"
+OAK_WHITE = "white"
 
 
 def create_table(

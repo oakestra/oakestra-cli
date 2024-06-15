@@ -31,8 +31,11 @@ def show_current_applications(
     verbosity: Annotated[Optional[Verbosity], typer.Option("-v")] = Verbosity.SIMPLE.value,
 ) -> None:
     current_applications = get_applications()
+    if not current_applications:
+        return
+
     table = create_table(caption="Current Applications", verbosity=verbosity)
-    add_column(table, column_name="Name", style=OAK_GREEN, justify="left")
+    add_column(table, column_name="Name", style=OAK_GREEN)
     add_plain_columns(table=table, column_names=["Services", "Application ID"])
     if verbosity == Verbosity.DETAILED:
         add_plain_columns(table=table, column_names=["Namespace", "User ID", "Description"])

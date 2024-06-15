@@ -7,7 +7,15 @@ from typing_extensions import Annotated
 
 from oak_cli.commands.services.auxiliary import add_icon_to_status, show_instances
 from oak_cli.commands.services.get import get_all_services
-from oak_cli.utils.styling import OAK_BLUE, OAK_GREEN, add_column, create_table, print_table
+from oak_cli.utils.styling import (
+    OAK_BLUE,
+    OAK_GREEN,
+    OAK_WHITE,
+    add_column,
+    add_plain_columns,
+    create_table,
+    print_table,
+)
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.utils.types import ApplicationId, Verbosity
 
@@ -24,16 +32,14 @@ def show_current_services(
 ) -> None:
     current_services = get_all_services(app_id)
     table = create_table(caption="Current Services", verbosity=verbosity)
-    add_column(table, column_name="Service Name", style=OAK_GREEN, justify="left")
+    add_column(table, column_name="Service Name", style=OAK_GREEN)
     add_column(table, column_name="Service ID")
-    add_column(table, column_name="Status", style="white")
-    add_column(table, column_name="Instances", style="white")
+    add_column(table, column_name="Status", style=OAK_WHITE)
+    add_column(table, column_name="Instances", style=OAK_WHITE)
     add_column(table, column_name="App Name", style=OAK_BLUE)
     add_column(table, column_name="App ID")
     if verbosity == Verbosity.DETAILED:
-        # FUTURE WORK / TODO: Think what properties might be interesting.
-        # Might need to simplify the SIMPLE case because the table already is quite large.
-        pass
+        add_plain_columns(table, column_names=["Image", "Command"])
 
     for i, service in enumerate(current_services):
         special_row_elements = []
@@ -47,7 +53,7 @@ def show_current_services(
                 ic(i, service)
                 continue
             case Verbosity.DETAILED:
-                # FUTURE WORK / TODO: Think what properties might be interesting.
+                special_row_elements += [service["image"], "".join(service["cmd"])]
                 pass
 
         row_elements = [
