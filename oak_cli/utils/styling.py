@@ -5,6 +5,7 @@ import rich
 from oak_cli.utils.types import Verbosity
 
 DEFAULT_JUSTIFY_DIRECTION = "left"
+DEFAULT_CELL_OVERFLOW = "fold"
 
 # Reference: https://rich.readthedocs.io/en/latest/appendix/colors.html
 OAK_GREEN = "light_green"
@@ -33,12 +34,9 @@ def add_column(
     column_name: str,
     style: str = OAK_GREY,
     justify: str = DEFAULT_JUSTIFY_DIRECTION,
+    overflow: str = DEFAULT_CELL_OVERFLOW,
 ) -> None:
-    table.add_column(
-        column_name,
-        style=style,
-        justify=justify,
-    )
+    table.add_column(column_name, style=style, justify=justify, overflow=overflow)
 
 
 def add_plain_columns(

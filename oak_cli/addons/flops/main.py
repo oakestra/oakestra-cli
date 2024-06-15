@@ -5,6 +5,7 @@ from typing import Optional
 
 import typer
 from icecream import ic
+from typing_extensions import Annotated
 
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
@@ -24,32 +25,34 @@ def _load_sla(sla: FLOpsSLAs, sla_path: pathlib.Path) -> dict:
         return json.load(f)
 
 
-def create_new_flops_project(sla: FLOpsProjectSLAs) -> None:
+@app.command("project, p", help="Starts a new FLOps project.")
+def create_new_flops_project(project_sla: FLOpsProjectSLAs) -> None:
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
             base_url=ROOT_FL_MANAGER_URL,
             api_endpoint="/api/flops/projects",
-            data=_load_sla(sla, FLOpsProjectSLAs.get_SLAs_path()),
+            data=_load_sla(project_sla, FLOpsProjectSLAs.get_SLAs_path()),
         ),
         custom_requests.RequestAuxiliaries(
-            what_should_happen=f"Init new FLOps project for SLA '{sla}'",
+            what_should_happen=f"Init new FLOps project for SLA '{project_sla}'",
             show_msg_on_success=True,
             oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),
     ).execute()
 
 
-def create_new_mock_data_service(sla: FLOpsMockDataProviderSLAs) -> None:
+@app.command("mock_data, m", help="Deploys a mock-data-provider.")
+def create_new_mock_data_service(mock_sla: FLOpsMockDataProviderSLAs) -> None:
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
             base_url=ROOT_FL_MANAGER_URL,
             api_endpoint="/api/flops/mocks",
-            data=_load_sla(sla, FLOpsMockDataProviderSLAs.get_SLAs_path()),
+            data=_load_sla(mock_sla, FLOpsMockDataProviderSLAs.get_SLAs_path()),
         ),
         custom_requests.RequestAuxiliaries(
-            what_should_happen=f"Init new FLOps mock data service for SLA '{sla}'",
+            what_should_happen=f"Init new FLOps mock data service for SLA '{mock_sla}'",
             show_msg_on_success=True,
             oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),
