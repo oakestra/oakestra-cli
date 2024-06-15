@@ -15,6 +15,7 @@ OAK_WHITE = "white"
 
 
 def create_table(
+    title: str = None,
     caption: str = None,
     box: rich.box = rich.box.ROUNDED,
     show_lines: bool = True,
@@ -23,6 +24,7 @@ def create_table(
     if verbosity:
         caption += f" (verbosity: '{verbosity.value}')"
     return rich.table.Table(
+        title=title,
         caption=caption,
         box=box,
         show_lines=show_lines,

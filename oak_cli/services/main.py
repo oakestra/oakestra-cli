@@ -26,6 +26,40 @@ ic.configureOutput(prefix="")
 app = typer.Typer(cls=AliasGroup)
 
 
+@app.command("inspect, i", help="Inspect the specified service.")
+def inspect_service(service_id: ServiceId) -> None:
+    service = get_single_service(service_id=service_id)
+    instances = service["instance_list"]
+    caption = "" if instances else "No instances deployed"
+    service_table = create_table(caption=caption)
+    add_column(service_table, column_name="Service Name", style=OAK_GREEN)
+    add_column(service_table, column_name="Service Status", style=OAK_WHITE)
+    add_plain_columns(service_table, column_names=["App Name", "App ID", "Image", "Command"])
+    service_status = service.get("status")
+    service_table.add_row(
+        service["microservice_name"],
+        add_icon_to_status(service_status) if service_status else "-",
+        service["app_name"],
+        service["applicationID"],
+        service["image"],
+        " ".join(service["cmd"]) if service["cmd"] else "-",
+    )
+    print_table(service_table)
+    if not instances:
+        return
+
+    instances_table = create_table(title="Instances")
+    add_column(instances_table, "#", style=OAK_GREEN)
+    add_column(instances_table, "Logs")
+    for instance in instances:
+        row_elements = [
+            str(instance.get("instance_number")),
+            instance.get("logs"),
+        ]
+        instances_table.add_row(*row_elements)
+    print_table(instances_table)
+
+
 @app.command("show, s", help="Shows current services.")
 def show_current_services(
     app_id: Annotated[
@@ -47,8 +81,9 @@ def show_current_services(
     add_column(table, column_name="Service ID")
     add_column(table, column_name="Status", style=OAK_WHITE)
     add_column(table, column_name="Instances", style=OAK_WHITE)
-    add_column(table, column_name="App Name", style=OAK_BLUE)
-    add_column(table, column_name="App ID")
+    if not app_id:
+        add_column(table, column_name="App Name", style=OAK_BLUE)
+        add_column(table, column_name="App ID")
     if verbosity == Verbosity.DETAILED:
         add_plain_columns(table, column_names=["Image", "Command"])
 
@@ -71,14 +106,19 @@ def show_current_services(
                 ]
                 pass
 
+        service_status = service.get("status")
         row_elements = [
             service["microservice_name"],
             service["microserviceID"],
-            add_icon_to_status(service["status"]),
+            add_icon_to_status(service_status) if service_status else "-",
             show_instances(instances=service["instance_list"]),
-            service["app_name"],
-            service["applicationID"],
-        ] + special_row_elements
+        ]
+        if not app_id:
+            row_elements += [
+                service["app_name"],
+                service["applicationID"],
+            ]
+        row_elements += special_row_elements
         table.add_row(*row_elements)
 
     if verbosity == Verbosity.EXHAUSTIVE:
