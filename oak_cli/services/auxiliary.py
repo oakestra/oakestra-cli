@@ -2,9 +2,8 @@ from typing import List
 
 import rich
 
-from oak_cli.services.common import get_all_services
+from oak_cli.services.common import get_all_services, get_single_service
 from oak_cli.utils.styling import (
-    LIVE_VIEW_PREFIX,
     OAK_BLUE,
     OAK_GREEN,
     OAK_WHITE,
@@ -12,7 +11,7 @@ from oak_cli.utils.styling import (
     add_plain_columns,
     create_table,
 )
-from oak_cli.utils.types import ApplicationId, Verbosity
+from oak_cli.utils.types import ApplicationId, ServiceId, Verbosity
 
 
 def add_icon_to_status(status: str) -> str:
@@ -86,4 +85,45 @@ def generate_current_services_table(
         row_elements += special_row_elements
         table.add_row(*row_elements)
 
+    return table
+
+
+def generate_service_inspection_table(
+    service_id: ServiceId,
+    live: bool = False,
+) -> rich.table.Table:
+    # NOTE: We use a grid instead of a table, because the live-display
+    # can only support a single object not multiple at once.
+    service = get_single_service(service_id=service_id)
+    instances = service["instance_list"]
+    instance_status = service.get("status")
+    title = " | ".join(
+        (
+            f"name: {service['microservice_name']}",
+            add_icon_to_status(instance_status) if instance_status else "-",
+            f"app name: {service['app_name']}",
+            f"app ID: {service['applicationID']}",
+        )
+    )
+    caption = " | ".join(
+        (
+            f"image: {service['image']}",
+            f"cmd: {' '.join(service['cmd']) if service['cmd'] else '-'}",
+        )
+    )
+    table = create_table(title=title, caption=caption, live=live)
+    service = get_single_service(service_id=service_id)
+    instances = service["instance_list"]
+
+    add_column(table, "#", style=OAK_BLUE)
+    add_column(table, "Status", style=OAK_WHITE)
+    add_column(table, "Logs", style=OAK_GREEN)
+    for instance in instances:
+        instance_status = instance.get("status")
+        row_elements = [
+            str(instance.get("instance_number")),
+            add_icon_to_status(instance_status) if instance_status else "-",
+            instance.get("logs"),
+        ]
+        table.add_row(*row_elements)
     return table

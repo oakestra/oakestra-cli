@@ -4,7 +4,6 @@ import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
-from oak_cli.utils.logging import logger
 from oak_cli.utils.types import Application, ApplicationId
 
 

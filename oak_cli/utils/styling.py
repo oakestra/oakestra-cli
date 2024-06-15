@@ -37,8 +37,8 @@ def create_table(
     if verbosity:
         caption += f" (verbosity: '{verbosity.value}')"
     if live:
-        # ♻️🔁🔄️
-        caption = " LIVE: " + caption
+        LIVE_PREFIX = "🔄️ LIVE"
+        caption = f"{LIVE_PREFIX} - {caption}" if caption else LIVE_PREFIX
     return rich.table.Table(
         title=title,
         caption=caption,
@@ -73,7 +73,7 @@ def display_table(live: bool, table_generator: Callable[[Any], Any]) -> None:
     if not live:
         print_table(table=table_generator())
     else:
-        with Live(table_generator(), auto_refresh=False) as live:
+        with Live(auto_refresh=False) as live:
             while True:
-                time.sleep(LIVE_REFRESH_RATE)
                 live.update(table_generator(), refresh=True)
+                time.sleep(LIVE_REFRESH_RATE)

@@ -1,13 +1,7 @@
 import rich
 
 from oak_cli.apps.common import get_applications
-from oak_cli.utils.styling import (
-    LIVE_VIEW_PREFIX,
-    OAK_GREEN,
-    add_column,
-    add_plain_columns,
-    create_table,
-)
+from oak_cli.utils.styling import OAK_GREEN, add_column, add_plain_columns, create_table
 from oak_cli.utils.types import Verbosity
 
 

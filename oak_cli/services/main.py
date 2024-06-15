@@ -1,28 +1,20 @@
-import time
 from typing import Optional
 
 import typer
 from icecream import ic
-from rich.live import Live
 from typing_extensions import Annotated
 
 import oak_cli.utils.api.custom_requests as custom_requests
-from oak_cli.services.auxiliary import add_icon_to_status, generate_current_services_table
+from oak_cli.services.auxiliary import (
+    generate_current_services_table,
+    generate_service_inspection_table,
+)
 from oak_cli.services.common import get_all_services, get_single_service, undeploy_instance
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
-from oak_cli.utils.styling import (
-    LIVE_HELP_TEXT,
-    OAK_GREEN,
-    OAK_WHITE,
-    add_column,
-    add_plain_columns,
-    create_table,
-    display_table,
-    print_table,
-)
+from oak_cli.utils.styling import LIVE_HELP_TEXT, display_table
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.utils.types import ApplicationId, Id, ServiceId, Verbosity
 
@@ -31,37 +23,14 @@ app = typer.Typer(cls=AliasGroup)
 
 
 @app.command("inspect, i", help="Inspect the specified service.")
-def inspect_service(service_id: ServiceId) -> None:
-    service = get_single_service(service_id=service_id)
-    instances = service["instance_list"]
-    caption = "" if instances else "No instances deployed"
-    service_table = create_table(caption=caption)
-    add_column(service_table, column_name="Service Name", style=OAK_GREEN)
-    add_column(service_table, column_name="Service Status", style=OAK_WHITE)
-    add_plain_columns(service_table, column_names=["App Name", "App ID", "Image", "Command"])
-    service_status = service.get("status")
-    service_table.add_row(
-        service["microservice_name"],
-        add_icon_to_status(service_status) if service_status else "-",
-        service["app_name"],
-        service["applicationID"],
-        service["image"],
-        " ".join(service["cmd"]) if service["cmd"] else "-",
+def inspect_service(
+    service_id: ServiceId,
+    live: Annotated[Optional[bool], typer.Option("-l", help=LIVE_HELP_TEXT)] = False,
+) -> None:
+    display_table(
+        live,
+        table_generator=lambda: generate_service_inspection_table(live=live, service_id=service_id),
     )
-    print_table(service_table)
-    if not instances:
-        return
-
-    instances_table = create_table(title="Instances")
-    add_column(instances_table, "#", style=OAK_GREEN)
-    add_column(instances_table, "Logs")
-    for instance in instances:
-        row_elements = [
-            str(instance.get("instance_number")),
-            instance.get("logs"),
-        ]
-        instances_table.add_row(*row_elements)
-    print_table(instances_table)
 
 
 @app.command("show, s", help="Shows current services.")
