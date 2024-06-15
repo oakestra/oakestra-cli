@@ -1,10 +1,8 @@
 import json
-import time
 from typing import List, Optional
 
 import typer
 from icecream import ic
-from rich.live import Live
 from typing_extensions import Annotated
 
 import oak_cli.utils.api.custom_requests as custom_requests
@@ -16,7 +14,7 @@ from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
-from oak_cli.utils.styling import LIVE_HELP_TEXT, LIVE_REFRESH_RATE, print_table
+from oak_cli.utils.styling import LIVE_HELP_TEXT, display_table
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.utils.types import Application, ApplicationId, Verbosity
 
@@ -38,17 +36,10 @@ def show_current_applications(
             ic(i, application)
         return
 
-    if not live:
-        print_table(table=generate_current_application_table(verbosity))
-        return
-
-    with Live(
-        generate_current_application_table(verbosity),
-        auto_refresh=False,
-    ) as live:
-        while True:
-            time.sleep(LIVE_REFRESH_RATE)
-            live.update(generate_current_application_table(verbosity), refresh=True)
+    display_table(
+        live,
+        table_generator=lambda: generate_current_application_table(verbosity=verbosity, live=live),
+    )
 
 
 @app.command("create, c", help="Creates one or multiple apps based on a SLA")

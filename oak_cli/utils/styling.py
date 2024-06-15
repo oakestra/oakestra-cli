@@ -1,11 +1,15 @@
-from typing import List
+import time
+from typing import Any, Callable, List
 
 import rich
+from rich.live import Live
 
 from oak_cli.utils.types import Verbosity
 
 LIVE_REFRESH_RATE = 3  # Seconds
 LIVE_HELP_TEXT = "Use dynamic Live-Display. (Exit view e.g. via 'Ctr+c')"
+LIVE_VIEW_PREFIX = "LIVE-VIEW: "
+
 
 DEFAULT_JUSTIFY_DIRECTION = "left"
 DEFAULT_CELL_OVERFLOW = "fold"
@@ -28,9 +32,13 @@ def create_table(
     box: rich.box = rich.box.ROUNDED,
     show_lines: bool = True,
     verbosity: Verbosity = None,
+    live: bool = False,
 ) -> rich.table.Table:
     if verbosity:
         caption += f" (verbosity: '{verbosity.value}')"
+    if live:
+        # ♻️🔁🔄️
+        caption = " LIVE: " + caption
     return rich.table.Table(
         title=title,
         caption=caption,
@@ -59,3 +67,13 @@ def add_plain_columns(
 
 def print_table(table: rich.table.Table) -> None:
     rich.console.Console().print(table)
+
+
+def display_table(live: bool, table_generator: Callable[[Any], Any]) -> None:
+    if not live:
+        print_table(table=table_generator())
+    else:
+        with Live(table_generator(), auto_refresh=False) as live:
+            while True:
+                time.sleep(LIVE_REFRESH_RATE)
+                live.update(table_generator(), refresh=True)

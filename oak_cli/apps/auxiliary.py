@@ -1,12 +1,18 @@
 import rich
 
 from oak_cli.apps.common import get_applications
-from oak_cli.utils.styling import OAK_GREEN, add_column, add_plain_columns, create_table
+from oak_cli.utils.styling import (
+    LIVE_VIEW_PREFIX,
+    OAK_GREEN,
+    add_column,
+    add_plain_columns,
+    create_table,
+)
 from oak_cli.utils.types import Verbosity
 
 
-def generate_current_application_table(verbosity: Verbosity) -> rich.table.Table:
-    table = create_table(caption="Current Applications", verbosity=verbosity)
+def generate_current_application_table(verbosity: Verbosity, live: bool) -> rich.table.Table:
+    table = create_table(caption="Current Applications", verbosity=verbosity, live=live)
     add_column(table, column_name="Name", style=OAK_GREEN)
     add_plain_columns(table=table, column_names=["Services", "Application ID"])
     if verbosity == Verbosity.DETAILED:

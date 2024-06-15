@@ -15,12 +15,12 @@ from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
 from oak_cli.utils.styling import (
     LIVE_HELP_TEXT,
-    LIVE_REFRESH_RATE,
     OAK_GREEN,
     OAK_WHITE,
     add_column,
     add_plain_columns,
     create_table,
+    display_table,
     print_table,
 )
 from oak_cli.utils.typer_augmentations import AliasGroup
@@ -91,17 +91,9 @@ def show_current_services(
             continue
         return
 
-    if not live:
-        print_table(table=generate_current_services_table(app_id, verbosity))
-        return
-
-    with Live(
-        generate_current_services_table(app_id, verbosity),
-        auto_refresh=False,
-    ) as live:
-        while True:
-            time.sleep(LIVE_REFRESH_RATE)
-            live.update(generate_current_services_table(app_id, verbosity), refresh=True)
+    display_table(
+        live, table_generator=lambda: generate_current_services_table(app_id, verbosity, live)
+    )
 
 
 @app.command("deploy, d", help="Deploy a new service instance.")

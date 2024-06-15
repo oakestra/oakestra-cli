@@ -4,6 +4,7 @@ import rich
 
 from oak_cli.services.common import get_all_services
 from oak_cli.utils.styling import (
+    LIVE_VIEW_PREFIX,
     OAK_BLUE,
     OAK_GREEN,
     OAK_WHITE,
@@ -44,13 +45,14 @@ def show_instances(instances: List[dict]) -> str:
 def generate_current_services_table(
     app_id: ApplicationId,
     verbosity: Verbosity,
+    live: bool = False,
 ) -> rich.table.Table:
     current_services = get_all_services(app_id)
     caption = "Current Services"
     if app_id:
         app_name = current_services[0]["app_name"]
         caption += f" of app: '{app_name} - {app_id}'"
-    table = create_table(caption=caption, verbosity=verbosity)
+    table = create_table(caption=caption, verbosity=verbosity, live=live)
     add_column(table, column_name="Service Name", style=OAK_GREEN)
     add_column(table, column_name="Service ID")
     add_column(table, column_name="Status", style=OAK_WHITE)
