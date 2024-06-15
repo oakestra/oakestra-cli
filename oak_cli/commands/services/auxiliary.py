@@ -4,6 +4,7 @@ from typing import List
 def add_icon_to_status(status: str) -> str:
     STATUS_ICON_MAP = {
         "RUNNING": "🟢",
+        "ACTIVE": "❇️",
         "NODE_SCHEDULED": "🔵",
         "NoActiveClusterWithCapacity": "❌",
     }

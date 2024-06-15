@@ -1,6 +1,5 @@
 from typing import Optional
 
-import rich
 import typer
 from icecream import ic
 from typing_extensions import Annotated
@@ -53,7 +52,10 @@ def show_current_services(
                 ic(i, service)
                 continue
             case Verbosity.DETAILED:
-                special_row_elements += [service["image"], "".join(service["cmd"])]
+                special_row_elements += [
+                    service["image"],
+                    " ".join(service["cmd"]) if service["cmd"] else "-",
+                ]
                 pass
 
         row_elements = [
