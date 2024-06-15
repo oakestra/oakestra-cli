@@ -28,16 +28,21 @@ app = typer.Typer(cls=AliasGroup)
 
 @app.command("show, s", help="Shows current services.")
 def show_current_services(
+    app_id: Annotated[
+        Optional[ApplicationId],
+        typer.Argument(help="ID of the parent application which services to show"),
+    ] = None,
     verbosity: Annotated[Optional[Verbosity], typer.Option("-v")] = Verbosity.SIMPLE.value,
-    app_id: Optional[ApplicationId] = typer.Option(
-        None, help="ID of the parent application which services to show"
-    ),
 ) -> None:
     current_services = get_all_services(app_id)
     if not current_services:
         return
 
-    table = create_table(caption="Current Services", verbosity=verbosity)
+    caption = "Current Services"
+    if app_id:
+        app_name = current_services[0]["app_name"]
+        caption += f" of app: '{app_name} - {app_id}'"
+    table = create_table(caption=caption, verbosity=verbosity)
     add_column(table, column_name="Service Name", style=OAK_GREEN)
     add_column(table, column_name="Service ID")
     add_column(table, column_name="Status", style=OAK_WHITE)
@@ -52,10 +57,11 @@ def show_current_services(
         match verbosity:
             case Verbosity.EXHAUSTIVE:
                 # NOTE: Hide information that is too verbose.
+                HIDDEN_TEXT = "(hidden by CLI)"
                 for instance in service["instance_list"]:
-                    instance["cpu_history"] = "..."
-                    instance["memory_history"] = "..."
-                    instance["logs"] = "..."
+                    instance["cpu_history"] = HIDDEN_TEXT
+                    instance["memory_history"] = HIDDEN_TEXT
+                    instance["logs"] = HIDDEN_TEXT
                 ic(i, service)
                 continue
             case Verbosity.DETAILED:

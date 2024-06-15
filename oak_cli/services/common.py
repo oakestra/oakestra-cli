@@ -5,7 +5,7 @@ from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
-from oak_cli.utils.types import Id, Service, ServiceId
+from oak_cli.utils.types import ApplicationId, Id, Service, ServiceId
 
 
 def get_single_service(service_id: ServiceId) -> Service:
@@ -21,11 +21,10 @@ def get_single_service(service_id: ServiceId) -> Service:
     ).execute()
 
 
-def get_all_services(app_id: ServiceId = None) -> List[Service]:
+def get_all_services(app_id: ApplicationId = None) -> List[Service]:
     what_should_happen = "Get all services"
     if app_id:
         what_should_happen += f" of app '{app_id}'"
-
     services = custom_requests.CustomRequest(
         custom_requests.RequestCore(
             base_url=SYSTEM_MANAGER_URL,
@@ -36,6 +35,10 @@ def get_all_services(app_id: ServiceId = None) -> List[Service]:
             oak_cli_exception_type=OakCLIExceptionTypes.SERVICE_GET,
         ),
     ).execute()
+    # NOTE: From my understanding the OAK endpoint does not work properly.
+    # It seems to NOT only return services of the provided app but more.
+    if app_id:
+        services = [service for service in services if service["applicationID"] == app_id]
 
     if not services:
         logger.info("No applications exist yet")
