@@ -1,7 +1,6 @@
 import json
 from typing import List, Optional
 
-import rich
 import typer
 from icecream import ic
 from typing_extensions import Annotated
@@ -9,6 +8,7 @@ from typing_extensions import Annotated
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.apps.common import delete_application, get_applications
 from oak_cli.apps.SLAs.common import AppSLAs, get_SLAs_path
+from oak_cli.services.main import deploy_new_instance
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
@@ -98,7 +98,7 @@ def create_applications(
     if deploy:
         for app in newly_added_apps:
             for service_id in app["microservices"]:
-                deploy_new_instance(service_id)
+                deploy_new_instance(service_id=service_id)
 
     return newly_added_apps
 
