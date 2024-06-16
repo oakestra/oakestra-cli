@@ -6,7 +6,11 @@ from oak_cli.utils.types import Verbosity
 
 
 def generate_current_application_table(verbosity: Verbosity, live: bool) -> rich.table.Table:
-    table = create_table(caption="Current Applications", verbosity=verbosity, live=live)
+    table = create_table(
+        caption="Current Applications",
+        verbosity=verbosity,
+        live=live,
+    )
     add_column(table, column_name="Name", style=OAK_GREEN)
     add_plain_columns(table=table, column_names=["Services", "Application ID"])
     if verbosity == Verbosity.DETAILED:

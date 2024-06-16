@@ -27,19 +27,32 @@ def add_icon_to_status(status: str) -> str:
     return f"{status} {STATUS_ICON_MAP.get(status, '❓')}"
 
 
-def show_instances(instances: List[dict]) -> str:
-    instance_status_info = []
+def create_instances_sub_table(
+    instances: List[dict], verbosity: Verbosity = Verbosity.SIMPLE
+) -> rich.table.Table:
+    table = create_table(
+        box=rich.box.SIMPLE,
+        pad_edge=False,
+        padding=0,
+        show_header=(verbosity == Verbosity.DETAILED),
+    )
+    add_column(table, column_name="#")
+    add_column(table, column_name="status", style=OAK_WHITE)
+    if verbosity == Verbosity.DETAILED:
+        add_column(table, column_name="public IP")
+        add_column(table, column_name="cluster ID")
+
     for i in instances:
         status = i.get("status")
-        info = (
-            f"{i['instance_number']}:{add_icon_to_status(status) if status else 'No Status Yet ⚪'}"
+        row_elements = (
+            str(i["instance_number"]),
+            add_icon_to_status(status) if status else "No Status Yet ⚪",
         )
-        instance_status_info.append(info)
+        if verbosity == Verbosity.DETAILED:
+            row_elements += (i.get("publicip"), i.get("cluster_id"))
 
-    resulting_string = f"({len(instances)})"
-    if len(instance_status_info) > 0:
-        resulting_string += f" - {instance_status_info}"
-    return resulting_string
+        table.add_row(*row_elements)
+    return table
 
 
 def generate_current_services_table(
@@ -56,7 +69,7 @@ def generate_current_services_table(
     add_column(table, column_name="Service Name", style=OAK_GREEN)
     add_column(table, column_name="Service ID")
     add_column(table, column_name="Status", style=OAK_WHITE)
-    add_column(table, column_name="Instances", style=OAK_WHITE)
+    add_column(table, column_name="Instances", style=OAK_WHITE, no_wrap=True)
     if not app_id:
         add_column(table, column_name="App Name", style=OAK_BLUE)
         add_column(table, column_name="App ID")
@@ -72,11 +85,12 @@ def generate_current_services_table(
             ]
 
         service_status = service.get("status")
+
         row_elements = [
             service["microservice_name"],
             service["microserviceID"],
             add_icon_to_status(service_status) if service_status else "-",
-            show_instances(instances=service["instance_list"]),
+            create_instances_sub_table(instances=service["instance_list"], verbosity=verbosity),
         ]
         if not app_id:
             row_elements += [
@@ -124,6 +138,8 @@ def generate_service_inspection_table(
             (
                 str(instance.get("instance_number")),
                 add_icon_to_status(instance_status) if instance_status else "-",
+                f"public IP: {instance.get('publicip')}",
+                f"cluster ID: {instance.get('cluster_id')}",
                 "Logs :",
             )
         )

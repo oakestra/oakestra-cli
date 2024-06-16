@@ -1,6 +1,6 @@
 import subprocess
 import time
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Union
 
 import rich
 from rich.live import Live
@@ -34,6 +34,9 @@ def create_table(
     show_lines: bool = True,
     verbosity: Verbosity = None,
     live: bool = False,
+    pad_edge=True,
+    padding: Union[int, tuple] = (0, 1),
+    show_header: bool = True,
 ) -> rich.table.Table:
     if verbosity:
         caption += f" (verbosity: '{verbosity.value}')"
@@ -45,6 +48,10 @@ def create_table(
         caption=caption,
         box=box,
         show_lines=show_lines,
+        pad_edge=pad_edge,
+        collapse_padding=(verbosity == Verbosity.DETAILED),
+        padding=padding,
+        show_header=show_header,
     )
 
 
@@ -54,8 +61,15 @@ def add_column(
     style: str = OAK_GREY,
     justify: str = DEFAULT_JUSTIFY_DIRECTION,
     overflow: str = DEFAULT_CELL_OVERFLOW,
+    no_wrap: bool = False,
 ) -> None:
-    table.add_column(column_name, style=style, justify=justify, overflow=overflow)
+    table.add_column(
+        column_name,
+        style=style,
+        justify=justify,
+        overflow=overflow,
+        no_wrap=no_wrap,
+    )
 
 
 def add_plain_columns(
