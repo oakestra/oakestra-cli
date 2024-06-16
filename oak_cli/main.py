@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 import typer
+from rich.console import Console
+from rich.traceback import install
 
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
 import oak_cli.docker.main as oak_docker
 import oak_cli.services.main as oak_services
-from oak_cli.utils.exceptions.main import OakCLIException
-from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import typer_help_text
+
+# https://rich.readthedocs.io/en/latest/traceback.html#traceback-handler
+install(show_locals=True)
+console = Console()
 
 app = typer.Typer(
     help="Run Oakestra's CLI",
@@ -36,12 +40,7 @@ app.add_typer(
 
 
 def main():
-    try:
-        app()
-    except OakCLIException as e:
-        logger.exception(f"{e.message}, {e.http_status}")
-    except Exception:
-        logger.exception("Unexpected exception occurred.")
+    app()
 
 
 if __name__ == "__main__":

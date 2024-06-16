@@ -3,21 +3,28 @@ from typing import List, Optional
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
+from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.types import ApplicationId, Id, Service, ServiceId
 
 
 def get_single_service(service_id: ServiceId) -> Service:
-    return custom_requests.CustomRequest(
-        custom_requests.RequestCore(
-            base_url=SYSTEM_MANAGER_URL,
-            api_endpoint=f"/api/service/{service_id}",
-        ),
-        custom_requests.RequestAuxiliaries(
-            what_should_happen=f"Get single service '{service_id}'",
-            oak_cli_exception_type=OakCLIExceptionTypes.SERVICE_GET,
-        ),
-    ).execute()
+    try:
+        return custom_requests.CustomRequest(
+            custom_requests.RequestCore(
+                base_url=SYSTEM_MANAGER_URL,
+                api_endpoint=f"/api/service/{service_id}",
+            ),
+            custom_requests.RequestAuxiliaries(
+                what_should_happen=f"Get single service '{service_id}'",
+                oak_cli_exception_type=OakCLIExceptionTypes.SERVICE_GET,
+            ),
+        ).execute()
+    except OakCLIException as e:
+        e.handle_exception(
+            oak_cli_execption_type=OakCLIExceptionTypes.SERVICE_GET,
+            special_message=f"Service '{service_id}' not found.",
+        )
 
 
 def get_all_services(app_id: ApplicationId = None) -> List[Service]:
