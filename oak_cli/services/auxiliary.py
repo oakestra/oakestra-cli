@@ -93,8 +93,10 @@ def generate_service_inspection_table(
     service_id: ServiceId,
     live: bool = False,
 ) -> rich.table.Table:
-    # NOTE: We use a grid instead of a table, because the live-display
-    # can only support a single object not multiple at once.
+    # NOTE: Initially the instance number and instance status had their own status.
+    # This lead to a lot of unused screen space.
+    # To maximize the available screen space all contents are placed into a single column.
+    # This might not be a great solution but it works. POTENTIAL FUTURE WORK
     service = get_single_service(service_id=service_id)
     instances = service["instance_list"]
     instance_status = service.get("status")
@@ -112,19 +114,19 @@ def generate_service_inspection_table(
             f"cmd: {' '.join(service.get('cmd')) if service.get('cmd') else '-'}",
         )
     )
-    table = create_table(title=title, caption=caption, live=live)
+    table = create_table(caption=caption, live=live)
     service = get_single_service(service_id=service_id)
     instances = service["instance_list"]
-
-    add_column(table, "#", style=OAK_BLUE)
-    add_column(table, "Status", style=OAK_WHITE)
-    add_column(table, "Logs", style=OAK_GREEN)
+    add_column(table, title, style=OAK_GREEN)
     for instance in instances:
         instance_status = instance.get("status")
-        row_elements = [
-            str(instance.get("instance_number")),
-            add_icon_to_status(instance_status) if instance_status else "-",
-            instance.get("logs"),
-        ]
-        table.add_row(*row_elements)
+        general_instance_info = f"[{OAK_BLUE}]" + " | ".join(
+            (
+                str(instance.get("instance_number")),
+                add_icon_to_status(instance_status) if instance_status else "-",
+                "Logs :",
+            )
+        )
+        table.add_row(general_instance_info)
+        table.add_row(instance.get("logs"))
     return table
