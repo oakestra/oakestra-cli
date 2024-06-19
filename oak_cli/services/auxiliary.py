@@ -86,11 +86,12 @@ def generate_current_services_table(
 
         service_status = service.get("status")
 
+        instances = service["instance_list"]
         row_elements = [
             service["microservice_name"],
             service["microserviceID"],
             add_icon_to_status(service_status) if service_status else "-",
-            create_instances_sub_table(instances=service["instance_list"], verbosity=verbosity),
+            create_instances_sub_table(instances=instances, verbosity=verbosity) if len(instances) > 0 else "-",
         ]
         if not app_id:
             row_elements += [
