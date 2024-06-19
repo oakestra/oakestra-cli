@@ -22,6 +22,13 @@ OAK_BLUE = "cyan1"
 OAK_WHITE = "white"
 
 
+def add_row_to_table(table: rich.table.Table, row_items: Union[Any, list[Any]]) -> None:
+    if not isinstance(row_items, list):
+        row_items = [row_items]
+    aligned_row_items = [rich.align.Align(item, vertical="middle") for item in row_items]
+    table.add_row(*aligned_row_items)
+
+
 def create_spinner(message: str, style: str = OAK_GREEN):  # NOTE: The return type is complex.
     """Returns a spinner object that should be used via a 'with'"""
     return rich.console.Console().status(f"[{style}]{message}")

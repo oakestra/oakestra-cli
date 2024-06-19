@@ -1,5 +1,6 @@
 from typing import List
 
+import oakestra_utils
 import rich
 
 from oak_cli.services.common import get_all_services, get_single_service
@@ -9,6 +10,7 @@ from oak_cli.utils.styling import (
     OAK_WHITE,
     add_column,
     add_plain_columns,
+    add_row_to_table,
     create_table,
 )
 from oak_cli.utils.types import ApplicationId, ServiceId, Verbosity
@@ -44,14 +46,13 @@ def create_instances_sub_table(
 
     for i in instances:
         status = i.get("status")
-        row_elements = (
+        row_items = [
             str(i["instance_number"]),
             add_icon_to_status(status) if status else "No Status Yet ⚪",
-        )
+        ]
         if verbosity == Verbosity.DETAILED:
-            row_elements += (i.get("publicip"), i.get("cluster_id"))
-
-        table.add_row(*row_elements)
+            row_items += [i.get("publicip"), i.get("cluster_id")]
+        add_row_to_table(table=table, row_items=row_items)
     return table
 
 
@@ -77,9 +78,9 @@ def generate_current_services_table(
         add_plain_columns(table, column_names=["Image", "Command"])
 
     for service in current_services:
-        special_row_elements = []
+        special_row_items = []
         if verbosity == Verbosity.DETAILED:
-            special_row_elements += [
+            special_row_items += [
                 service["image"],
                 " ".join(service["cmd"]) if service["cmd"] else "-",
             ]
@@ -87,19 +88,23 @@ def generate_current_services_table(
         service_status = service.get("status")
 
         instances = service["instance_list"]
-        row_elements = [
+        instance_info = "-"
+        if len(instances) > 0:
+            instance_info = create_instances_sub_table(instances=instances, verbosity=verbosity)
+
+        row_items = [
             service["microservice_name"],
             service["microserviceID"],
             add_icon_to_status(service_status) if service_status else "-",
-            create_instances_sub_table(instances=instances, verbosity=verbosity) if len(instances) > 0 else "-",
+            instance_info,
         ]
         if not app_id:
-            row_elements += [
+            row_items += [
                 service["app_name"],
                 service["applicationID"],
             ]
-        row_elements += special_row_elements
-        table.add_row(*row_elements)
+        row_items += special_row_items
+        add_row_to_table(table=table, row_items=row_items)
 
     return table
 
@@ -144,6 +149,6 @@ def generate_service_inspection_table(
                 "Logs :",
             )
         )
-        table.add_row(general_instance_info)
-        table.add_row(instance.get("logs"))
+        add_row_to_table(table=table, row_items=general_instance_info)
+        add_row_to_table(table=table, row_items=instance.get("logs"))
     return table
