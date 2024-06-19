@@ -1,7 +1,12 @@
 from typing import List
 
-import oakestra_utils
 import rich
+from oakestra_utils.types.statuses import (
+    DeploymentStatus,
+    NegativeSchedulingStatus,
+    PositiveSchedulingStatus,
+    convert_to_status,
+)
 
 from oak_cli.services.common import get_all_services, get_single_service
 from oak_cli.utils.styling import (
@@ -16,17 +21,29 @@ from oak_cli.utils.styling import (
 from oak_cli.utils.types import ApplicationId, ServiceId, Verbosity
 
 
-def add_icon_to_status(status: str) -> str:
+def add_icon_to_status(status_name: str) -> str:
+    if not status_name:
+        return "-"
+
+    status = convert_to_status(status_name)
     STATUS_ICON_MAP = {
-        "COMPLETED": "✅",
-        "RUNNING": "🟢",
-        "ACTIVE": "🔷",
-        "CLUSTER_SCHEDULED": "🟣",
-        "NODE_SCHEDULED": "🔵",
-        "DEAD": "💀",
-        "NoActiveClusterWithCapacity": "❌",
+        PositiveSchedulingStatus.REQUESTED: "🟡",
+        PositiveSchedulingStatus.CLUSTER_SCHEDULED: "🟣",
+        PositiveSchedulingStatus.NODE_SCHEDULED: "🔵",
+        DeploymentStatus.CREATING: "🔨",
+        DeploymentStatus.CREATED: "🛠️",
+        DeploymentStatus.RUNNING: "🟢",
+        DeploymentStatus.FAILED: "❌",
+        DeploymentStatus.DEAD: "💀",
+        DeploymentStatus.COMPLETED: "✅",
+        DeploymentStatus.UNDEPLOYED: "⚫",
     }
-    return f"{status} {STATUS_ICON_MAP.get(status, '❓')}"
+    if isinstance(status, NegativeSchedulingStatus):
+        status_icon = "❌"
+    else:
+        status_icon = STATUS_ICON_MAP.get(status, "❓")
+
+    return f"{status} {status_icon}"
 
 
 def create_instances_sub_table(
@@ -48,7 +65,7 @@ def create_instances_sub_table(
         status = i.get("status")
         row_items = [
             str(i["instance_number"]),
-            add_icon_to_status(status) if status else "No Status Yet ⚪",
+            add_icon_to_status(status),
         ]
         if verbosity == Verbosity.DETAILED:
             row_items += [i.get("publicip"), i.get("cluster_id")]
@@ -95,7 +112,7 @@ def generate_current_services_table(
         row_items = [
             service["microservice_name"],
             service["microserviceID"],
-            add_icon_to_status(service_status) if service_status else "-",
+            add_icon_to_status(service_status),
             instance_info,
         ]
         if not app_id:
@@ -123,7 +140,7 @@ def generate_service_inspection_table(
     title = " | ".join(
         (
             f"name: {service['microservice_name']}",
-            add_icon_to_status(instance_status) if instance_status else "-",
+            add_icon_to_status(instance_status),
             f"app name: {service['app_name']}",
             f"app ID: {service['applicationID']}",
         )
@@ -143,7 +160,7 @@ def generate_service_inspection_table(
         general_instance_info = f"[{OAK_BLUE}]" + " | ".join(
             (
                 str(instance.get("instance_number")),
-                add_icon_to_status(instance_status) if instance_status else "-",
+                add_icon_to_status(instance_status),
                 f"public IP: {instance.get('publicip')}",
                 f"cluster ID: {instance.get('cluster_id')}",
                 "Logs :",
