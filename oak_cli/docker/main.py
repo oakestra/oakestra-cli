@@ -5,7 +5,7 @@ import oak_cli.docker.root_orchestrator
 from oak_cli.utils.typer_augmentations import typer_help_text
 
 app = typer.Typer(
-    help=typer_help_text("docker ALEX"),
+    help=typer_help_text("docker"),
 )
 app.add_typer(
     typer_instance=oak_cli.docker.root_orchestrator.app,

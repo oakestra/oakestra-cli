@@ -86,7 +86,8 @@ def generate_current_services_table(
     table = create_table(caption=caption, verbosity=verbosity, live=live)
     add_column(table, column_name="Service Name", style=OAK_GREEN)
     add_column(table, column_name="Service ID")
-    add_column(table, column_name="Status", style=OAK_WHITE)
+    if verbosity == Verbosity.DETAILED:
+        add_column(table, column_name="Status", style=OAK_WHITE)
     add_column(table, column_name="Instances", style=OAK_WHITE, no_wrap=True)
     if not app_id:
         add_column(table, column_name="App Name", style=OAK_BLUE)
@@ -109,12 +110,10 @@ def generate_current_services_table(
         if len(instances) > 0:
             instance_info = create_instances_sub_table(instances=instances, verbosity=verbosity)
 
-        row_items = [
-            service["microservice_name"],
-            service["microserviceID"],
-            add_icon_to_status(service_status),
-            instance_info,
-        ]
+        row_items = [service["microservice_name"], service["microserviceID"]]
+        if verbosity == Verbosity.DETAILED:
+            row_items.append(add_icon_to_status(service_status))
+        row_items.append(instance_info)
         if not app_id:
             row_items += [
                 service["app_name"],

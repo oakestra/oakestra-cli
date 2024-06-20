@@ -52,10 +52,10 @@
                     "added_files": [],
                     "constraints":[
                         {
-                        "type":"addons",
-                        "needs": [
-                            "FLOps"
-                        ]
+                            "type":"addons",
+                            "needs": [
+                                "FLOps-learner"
+                            ]
                         }
                     ]
                 }
