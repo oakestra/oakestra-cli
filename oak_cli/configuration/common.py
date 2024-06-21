@@ -76,7 +76,6 @@ def check_and_handle_config_file() -> None:
 def handle_missing_key_access_attempt(
     config_string_key: Optional[str],
     what_should_be_found: str,
-    configuration_cmd: str,
 ) -> None:
     if not config_string_key:
         logger.error(
