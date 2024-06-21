@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from importlib.metadata import version
+
 import typer
 from rich.console import Console
 from rich.traceback import install
@@ -8,7 +10,8 @@ import oak_cli.apps.main as oak_applications
 import oak_cli.docker.main as oak_docker
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
-from oak_cli.utils.typer_augmentations import typer_help_text
+from oak_cli.utils.logging import logger
+from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
 
 # https://rich.readthedocs.io/en/latest/traceback.html#traceback-handler
 install(show_locals=True)
@@ -17,6 +20,7 @@ console = Console()
 app = typer.Typer(
     help="Run Oakestra's CLI",
     context_settings={"help_option_names": ["-h", "--help"]},
+    cls=AliasGroup,
 )
 app.add_typer(
     typer_instance=oak_applications.app,
@@ -43,6 +47,11 @@ app.add_typer(
     name="installer",
     help="Install Oakestra dependencies & components.",
 )
+
+
+@app.command("version, v")
+def show_version():
+    logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
 
 
 def main():
