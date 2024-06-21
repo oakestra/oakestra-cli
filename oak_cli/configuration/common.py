@@ -1,6 +1,7 @@
 import configparser
 import pathlib
-from typing import Any
+import sys
+from typing import Any, Optional
 
 from oak_cli.configuration.auxiliary import ConfigKey
 from oak_cli.utils.logging import logger
@@ -70,3 +71,20 @@ def check_and_handle_config_file() -> None:
 
     logger.info("No config file found. Creating a new empty un-configured config file.")
     _create_initial_unconfigured_config_file()
+
+
+def handle_missing_key_access_attempt(
+    config_string_key: Optional[str],
+    what_should_be_found: str,
+    configuration_cmd: str,
+) -> None:
+    if not config_string_key:
+        logger.error(
+            "\n".join(
+                (
+                    f"The '{what_should_be_found}'was not found in your oak-CLI config.",
+                    f"Please first configure it by running '{configuration_cmd}'.",
+                )
+            )
+        )
+        sys.exit(1)

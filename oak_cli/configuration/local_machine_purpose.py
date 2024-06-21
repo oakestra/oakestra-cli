@@ -1,5 +1,4 @@
 import json
-import sys
 from typing import List
 
 import typer
@@ -8,6 +7,7 @@ from oak_cli.configuration.auxiliary import ConfigKey
 from oak_cli.configuration.common import (
     check_and_handle_config_file,
     get_config_value,
+    handle_missing_key_access_attempt,
     update_config_value,
 )
 from oak_cli.utils.logging import logger
@@ -28,18 +28,11 @@ class LocalMachinePurpose(CustomEnum):
 def get_local_machine_purposes_from_config() -> List[LocalMachinePurpose]:
     check_and_handle_config_file()
     config_json_string = get_config_value(ConfigKey.LOCAL_MACHINE_PURPOSE_KEY)
-    if not config_json_string:
-        logger.error(
-            "\n".join(
-                (
-                    "The local machine purpose was not found in your oak-CLI config.",
-                    "Please first configure the purpose of this machine.",
-                    "Run the 'oak c lmp configure' command to configure it.",
-                )
-            )
-        )
-        sys.exit(1)
-
+    handle_missing_key_access_attempt(
+        config_string_key=config_json_string,
+        what_should_be_found="local machine purpose",
+        configuration_cmd="oak c local-machine-purpose configure",
+    )
     config_list = json.loads(config_json_string)
     return [LocalMachinePurpose(purpose_name) for purpose_name in config_list]
 
