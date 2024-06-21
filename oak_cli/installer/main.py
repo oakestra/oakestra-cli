@@ -18,8 +18,4 @@ def install_fundamentals() -> None:
     # NOTE: The following playbook requires a ansible-galaxy role to be installed on the machine.
     # Installing it via a dedicated playbook does not work due to ansible-access right issues.
     run_in_shell(shell_cmd="ansible-galaxy install geerlingguy.docker")
-    r = ansible_runner.run(playbook=CLI_PLAYBOOK.INSTALL_ANSIBLE_GALAXY_DEPENDENCIES.get_path())
-    # r = ansible_runner.run(playbook=CLI_PLAYBOOK.INSTALL_FUNDAMENTALS.get_path())
-    from icecream import ic
-
-    ic(r.status, r.rc)
+    ansible_runner.run(playbook=CLI_PLAYBOOK.INSTALL_FUNDAMENTALS.get_path())

@@ -2,15 +2,7 @@
   hosts: localhost
   become: yes
 
-  vars:
-    ansible_roles_list: 
-      - geerlingguy.docker 
-
-
   pre_tasks:
-
-    - debug: msg="haa"
-
     - name: Update apt cache
       apt:
         update_cache: yes
@@ -25,11 +17,8 @@
         state: latest
         update_cache: true
 
-  # roles: 
-  #   # Install & start docker (including compose)
-  #   - role: geerlingguy.docker 
-  #     vars:
-  #       docker_install_compose: true
-  #       #docker_compose_version: "1.26.0" # Specify the desired version
-  #       #docker_compose_arch: "{{ ansible_architecture }}" # Automatically detects architecture
-  #       #docker_compose_path: "/usr/local/bin/docker-compose" # Default path
+  roles: 
+    # Install & start docker (including compose)
+    - role: geerlingguy.docker 
+      vars:
+        docker_install_compose: true
