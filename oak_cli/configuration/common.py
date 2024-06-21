@@ -32,12 +32,13 @@ def open_local_config() -> configparser.ConfigParser:
     return config
 
 
-def set_config_value(
-    config: configparser.ConfigParser,
+def update_config_value(
     key: ConfigKey,
     value: Any,
+    config: configparser.ConfigParser = open_local_config(),
 ) -> configparser.ConfigParser:
     config[ConfigKey.CONFIG_MAIN_KEY.value][key.value] = value
+    _update_config(config)
     return config
 
 
@@ -46,12 +47,12 @@ def get_config_value(config: configparser.ConfigParser, key: ConfigKey) -> Any:
 
 
 def configure_aspect(
-    config: configparser.ConfigParser,
     aspect: CustomEnum,
     configuration_text: str,
     config_key: ConfigKey,
     default_option: CustomEnum = None,
     use_default: bool = False,
+    config: configparser.ConfigParser = open_local_config(),
 ) -> configparser.ConfigParser:
     options = [*aspect]
     if not use_default:
@@ -75,24 +76,27 @@ def configure_aspect(
                 continue
             break
 
-    return set_config_value(
-        config,
-        config_key,
-        str(default_option if use_default else preferred_option).lower(),
+    return update_config_value(
+        config=config,
+        key=config_key,
+        value=str(default_option if use_default else preferred_option).lower(),
     )
 
 
-def _create_initial_unconfigured_config_file() -> None:
-    config = configparser.ConfigParser()
-    config[ConfigKey.CONFIG_MAIN_KEY.value] = {}
-    config = set_config_value(config, ConfigKey.CONFIG_VERSION_KEY, CONFIG_VERSION)
-
-    if not OAK_CLI_CONFIG_PATH.exists():
-        OAK_CLI_CONFIG_PATH.touch()
-
+def _update_config(config: configparser.ConfigParser) -> None:
     with open(OAK_CLI_CONFIG_PATH, "w") as config_file:
         config.write(config_file)
 
+
+def _create_initial_unconfigured_config_file() -> None:
+    if not OAK_CLI_CONFIG_PATH.exists():
+        OAK_CLI_CONFIG_PATH.touch()
+
+    config = configparser.ConfigParser()
+    config[ConfigKey.CONFIG_MAIN_KEY.value] = {}
+    config = update_config_value(
+        config=config, key=ConfigKey.CONFIG_VERSION_KEY, value=CONFIG_VERSION
+    )
     logger.info(
         "\n".join(
             (
