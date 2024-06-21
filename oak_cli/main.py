@@ -7,6 +7,7 @@ from rich.traceback import install
 
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
+import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
@@ -39,7 +40,7 @@ app.add_typer(
 )
 app.add_typer(
     typer_instance=oak_addons.app,
-    name="ad",
+    name="addon",
     help=typer_help_text("addon"),
 )
 app.add_typer(
@@ -47,9 +48,14 @@ app.add_typer(
     name="installer",
     help="Install Oakestra dependencies & components.",
 )
+app.add_typer(
+    typer_instance=oak_cli_configuration.app,
+    name="c",
+    help=typer_help_text("OAK CLI Configuration"),
+)
 
 
-@app.command("version, v")
+@app.command("version, v", help="Shows the version of the currently installed OAK-CLI.")
 def show_version():
     logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
 
