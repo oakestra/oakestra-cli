@@ -25,7 +25,7 @@ OAK_WHITE = "white"
 def add_row_to_table(table: rich.table.Table, row_items: Union[Any, list[Any]]) -> None:
     if not isinstance(row_items, list):
         row_items = [row_items]
-    aligned_row_items = [rich.align.Align(item, vertical="middle") for item in row_items]
+    aligned_row_items = [rich.align.Align(item or "-", vertical="middle") for item in row_items]
     table.add_row(*aligned_row_items)
 
 
