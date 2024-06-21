@@ -4,7 +4,6 @@ from typing import Any
 
 from oak_cli.configuration.auxiliary import ConfigKey
 from oak_cli.utils.logging import logger
-from oak_cli.utils.types import CustomEnum
 
 OAK_CLI_CONFIG_PATH = pathlib.Path.home() / ".oak_cli_config"
 
@@ -39,36 +38,7 @@ def update_config_value(key: ConfigKey, value: Any) -> None:
 
 
 def get_config_value(key: ConfigKey) -> Any:
-    return open_local_config()[ConfigKey.CONFIG_MAIN_KEY.value][key.value]
-
-
-def configure_aspect(
-    aspect: CustomEnum,
-    configuration_text: str,
-    config_key: ConfigKey,
-) -> None:
-    options = [*aspect]
-    options_info = "\n  "
-    for i, option in enumerate(options):
-        options_info += f"{i+1}: {option.value.upper()}\n  "
-    logger.info(f"Select your preferred '{configuration_text}': {options_info}")
-    while True:
-        preferred_option = input("Type your preference: ").lower()
-        if (
-            len(preferred_option) == 1
-            and preferred_option.isdigit()
-            and int(preferred_option) <= len(options)
-            and int(preferred_option) > 0
-        ):
-            preferred_option = options[int(preferred_option) - 1]
-        elif preferred_option in [option.value for option in options]:
-            preferred_option = aspect(preferred_option)
-        else:
-            logger.info("Please only type one of the available options.")
-            continue
-        break
-
-    update_config_value(key=config_key, value=str(preferred_option).lower())
+    return open_local_config()[ConfigKey.CONFIG_MAIN_KEY.value].get(key.value)
 
 
 def _update_config(config: configparser.ConfigParser) -> None:
@@ -82,9 +52,8 @@ def _create_initial_unconfigured_config_file() -> None:
 
     config = configparser.ConfigParser()
     config[ConfigKey.CONFIG_MAIN_KEY.value] = {}
-    config = update_config_value(
-        config=config, key=ConfigKey.CONFIG_VERSION_KEY, value=CONFIG_VERSION
-    )
+    _update_config(config=config)
+    update_config_value(key=ConfigKey.CONFIG_VERSION_KEY, value=CONFIG_VERSION)
     logger.info(
         "\n".join(
             (
