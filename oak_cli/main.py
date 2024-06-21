@@ -6,6 +6,7 @@ from rich.traceback import install
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
 import oak_cli.docker.main as oak_docker
+import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
 from oak_cli.utils.typer_augmentations import typer_help_text
 
@@ -36,6 +37,11 @@ app.add_typer(
     typer_instance=oak_addons.app,
     name="ad",
     help=typer_help_text("addon"),
+)
+app.add_typer(
+    typer_instance=oak_installer.app,
+    name="installer",
+    help="Install Oakestra dependencies & components.",
 )
 
 

@@ -58,13 +58,13 @@ def create_new_mock_data_service(mock_sla: FLOpsMockDataProviderSLAs) -> None:
     ).execute()
 
 
-TRACKING_HELP = """
-Returns the URL of the tracking server of the specified customer.
-Deployes the Tracking Server Service if it is not yet deployed.
-"""
-
-
-@app.command("tracking, t", help=TRACKING_HELP)
+@app.command(
+    "tracking, t",
+    help="""
+        Returns the URL of the tracking server of the specified customer.
+        Deployes the Tracking Server Service if it is not yet deployed.
+        """,
+)
 def get_tracking_url(customer_id: Optional[str] = "Admin") -> None:
     result = custom_requests.CustomRequest(
         custom_requests.RequestCore(

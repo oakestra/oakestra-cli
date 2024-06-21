@@ -81,24 +81,27 @@ def deploy_new_instance(service_id: ServiceId) -> None:
     ).execute()
 
 
-UNDEPLOY_HELP = """
-Undeploy all services or only the specified ones.
-Without any optional flags undeploys all services.
-"""
-
-INSTANCE_ID_HELP = """
-Requires the 'service_id' to be provided.
-Undeploys only the single instance of the specified service.
-"""
-
-
-@app.command("undeploy, u", help=UNDEPLOY_HELP)
+@app.command(
+    "undeploy, u",
+    help="""
+        Undeploy all services or only the specified ones.
+        Without any optional flags undeploys all services.
+        """,
+)
 def undeploy_instances(
     service_id: Annotated[
         ServiceId,
         typer.Option(help="If provided will only undeploy all instances of that service."),
     ] = None,
-    instance_id: Annotated[Id, typer.Option(help=INSTANCE_ID_HELP)] = None,
+    instance_id: Annotated[
+        Id,
+        typer.Option(
+            help="""
+                Requires the 'service_id' to be provided.
+                Undeploys only the single instance of the specified service.
+                """
+        ),
+    ] = None,
 ) -> None:
     def undeploy_service_instances(service: dict) -> None:
         for instance in service["instance_list"]:
