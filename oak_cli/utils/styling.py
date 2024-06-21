@@ -1,10 +1,10 @@
-import subprocess
 import time
 from typing import Any, Callable, List, Union
 
 import rich
 from rich.live import Live
 
+from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.types import Verbosity
 
 LIVE_REFRESH_RATE = 3  # Seconds
@@ -96,7 +96,7 @@ def display_table(live: bool, table_generator: Callable[[Any], Any]) -> None:
         print_table(table=table_generator())
     else:
         # Clear the terminal to have the live-view in a clean isolated view.
-        subprocess.run(["clear", "-x"])
+        run_in_shell(shell_cmd="clear -x", check=False)
         with Live(auto_refresh=False) as live:
             while True:
                 live.update(table_generator(), refresh=True)

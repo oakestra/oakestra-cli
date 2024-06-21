@@ -1,0 +1,35 @@
+- name: Install Fundamental non-python dependencies for Oakestra, including Git, Docker, and Docker Compose, etc.
+  hosts: localhost
+  become: yes
+
+  vars:
+    ansible_roles_list: 
+      - geerlingguy.docker 
+
+
+  pre_tasks:
+
+    - debug: msg="haa"
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+        state: latest
+        update_cache: true
+
+  # roles: 
+  #   # Install & start docker (including compose)
+  #   - role: geerlingguy.docker 
+  #     vars:
+  #       docker_install_compose: true
+  #       #docker_compose_version: "1.26.0" # Specify the desired version
+  #       #docker_compose_arch: "{{ ansible_architecture }}" # Automatically detects architecture
+  #       #docker_compose_path: "/usr/local/bin/docker-compose" # Default path

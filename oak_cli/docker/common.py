@@ -1,10 +1,9 @@
 import json
 import pathlib
-import shlex
-import subprocess
 import sys
 
 from oak_cli.docker.enums import OakestraDockerComposeService, RootOrchestratorService
+from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.logging import logger
 from oak_cli.utils.styling import create_spinner
 
@@ -20,13 +19,8 @@ def check_docker_service_status(
     docker_service: OakestraDockerComposeService,
     docker_operation: str,
 ) -> None:
-    inspect_cmd = 'docker inspect -f "{{ json .State }}" ' + str(docker_service)
-    result = subprocess.run(
-        shlex.split(inspect_cmd),
-        check=True,
-        stderr=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        text=True,
+    result = run_in_shell(
+        shell_cmd='docker inspect -f "{{ json .State }}" ' + str(docker_service), text=True
     )
     result_output = json.loads(result.stdout)
     service_status = result_output["Status"]
@@ -41,15 +35,8 @@ def check_docker_service_status(
 
 
 def restart_docker_service(docker_compose_service: OakestraDockerComposeService) -> None:
-    docker_cmd = f"docker restart {docker_compose_service}"
     with create_spinner(message=f"Restarting '{docker_compose_service}'"):
-        subprocess.run(
-            shlex.split(docker_cmd),
-            check=True,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            text=True,
-        )
+        run_in_shell(shell_cmd=f"docker restart {docker_compose_service}", text=True)
     check_docker_service_status(docker_compose_service, "restarted")
 
 
@@ -57,14 +44,8 @@ def rebuild_docker_compose_service(
     compose_service: OakestraDockerComposeService,
     cache_less: bool = False,
 ) -> None:
-    def run_shell_cmd(cmd: str) -> subprocess.CompletedProcess[str]:
-        result = subprocess.run(
-            shlex.split(cmd),
-            check=False,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            text=True,
-        )
+    def handle_shell_cmd(cmd: str) -> None:
+        result = run_in_shell(shell_cmd=cmd, text=True, check=False)
         if result.returncode != 0:
             logger.critical(
                 f"Compose service '{compose_service}' operation '{cmd}' failed due to: '{result}"
@@ -81,8 +62,8 @@ def rebuild_docker_compose_service(
         spinner_msg += " without cache"
     with create_spinner(message=spinner_msg):
         if cache_less:
-            run_shell_cmd(f"docker compose -f {compose_path} build --no-cache {compose_service}")
+            handle_shell_cmd(f"docker compose -f {compose_path} build --no-cache {compose_service}")
         re_up_flags = "--detach --build --no-deps --force-recreate"
-        run_shell_cmd(f"docker compose -f {compose_path} up {re_up_flags} {compose_service}")
+        handle_shell_cmd(f"docker compose -f {compose_path} up {re_up_flags} {compose_service}")
 
     check_docker_service_status(compose_service, "rebuild")
