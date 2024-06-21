@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 
 import typer
 
@@ -10,7 +10,6 @@ from oak_cli.configuration.common import (
     handle_missing_key_access_attempt,
     update_config_value,
 )
-from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.utils.types import CustomEnum
 
@@ -25,16 +24,33 @@ class LocalMachinePurpose(CustomEnum):
     WORKER_NODE = "worker_node"
 
 
-def get_local_machine_purposes_from_config() -> List[LocalMachinePurpose]:
+def get_local_machine_purposes_from_config(
+    terminate_if_key_is_missing_from_conf: bool = True,
+) -> Optional[List[LocalMachinePurpose]]:
     check_and_handle_config_file()
     config_json_string = get_config_value(ConfigKey.LOCAL_MACHINE_PURPOSE_KEY)
-    handle_missing_key_access_attempt(
-        config_string_key=config_json_string,
-        what_should_be_found="local machine purpose",
-        configuration_cmd="oak c local-machine-purpose configure",
-    )
+    if terminate_if_key_is_missing_from_conf:
+        handle_missing_key_access_attempt(
+            config_string_key=config_json_string,
+            what_should_be_found="local machine purpose",
+            configuration_cmd="oak c local-machine-purpose configure",
+        )
+    else:
+        if not config_json_string:
+            return
     config_list = json.loads(config_json_string)
     return [LocalMachinePurpose(purpose_name) for purpose_name in config_list]
+
+
+def check_if_local_machine_has_required_purposes(
+    required_purposes: List[LocalMachinePurpose],
+) -> bool:
+    local_machine_purposes = get_local_machine_purposes_from_config(
+        terminate_if_key_is_missing_from_conf=False
+    )
+    if not local_machine_purposes:
+        return False
+    return set(local_machine_purposes).issubset(set(required_purposes))
 
 
 @app.command(

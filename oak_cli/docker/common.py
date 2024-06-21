@@ -2,17 +2,19 @@ import json
 import pathlib
 import sys
 
+from oak_cli.configuration.main_oak_repo import get_main_oak_repo_path_from_config
 from oak_cli.docker.enums import OakestraDockerComposeService, RootOrchestratorService
 from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.logging import logger
 from oak_cli.utils.styling import create_spinner
 
-ROOT_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH = pathlib.Path(
-    "/home/alex/oakestra_main_repo/root_orchestrator/docker-compose.yml"
-)
-CLUSTER_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH = pathlib.Path(
-    "/home/alex/oakestra_main_repo/cluster_orchestrator/docker-compose.yml"
-)
+
+def get_root_orchestrator_docker_compose_file_path() -> pathlib.Path:
+    return get_main_oak_repo_path_from_config() / "root_orchestrator" / "docker-compose.yml"
+
+
+def get_cluster_orchestrator_docker_compose_file_path() -> pathlib.Path:
+    return get_main_oak_repo_path_from_config() / "cluster_orchestrator" / "docker-compose.yml"
 
 
 def check_docker_service_status(
@@ -53,9 +55,9 @@ def rebuild_docker_compose_service(
             sys.exit(1)
 
     if isinstance(compose_service, RootOrchestratorService):
-        compose_path = ROOT_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH
+        compose_path = get_root_orchestrator_docker_compose_file_path()
     else:
-        compose_path = CLUSTER_ORCHESTRATOR_DOCKER_COMPOSE_FILE_PATH
+        compose_path = get_cluster_orchestrator_docker_compose_file_path()
 
     spinner_msg = f"Rebuilding '{compose_service}'"
     if cache_less:

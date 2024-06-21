@@ -11,6 +11,7 @@ import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
+from oak_cli.configuration.main import configuration_expansion_help_text
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
 
@@ -36,7 +37,12 @@ app.add_typer(
 app.add_typer(
     typer_instance=oak_docker.app,
     name="d",
-    help=typer_help_text("docker(compose)"),
+    help="\n".join(
+        (
+            typer_help_text("docker(compose)"),
+            configuration_expansion_help_text(configuration_cmd="oak c main-repo configure"),
+        )
+    ),
 )
 app.add_typer(
     typer_instance=oak_addons.app,
