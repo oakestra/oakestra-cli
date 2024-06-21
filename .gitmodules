@@ -1,3 +1,0 @@
-[submodule "oak_cli/ansible/oakestra_automations_submodule"]
-	path = oak_cli/ansible/oakestra_automations_submodule
-	url = https://github.com/oakestra/automation.git
