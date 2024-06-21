@@ -22,7 +22,7 @@ def _check_local_config_valid() -> bool:
     if ConfigKey.CONFIG_VERSION_KEY.value not in all_config_elements:
         return False
 
-    local_config_version = get_config_value(config, ConfigKey.CONFIG_VERSION_KEY)
+    local_config_version = get_config_value(ConfigKey.CONFIG_VERSION_KEY)
     return local_config_version == CONFIG_VERSION
 
 
@@ -32,55 +32,43 @@ def open_local_config() -> configparser.ConfigParser:
     return config
 
 
-def update_config_value(
-    key: ConfigKey,
-    value: Any,
-    config: configparser.ConfigParser = open_local_config(),
-) -> configparser.ConfigParser:
+def update_config_value(key: ConfigKey, value: Any) -> None:
+    config = open_local_config()
     config[ConfigKey.CONFIG_MAIN_KEY.value][key.value] = value
     _update_config(config)
-    return config
 
 
-def get_config_value(config: configparser.ConfigParser, key: ConfigKey) -> Any:
-    return config[ConfigKey.CONFIG_MAIN_KEY.value][key.value]
+def get_config_value(key: ConfigKey) -> Any:
+    return open_local_config()[ConfigKey.CONFIG_MAIN_KEY.value][key.value]
 
 
 def configure_aspect(
     aspect: CustomEnum,
     configuration_text: str,
     config_key: ConfigKey,
-    default_option: CustomEnum = None,
-    use_default: bool = False,
-    config: configparser.ConfigParser = open_local_config(),
-) -> configparser.ConfigParser:
+) -> None:
     options = [*aspect]
-    if not use_default:
-        options_info = "\n  "
-        for i, option in enumerate(options):
-            options_info += f"{i+1}: {option.value.upper()}\n  "
-        logger.info(f"Select your preferred '{configuration_text}': {options_info}")
-        while True:
-            preferred_option = input("Type your preference: ").lower()
-            if (
-                len(preferred_option) == 1
-                and preferred_option.isdigit()
-                and int(preferred_option) <= len(options)
-                and int(preferred_option) > 0
-            ):
-                preferred_option = options[int(preferred_option) - 1]
-            elif preferred_option in [option.value for option in options]:
-                preferred_option = aspect(preferred_option)
-            else:
-                logger.info("Please only type one of the available options.")
-                continue
-            break
+    options_info = "\n  "
+    for i, option in enumerate(options):
+        options_info += f"{i+1}: {option.value.upper()}\n  "
+    logger.info(f"Select your preferred '{configuration_text}': {options_info}")
+    while True:
+        preferred_option = input("Type your preference: ").lower()
+        if (
+            len(preferred_option) == 1
+            and preferred_option.isdigit()
+            and int(preferred_option) <= len(options)
+            and int(preferred_option) > 0
+        ):
+            preferred_option = options[int(preferred_option) - 1]
+        elif preferred_option in [option.value for option in options]:
+            preferred_option = aspect(preferred_option)
+        else:
+            logger.info("Please only type one of the available options.")
+            continue
+        break
 
-    return update_config_value(
-        config=config,
-        key=config_key,
-        value=str(default_option if use_default else preferred_option).lower(),
-    )
+    update_config_value(key=config_key, value=str(preferred_option).lower())
 
 
 def _update_config(config: configparser.ConfigParser) -> None:
