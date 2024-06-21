@@ -82,8 +82,8 @@ def handle_missing_key_access_attempt(
         logger.error(
             "\n".join(
                 (
-                    f"The '{what_should_be_found}'was not found in your oak-CLI config.",
-                    f"Please first configure it by running '{configuration_cmd}'.",
+                    f"The '{what_should_be_found}' was not found in your oak-CLI config.",
+                    "Please first configure it by running the matching oak-cli configuration cmd.",
                 )
             )
         )

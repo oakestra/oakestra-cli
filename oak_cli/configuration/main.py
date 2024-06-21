@@ -24,27 +24,6 @@ app.add_typer(
 )
 
 
-def configuration_expansion_help_text(
-    configuration_cmd: str,
-    add_hint_about_local_machine_purpose_configuration: bool = True,
-) -> str:
-    help = "\n".join(
-        (
-            "You can expand the available commands for this subcommand"
-            " by configuring its related settings in the OAK-CLI.",
-            f"The relevant command is '{configuration_cmd}'.",
-        )
-    )
-    if add_hint_about_local_machine_purpose_configuration:
-        help += "\n".join(
-            (
-                " By specifying the purpose of this machine you can unlock further CLI commands.",
-                "You can do so by running 'oak c local-machine-purpose configure'.",
-            )
-        )
-    return help
-
-
 @app.command("show-config, s", help="Shows your current OAK-CLI configuration.")
 def show_config():
     check_and_handle_config_file()

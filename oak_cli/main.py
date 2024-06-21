@@ -11,7 +11,10 @@ import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
-from oak_cli.configuration.main import configuration_expansion_help_text
+from oak_cli.configuration.local_machine_purpose import (
+    LocalMachinePurpose,
+    check_if_local_machine_has_required_purposes,
+)
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
 
@@ -20,35 +23,55 @@ install(show_locals=True)
 console = Console()
 
 app = typer.Typer(
-    help="Run Oakestra's CLI",
+    help=" ".join(
+        (
+            "Run Oakestra's CLI.",
+            "Many commands are hidden initially to avoid overwhelming new users"
+            "and to focus on the reasonable commands for the current configuration.",
+            "New commands can be un-locked by configuring your OAK-CLI installation further.",
+            "If you want to unlock all capabilities of the CLI,"
+            "configure the purpose for this machine as 'everything'.",
+        )
+    ),
     context_settings={"help_option_names": ["-h", "--help"]},
     cls=AliasGroup,
 )
-app.add_typer(
-    typer_instance=oak_applications.app,
-    name="a",
-    help=typer_help_text("application"),
-)
-app.add_typer(
-    typer_instance=oak_services.app,
-    name="s",
-    help=typer_help_text("service"),
-)
-app.add_typer(
-    typer_instance=oak_docker.app,
-    name="d",
-    help="\n".join(
-        (
-            typer_help_text("docker(compose)"),
-            configuration_expansion_help_text(configuration_cmd="oak c main-repo configure"),
-        )
-    ),
-)
-app.add_typer(
-    typer_instance=oak_addons.app,
-    name="addon",
-    help=typer_help_text("addon"),
-)
+
+if check_if_local_machine_has_required_purposes(
+    required_purposes=[LocalMachinePurpose.ROOT_ORCHESTRATOR]
+):
+    app.add_typer(
+        typer_instance=oak_applications.app,
+        name="a",
+        help=typer_help_text("application"),
+    )
+    app.add_typer(
+        typer_instance=oak_services.app,
+        name="s",
+        help=typer_help_text("service"),
+    )
+
+if check_if_local_machine_has_required_purposes(
+    required_purposes=[
+        LocalMachinePurpose.DEVELOPMENT,
+    ]
+):
+    app.add_typer(
+        typer_instance=oak_docker.app,
+        name="d",
+        help=typer_help_text("docker(compose)"),
+    )
+
+if check_if_local_machine_has_required_purposes(
+    required_purposes=[LocalMachinePurpose.ADDON_SUPPORT]
+):
+    app.add_typer(
+        typer_instance=oak_addons.app,
+        name="addon",
+        help=typer_help_text("addon"),
+    )
+
+
 app.add_typer(
     typer_instance=oak_installer.app,
     name="installer",

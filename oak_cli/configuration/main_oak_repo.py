@@ -22,7 +22,6 @@ def get_main_oak_repo_path_from_config() -> pathlib.Path:
     handle_missing_key_access_attempt(
         config_string_key=config_string,
         what_should_be_found="main oakestra repository path",
-        configuration_cmd="oak c main-repo configure",
     )
     return pathlib.Path(config_string)
 
