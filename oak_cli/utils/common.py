@@ -1,6 +1,11 @@
+import os
 import pathlib
 import shlex
 import subprocess
+import sys
+from typing import Union
+
+from oak_cli.utils.logging import logger
 
 
 def get_oak_cli_path() -> pathlib.Path:
@@ -22,3 +27,18 @@ def run_in_shell(
         text=text,
         shell=pure_shell,
     )
+
+
+def get_env_var(name: str, default: Union[str, int] = None) -> str:
+    env_var = os.environ.get(name) or default
+    if env_var is None:
+        _ERROR_MESSAGE = "\n".join(
+            (
+                "Terminating.",
+                "Make sure to set the environment variables first.",
+                f"Missing: '{name}'",
+            )
+        )
+        logger.fatal(f"{_ERROR_MESSAGE}'{name}'")
+        sys.exit(1)
+    return env_var
