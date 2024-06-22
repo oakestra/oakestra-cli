@@ -18,16 +18,21 @@ def get_process_status(
         shell_cmd=f"ps -aux | grep '{process_cmd}'",
         pure_shell=True,
         text=True,
+        check=False,
     )
-    processes = [line for line in cmd_res.stdout.split("\n") if line != ""]
-    message = ""
-    if process_name:
-        message = f"{process_name}: "
-    # NOTE: The grep cmd and the python subprocess call count as 2 processes in the list.
-    if len(processes) > 2:
-        status = ProcessStatus.RUNNING
-    else:
+    # NOTE: Sometimes flaky errors occur.
+    if cmd_res.returncode != 0:
         status = ProcessStatus.OFFLINE
+    else:
+        processes = [line for line in cmd_res.stdout.split("\n") if line != ""]
+        message = ""
+        if process_name:
+            message = f"{process_name}: "
+        # NOTE: The grep cmd and the python subprocess call count as 2 processes in the list.
+        if len(processes) > 2:
+            status = ProcessStatus.RUNNING
+        else:
+            status = ProcessStatus.OFFLINE
 
     if print_status:
         logger.info(message + status.value)

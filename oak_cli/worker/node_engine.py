@@ -4,6 +4,7 @@ import typer
 from typing_extensions import Annotated
 
 from oak_cli.utils.common import get_env_var, run_in_shell
+from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.worker.common import ProcessStatus, get_process_status, stop_process
 
@@ -20,7 +21,8 @@ def start_node_engine(
         Optional[bool], typer.Option("--ml_data_server_for_flops_addon_learner")
     ] = False,
 ) -> None:
-    if get_node_engine_status() == ProcessStatus.RUNNING:
+    if get_node_engine_status(print_status=False) == ProcessStatus.RUNNING:
+        logger.info("The NodeEngine is already running.")
         return
 
     cmd = f"{NODE_ENGINE_CMD_PREFIX} -p 6000 -p 10100 -a {get_env_var(name='SYSTEM_MANAGER_URL')}"
@@ -30,11 +32,11 @@ def start_node_engine(
 
 
 @app.command("status", help=f"Show the status of the {NODE_ENGINE_NAME}.")
-def get_node_engine_status() -> ProcessStatus:
+def get_node_engine_status(print_status: bool = True) -> ProcessStatus:
     return get_process_status(
         process_cmd=NODE_ENGINE_CMD_PREFIX,
         process_name=NODE_ENGINE_NAME,
-        print_status=True,
+        print_status=print_status,
     )
 
 
