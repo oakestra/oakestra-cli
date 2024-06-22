@@ -10,10 +10,15 @@ def get_oak_cli_path() -> pathlib.Path:
 
 def run_in_shell(
     shell_cmd: str,
-    capture_output=True,
-    check=True,
-    text=False,
+    capture_output: bool = True,
+    check: bool = True,
+    text: bool = False,
+    pure_shell: bool = False,
 ) -> subprocess.CompletedProcess[bytes]:
     return subprocess.run(
-        shlex.split(shell_cmd), capture_output=capture_output, check=check, text=text
+        shell_cmd if pure_shell else shlex.split(shell_cmd),
+        capture_output=capture_output,
+        check=check,
+        text=text,
+        shell=pure_shell,
     )
