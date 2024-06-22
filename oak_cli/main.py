@@ -11,6 +11,7 @@ import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
+import oak_cli.worker.main as oak_worker
 from oak_cli.configuration.local_machine_purpose import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
@@ -69,6 +70,15 @@ if check_if_local_machine_has_required_purposes(
         typer_instance=oak_addons.app,
         name="addon",
         help=typer_help_text("addon"),
+    )
+
+if check_if_local_machine_has_required_purposes(
+    required_purposes=[LocalMachinePurpose.WORKER_NODE]
+):
+    app.add_typer(
+        typer_instance=oak_worker.app,
+        name="w",
+        help=typer_help_text("Worker"),
     )
 
 
