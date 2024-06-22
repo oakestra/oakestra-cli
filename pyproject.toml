@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oak_cli"
-version = "0.3.0"
+version = "0.3.1"
 description = ""
 authors = ["Alexander Malyuk <malyuk.alexander1999@gmail.com>"]
 readme = "README.md"
@@ -15,7 +15,10 @@ rich = "^13.7.1"
 ansible = "^10.1.0"
 ansible-core = "^2.17.1"
 ansible-runner = "^2.4.0"
-oakestra_utils = { git = "https://github.com/oakestra/oakestra.git@develop", subdirectory = "libraries/oakestra_utils_library" }
+# NOTE: This works great for development.
+# But Pypi (pip) does not allow such dependencies.
+# oakestra_utils = { git = "https://github.com/oakestra/oakestra.git@develop", subdirectory = "libraries/oakestra_utils_library" }
+oakestra-utils = "^0.2.0"
 
 [build-system]
 requires = ["poetry-core"]

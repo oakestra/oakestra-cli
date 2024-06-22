@@ -96,7 +96,7 @@ def display_table(live: bool, table_generator: Callable[[Any], Any]) -> None:
         print_table(table=table_generator())
     else:
         # Clear the terminal to have the live-view in a clean isolated view.
-        run_in_shell(shell_cmd="clear -x", check=False)
+        run_in_shell(shell_cmd="clear -x", check=False, capture_output=False)
         with Live(auto_refresh=False) as live:
             while True:
                 live.update(table_generator(), refresh=True)
