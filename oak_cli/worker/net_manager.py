@@ -4,7 +4,6 @@ import typer
 from typing_extensions import Annotated
 
 from oak_cli.utils.common import run_in_shell
-from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.worker.common import ProcessStatus, get_process_status, stop_process
 
