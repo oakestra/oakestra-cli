@@ -85,7 +85,11 @@ def generate_current_services_table(
         caption += f" of app: '{app_name} - {app_id}'"
     table = create_table(caption=caption, verbosity=verbosity, live=live)
     add_column(table, column_name="Service Name", style=OAK_GREEN)
-    add_column(table, column_name="Service ID")
+    add_column(
+        table,
+        column_name="Service ID",
+        no_wrap=(verbosity == Verbosity.SIMPLE),
+    )
     if verbosity == Verbosity.DETAILED:
         add_column(table, column_name="Status", style=OAK_WHITE)
     add_column(table, column_name="Instances", style=OAK_WHITE, no_wrap=True)

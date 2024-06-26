@@ -5,9 +5,10 @@
     "ml_model_flavor": "sklearn",
     "use_devel_base_images": true,
     "training_configuration": {
-        "mode": "classic",
+        "mode": "hierarchical",
         "data_tags": ["mnist"],
-        "training_rounds": 2,
+        "training_cycles": 2,
+        "training_rounds": 3,
         "min_available_learners":2,
         "min_fit_learners": 2,
         "min_evaluate_learners": 2

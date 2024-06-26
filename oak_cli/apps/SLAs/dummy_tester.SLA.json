@@ -10,7 +10,7 @@
             "microservices": [
                 {
                     "microserviceID": "",
-                    "microservice_name": "curl",
+                    "microservice_name": "curl2",
                     "microservice_namespace": "test",
                     "virtualization": "container",
                     "cmd": [
@@ -28,7 +28,15 @@
                     "code": "docker.io/curlimages/curl:7.82.0",
                     "state": "",
                     "port": "9080",
-                    "added_files": []
+                    "added_files": [],
+                    "constraints":[
+                        {
+                            "type":"clusters",
+                            "allowed": [
+                                "fictional_cluster"
+                            ]
+                        }
+                    ]
                 },
                 {
                     "microserviceID": "",
@@ -52,9 +60,9 @@
                     "added_files": [],
                     "constraints":[
                         {
-                            "type":"addons",
-                            "needs": [
-                                "FLOps-learner"
+                            "type":"clusters",
+                            "allowed": [
+                                "alex_cluster"
                             ]
                         }
                     ]
