@@ -1,4 +1,4 @@
-- name: Install Fundamental non-python dependencies for Oakestra, including Git, Docker, and Docker Compose, etc.
+- name: Install Fundamental non-python dependencies for Oakestra, including Git, Docker (with Compose), and Go, etc.
   hosts: localhost
   become: yes
 
@@ -22,5 +22,5 @@
     - role: geerlingguy.docker 
       vars:
         docker_install_compose: true
-
-# TODO / Future Work: Add Golang installation role/task
+    # Install Go
+    - role: gantsign.golang
