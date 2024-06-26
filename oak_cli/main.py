@@ -12,11 +12,12 @@ import oak_cli.docker.main as oak_docker
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
 import oak_cli.worker.main as oak_worker
+from oak_cli.configuration.common import check_and_handle_config_file, get_config_value
+from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.configuration.local_machine_purpose import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )
-from oak_cli.utils.common import get_env_var
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
 
@@ -102,7 +103,10 @@ def show_version():
 
 @app.command("api-docs", help="Shows a links to the Swagger api-docs for Oakestra.")
 def show_api_docs():
-    api_docs_link = f"http://{get_env_var('SYSTEM_MANAGER_URL')}:1000/api/docs"
+    check_and_handle_config_file()
+    api_docs_link = (
+        f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}:1000/api/docs"
+    )
     logger.info(f"Oakestra root API docs: '{api_docs_link}'")
 
 

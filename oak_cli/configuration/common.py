@@ -5,7 +5,7 @@ import pathlib
 import sys
 from typing import Any, Optional
 
-from oak_cli.configuration.auxiliary import ConfigKey
+from oak_cli.configuration.keys.enums import ConfigKey, InternalConfigKey
 from oak_cli.utils.logging import logger
 
 OAK_CLI_CONFIG_PATH = pathlib.Path.home() / ".oak_cli_config"
@@ -19,12 +19,12 @@ def _check_local_config_valid() -> bool:
         return False
 
     config = open_local_config()
-    all_config_key_value_pairs = config.items(ConfigKey.CONFIG_MAIN_KEY.value)
+    all_config_key_value_pairs = config.items(InternalConfigKey.CONFIG_MAIN_KEY.value)
     all_config_elements = [elem for sublist in all_config_key_value_pairs for elem in sublist]
-    if ConfigKey.CONFIG_VERSION.value not in all_config_elements:
+    if InternalConfigKey.CONFIG_VERSION.value not in all_config_elements:
         return False
 
-    local_config_version = get_config_value(ConfigKey.CONFIG_VERSION)
+    local_config_version = get_config_value(InternalConfigKey.CONFIG_VERSION)
     return local_config_version == CONFIG_VERSION
 
 
@@ -36,12 +36,17 @@ def open_local_config() -> configparser.ConfigParser:
 
 def update_config_value(key: ConfigKey, value: Any) -> None:
     config = open_local_config()
-    config[ConfigKey.CONFIG_MAIN_KEY.value][key.value] = value
+    config[InternalConfigKey.CONFIG_MAIN_KEY.value][key.value] = value
     _update_config(config)
 
 
-def get_config_value(key: ConfigKey) -> Any:
-    return open_local_config()[ConfigKey.CONFIG_MAIN_KEY.value].get(key.value)
+def get_config_value(
+    key: ConfigKey, terminate_if_key_is_missing_from_conf: bool = True
+) -> Optional[str]:
+    value_from_config = open_local_config()[InternalConfigKey.CONFIG_MAIN_KEY.value].get(key.value)
+    if not value_from_config and terminate_if_key_is_missing_from_conf:
+        _handle_missing_key_access_attempt(key)
+    return value_from_config
 
 
 def _update_config(config: configparser.ConfigParser) -> None:
@@ -54,9 +59,9 @@ def _create_initial_unconfigured_config_file() -> None:
         OAK_CLI_CONFIG_PATH.touch()
 
     config = configparser.ConfigParser()
-    config[ConfigKey.CONFIG_MAIN_KEY.value] = {}
+    config[InternalConfigKey.CONFIG_MAIN_KEY.value] = {}
     _update_config(config=config)
-    update_config_value(key=ConfigKey.CONFIG_VERSION, value=CONFIG_VERSION)
+    update_config_value(key=InternalConfigKey.CONFIG_VERSION, value=CONFIG_VERSION)
     logger.info(
         "\n".join(
             (
@@ -75,15 +80,13 @@ def check_and_handle_config_file() -> None:
     _create_initial_unconfigured_config_file()
 
 
-def handle_missing_key_access_attempt(config_string_key: Optional[str]) -> None:
-    if not config_string_key:
-        what_should_be_found = config_string_key.replace("_", " ")
-        logger.error(
-            "\n".join(
-                (
-                    f"The '{what_should_be_found}' was not found in your oak-CLI config.",
-                    "Please first configure it by running the matching oak-cli configuration cmd.",
-                )
+def _handle_missing_key_access_attempt(key: ConfigKey) -> None:
+    logger.error(
+        "\n".join(
+            (
+                f"The '{key.value.replace('_', ' ')}' was not found in your oak-CLI config.",
+                "Please first configure it by running the matching oak-cli configuration cmd.",
             )
         )
-        sys.exit(1)
+    )
+    sys.exit(1)

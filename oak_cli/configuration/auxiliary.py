@@ -1,29 +1,14 @@
 import pathlib
 import readline
 
+from oak_cli.configuration.common import get_config_value
+from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.utils.logging import logger
-from oak_cli.utils.types import CustomEnum
-
-
-class ConfigKey(CustomEnum):
-    pass
-
-
-class PureConfigKey(ConfigKey):
-    """A 'pure' ConfigKey is a Config Key that is not a Core"""
-
-    CONFIG_MAIN_KEY = "OAK_CLI"
-    CONFIG_VERSION = "config_version"
-
-    LOCAL_MACHINE_PURPOSE = "local_machine_purpose"
-
-    MAIN_OAK_REPO_PATH = "main_oak_repo_path"
-    FLOPS_REPO_PATH = "flops_repo_path"
 
 
 def prompt_for_path(path_name: str) -> pathlib.Path:
     while True:
-        logger.info(f"Please provide the path to {path_name}")
+        logger.info(f"Please provide the '{path_name}'")
         # https://stackoverflow.com/questions/56119177/how-to-make-a-python-script-tab-complete-directories-in-terminal/56119373#56119373
         readline.set_completer_delims(" \t\n=")
         readline.parse_and_bind("tab: complete")
@@ -33,3 +18,7 @@ def prompt_for_path(path_name: str) -> pathlib.Path:
             continue
         break
     return user_typed_path
+
+
+def get_main_oak_repo_path() -> pathlib.Path:
+    return pathlib.Path(get_config_value(ConfigurableConfigKey.MAIN_OAK_REPO_PATH))

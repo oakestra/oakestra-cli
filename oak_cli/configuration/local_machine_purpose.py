@@ -3,13 +3,12 @@ from typing import List, Optional
 
 import typer
 
-from oak_cli.configuration.auxiliary import ConfigKey
 from oak_cli.configuration.common import (
     check_and_handle_config_file,
     get_config_value,
-    handle_missing_key_access_attempt,
     update_config_value,
 )
+from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.utils.types import CustomEnum
 
@@ -34,12 +33,12 @@ def get_local_machine_purposes_from_config(
     terminate_if_key_is_missing_from_conf: bool = True,
 ) -> Optional[List[LocalMachinePurpose]]:
     check_and_handle_config_file()
-    config_json_string = get_config_value(ConfigKey.LOCAL_MACHINE_PURPOSE)
-    if terminate_if_key_is_missing_from_conf:
-        handle_missing_key_access_attempt(config_string_key=config_json_string)
-    else:
-        if not config_json_string:
-            return
+    config_json_string = get_config_value(
+        ConfigurableConfigKey.LOCAL_MACHINE_PURPOSE,
+        terminate_if_key_is_missing_from_conf,
+    )
+    if not config_json_string:
+        return None
     config_list = json.loads(config_json_string)
     return [LocalMachinePurpose(purpose_name) for purpose_name in config_list]
 
@@ -75,7 +74,7 @@ def configure_local_machine_purpose(
         local_machine_purposes = [LocalMachinePurpose.EVERYTHING]
     check_and_handle_config_file()
     update_config_value(
-        key=ConfigKey.LOCAL_MACHINE_PURPOSE,
+        key=ConfigurableConfigKey.LOCAL_MACHINE_PURPOSE,
         # NOTE: The config only supports strings.
         value=json.dumps([purpose.value for purpose in local_machine_purposes]),
     )
