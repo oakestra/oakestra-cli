@@ -6,13 +6,19 @@ from oak_cli.utils.types import CustomEnum
 
 
 class ConfigKey(CustomEnum):
+    pass
+
+
+class PureConfigKey(ConfigKey):
+    """A 'pure' ConfigKey is a Config Key that is not a Core"""
+
     CONFIG_MAIN_KEY = "OAK_CLI"
-    CONFIG_VERSION_KEY = "config_version"
+    CONFIG_VERSION = "config_version"
 
-    LOCAL_MACHINE_PURPOSE_KEY = "local_machine_purpose"
+    LOCAL_MACHINE_PURPOSE = "local_machine_purpose"
 
-    MAIN_OAK_REPO_PATH_KEY = "main_oak_repo_path"
-    FLOPS_REPO_PATH_KEY = "flops_repo_path"
+    MAIN_OAK_REPO_PATH = "main_oak_repo_path"
+    FLOPS_REPO_PATH = "flops_repo_path"
 
 
 def prompt_for_path(path_name: str) -> pathlib.Path:

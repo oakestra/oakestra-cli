@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import configparser
 import pathlib
 import sys
@@ -19,10 +21,10 @@ def _check_local_config_valid() -> bool:
     config = open_local_config()
     all_config_key_value_pairs = config.items(ConfigKey.CONFIG_MAIN_KEY.value)
     all_config_elements = [elem for sublist in all_config_key_value_pairs for elem in sublist]
-    if ConfigKey.CONFIG_VERSION_KEY.value not in all_config_elements:
+    if ConfigKey.CONFIG_VERSION.value not in all_config_elements:
         return False
 
-    local_config_version = get_config_value(ConfigKey.CONFIG_VERSION_KEY)
+    local_config_version = get_config_value(ConfigKey.CONFIG_VERSION)
     return local_config_version == CONFIG_VERSION
 
 
@@ -54,7 +56,7 @@ def _create_initial_unconfigured_config_file() -> None:
     config = configparser.ConfigParser()
     config[ConfigKey.CONFIG_MAIN_KEY.value] = {}
     _update_config(config=config)
-    update_config_value(key=ConfigKey.CONFIG_VERSION_KEY, value=CONFIG_VERSION)
+    update_config_value(key=ConfigKey.CONFIG_VERSION, value=CONFIG_VERSION)
     logger.info(
         "\n".join(
             (
@@ -73,11 +75,9 @@ def check_and_handle_config_file() -> None:
     _create_initial_unconfigured_config_file()
 
 
-def handle_missing_key_access_attempt(
-    config_string_key: Optional[str],
-    what_should_be_found: str,
-) -> None:
+def handle_missing_key_access_attempt(config_string_key: Optional[str]) -> None:
     if not config_string_key:
+        what_should_be_found = config_string_key.replace("_", " ")
         logger.error(
             "\n".join(
                 (

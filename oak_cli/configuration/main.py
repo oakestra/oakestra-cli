@@ -3,6 +3,7 @@ import pprint
 import typer
 
 import oak_cli.configuration.addon_repos
+import oak_cli.configuration.core_vars
 import oak_cli.configuration.local_machine_purpose
 import oak_cli.configuration.main_oak_repo
 import oak_cli.docker.cluster_orchestrator
@@ -27,6 +28,11 @@ app.add_typer(
     typer_instance=oak_cli.configuration.addon_repos.app,
     name="addon-repos",
     help="Configure addon repositories",
+)
+app.add_typer(
+    typer_instance=oak_cli.configuration.core_vars.app,
+    name="core-vars",
+    help="Configure Core Variables used by OAK-CLI",
 )
 
 

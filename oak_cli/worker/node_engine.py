@@ -38,7 +38,7 @@ def start_node_engine(
         logger.info("The NodeEngine is already running.")
         return
 
-    cmd = f"{NODE_ENGINE_CMD_PREFIX} -p 6000 -p 10100 -a {get_env_var(name='SYSTEM_MANAGER_URL')}"
+    cmd = f"{NODE_ENGINE_CMD_PREFIX} -p 6000 -p 10100 -a {get_env_var(name='CLUSTER_ORCHESTRATOR_IP')}"
     if use_ml_data_server_for_flops_addon_learner:
         cmd += " -l"
     run_in_shell(shell_cmd=cmd, capture_output=False, check=False)
@@ -67,15 +67,17 @@ if check_if_local_machine_has_required_purposes(
         help=f"rebuilds (and restarts) the {NODE_ENGINE_NAME}.",
     )
     def rebuild_node_engine(
-        architecture: Architecture = Architecture.AMD64, restart: bool = True
+        # NOTE: Theoretically this is wrong but it only works like this - typer is WIP after all.
+        architecture: Architecture = Architecture.AMD64.value,
+        restart: bool = True,
     ) -> None:
         if restart:
             stop_node_engine()
 
         node_engine_build_path = get_main_oak_repo_path_from_config() / "go_node_engine" / "build"
         os.chdir(node_engine_build_path)
-        run_in_shell(shell_cmd="./build.sh")
-        run_in_shell(shell_cmd=f". install.sh {architecture.value}")
+        run_in_shell(shell_cmd="bash build.sh")
+        run_in_shell(shell_cmd=f"bash install.sh {architecture.value}")
         logger.info("Successfully rebuild the NodeEngine.")
 
         if restart:

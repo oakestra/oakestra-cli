@@ -34,12 +34,9 @@ def get_local_machine_purposes_from_config(
     terminate_if_key_is_missing_from_conf: bool = True,
 ) -> Optional[List[LocalMachinePurpose]]:
     check_and_handle_config_file()
-    config_json_string = get_config_value(ConfigKey.LOCAL_MACHINE_PURPOSE_KEY)
+    config_json_string = get_config_value(ConfigKey.LOCAL_MACHINE_PURPOSE)
     if terminate_if_key_is_missing_from_conf:
-        handle_missing_key_access_attempt(
-            config_string_key=config_json_string,
-            what_should_be_found="local machine purpose",
-        )
+        handle_missing_key_access_attempt(config_string_key=config_json_string)
     else:
         if not config_json_string:
             return
@@ -78,7 +75,7 @@ def configure_local_machine_purpose(
         local_machine_purposes = [LocalMachinePurpose.EVERYTHING]
     check_and_handle_config_file()
     update_config_value(
-        key=ConfigKey.LOCAL_MACHINE_PURPOSE_KEY,
+        key=ConfigKey.LOCAL_MACHINE_PURPOSE,
         # NOTE: The config only supports strings.
         value=json.dumps([purpose.value for purpose in local_machine_purposes]),
     )
