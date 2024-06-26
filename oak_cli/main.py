@@ -16,6 +16,7 @@ from oak_cli.configuration.local_machine_purpose import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )
+from oak_cli.utils.common import get_env_var
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
 
@@ -97,6 +98,12 @@ app.add_typer(
 @app.command("version, v", help="Shows the version of the currently installed OAK-CLI.")
 def show_version():
     logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
+
+
+@app.command("api-docs", help="Shows a links to the Swagger api-docs for Oakestra.")
+def show_api_docs():
+    api_docs_link = f"http://{get_env_var('SYSTEM_MANAGER_URL')}:1000/api/docs"
+    logger.info(f"Oakestra root API docs: '{api_docs_link}'")
 
 
 def main():

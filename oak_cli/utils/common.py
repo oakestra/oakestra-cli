@@ -18,6 +18,9 @@ def run_in_shell(
     capture_output: bool = True,
     check: bool = True,
     text: bool = False,
+    # NOTE: subprocess.run usually expects an array of strings as the cmd.
+    # It is not able to handle pipes ("|"), etc.
+    # If shell=True is enabled then it expects a single string as cmd and can handle pipes, etc.
     pure_shell: bool = False,
 ) -> subprocess.CompletedProcess[bytes]:
     return subprocess.run(
