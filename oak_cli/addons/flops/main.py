@@ -1,7 +1,6 @@
 import json
 import os
 import pathlib
-from typing import Optional
 
 import typer
 from icecream import ic
@@ -65,7 +64,7 @@ def create_new_mock_data_service(mock_sla: FLOpsMockDataProviderSLAs) -> None:
         Deployes the Tracking Server Service if it is not yet deployed.
         """,
 )
-def get_tracking_url(customer_id: Optional[str] = "Admin") -> None:
+def get_tracking_url(customer_id: str = "Admin") -> None:
     result = custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.GET,

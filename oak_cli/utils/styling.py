@@ -37,7 +37,7 @@ def create_spinner(message: str, style: str = OAK_GREEN):  # NOTE: The return ty
 
 
 def create_table(
-    title: Optional[str] = None,
+    title: str = "",
     caption: str = "",
     box: box = box.ROUNDED,  # type: ignore
     show_lines: bool = True,

@@ -4,7 +4,6 @@ import pathlib
 import shlex
 import subprocess
 import sys
-from typing import Optional
 
 from oak_cli.utils.logging import logger
 
@@ -45,7 +44,7 @@ def run_in_shell(
     )
 
 
-def get_env_var(name: str, default: Optional[str] = None) -> str:
+def get_env_var(name: str, default: str = "") -> str:
     env_var = os.environ.get(name) or default
     if env_var is None:
         _ERROR_MESSAGE = "\n".join(

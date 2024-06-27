@@ -3,7 +3,7 @@ from __future__ import annotations
 import configparser
 import pathlib
 import sys
-from typing import Any, Optional
+from typing import Any
 
 from oak_cli.configuration.keys.enums import ConfigKey, InternalConfigKey
 from oak_cli.utils.logging import logger
@@ -40,11 +40,9 @@ def update_config_value(key: ConfigKey, value: Any) -> None:
     _update_config(config)
 
 
-def get_config_value(
-    key: ConfigKey, terminate_if_key_is_missing_from_conf: bool = True
-) -> Optional[str]:
+def get_config_value(key: ConfigKey, terminate_if_key_is_missing_from_conf: bool = True) -> str:
     config = open_local_config()[InternalConfigKey.CONFIG_MAIN_KEY.value]
-    value_from_config = config.get(key.value)  # type: ignore
+    value_from_config = config.get(key.value, "")  # type: ignore
     if not value_from_config and terminate_if_key_is_missing_from_conf:
         _handle_missing_key_access_attempt(key)
     return value_from_config

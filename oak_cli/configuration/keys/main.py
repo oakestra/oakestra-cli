@@ -1,5 +1,3 @@
-from typing import Optional
-
 import typer
 
 from oak_cli.configuration.auxiliary import prompt_for_path
@@ -10,7 +8,7 @@ app = typer.Typer()
 
 
 @app.command("configure", help="Configure a core variable.")
-def configure_config_key(key: ConfigurableConfigKey, value: Optional[str] = None) -> None:
+def configure_config_key(key: ConfigurableConfigKey, value: str = "") -> None:
     check_and_handle_config_file()
     if not value:
         if key.is_path():

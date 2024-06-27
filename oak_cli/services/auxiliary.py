@@ -22,7 +22,7 @@ from oak_cli.utils.styling import (
 from oak_cli.utils.types import ApplicationId, ServiceId, Verbosity
 
 
-def add_icon_to_status(status_name: Optional[str]) -> str:
+def add_icon_to_status(status_name: str = "") -> str:
     if not status_name:
         return "-"
 
@@ -63,7 +63,7 @@ def create_instances_sub_table(
         add_column(table, column_name="cluster ID")
 
     for i in instances:
-        status = i.get("status")
+        status = i.get("status", "")
         row_items = [
             str(i["instance_number"]),
             add_icon_to_status(status),
@@ -108,7 +108,7 @@ def generate_current_services_table(
                 " ".join(service["cmd"]) if service["cmd"] else "-",
             ]
 
-        service_status = service.get("status")
+        service_status = service.get("status", "")
 
         instances = service["instance_list"]
         instance_info = "-"
@@ -140,7 +140,7 @@ def generate_service_inspection_table(
     # This might not be a great solution but it works. POTENTIAL FUTURE WORK
     service = get_single_service(service_id=service_id)
     instances = service["instance_list"]
-    instance_status = service.get("status")
+    instance_status = service.get("status", "")
     title = " | ".join(
         (
             f"name: {service['microservice_name']}",
