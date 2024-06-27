@@ -22,7 +22,7 @@ def get_process_status(
         pure_shell=True,
         text=True,
     )
-    processes = [line for line in cmd_res.stdout.split("\n") if line != ""]
+    processes = [line for line in cmd_res.stdout.split("\n") if line != ""]  # type: ignore
     message = ""
     if process_name:
         message = f"{process_name}: "
@@ -48,7 +48,7 @@ def stop_process(process_cmd: str, process_name: str) -> None:
         pure_shell=True,
         text=True,
     )
-    pids = [line for line in cmd_res.stdout.split("\n") if line != ""]
+    pids = [line for line in cmd_res.stdout.split("\n") if line != ""]  # type: ignore
     # NOTE: The grep cmd and the python subprocess call count as 2 processes in the list.
     if len(pids) > 0:
         # NOTE: Killing the first PID in the list should stop the main process.

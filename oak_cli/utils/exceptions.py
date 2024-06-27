@@ -1,11 +1,12 @@
 from http import HTTPStatus
+from typing import Optional
 
 
 class OakCliException(Exception):
     def __init__(
         self,
         msg: str,
-        http_status: HTTPStatus = None,
+        http_status: Optional[HTTPStatus] = None,
     ):
         self.msg = msg
         self.http_status = http_status

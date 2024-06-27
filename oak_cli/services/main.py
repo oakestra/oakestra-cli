@@ -14,9 +14,16 @@ from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
-from oak_cli.utils.styling import LIVE_HELP_TEXT, display_table
+from oak_cli.utils.styling import display_table
 from oak_cli.utils.typer_augmentations import AliasGroup
-from oak_cli.utils.types import ApplicationId, Id, ServiceId, Verbosity
+from oak_cli.utils.types import (
+    LIVE_VIEW_FLAG_TYPE,
+    VERBOSITY_FLAG_TYPE,
+    ApplicationId,
+    Id,
+    ServiceId,
+    Verbosity,
+)
 
 ic.configureOutput(prefix="")
 app = typer.Typer(cls=AliasGroup)
@@ -25,7 +32,7 @@ app = typer.Typer(cls=AliasGroup)
 @app.command("inspect, i", help="Inspect the specified service.")
 def inspect_service(
     service_id: ServiceId,
-    live: Annotated[Optional[bool], typer.Option("-l", help=LIVE_HELP_TEXT)] = False,
+    live: LIVE_VIEW_FLAG_TYPE = False,
 ) -> None:
     display_table(
         live,
@@ -39,8 +46,8 @@ def show_current_services(
         Optional[ApplicationId],
         typer.Argument(help="ID of the parent application which services to show"),
     ] = None,
-    live: Annotated[Optional[bool], typer.Option("-l", help=LIVE_HELP_TEXT)] = False,
-    verbosity: Annotated[Optional[Verbosity], typer.Option("-v")] = Verbosity.SIMPLE.value,
+    live: LIVE_VIEW_FLAG_TYPE = False,
+    verbosity: VERBOSITY_FLAG_TYPE = Verbosity.SIMPLE.value,  # type: ignore
 ) -> None:
     current_services = get_all_services(app_id)
 
@@ -61,7 +68,8 @@ def show_current_services(
         return
 
     display_table(
-        live, table_generator=lambda: generate_current_services_table(app_id, verbosity, live)
+        live,
+        table_generator=lambda: generate_current_services_table(app_id, Verbosity(verbosity), live),
     )
 
 
@@ -90,11 +98,11 @@ def deploy_new_instance(service_id: ServiceId) -> None:
 )
 def undeploy_instances(
     service_id: Annotated[
-        ServiceId,
+        Optional[ServiceId],
         typer.Option(help="If provided will only undeploy all instances of that service."),
     ] = None,
     instance_id: Annotated[
-        Id,
+        Optional[Id],
         typer.Option(
             help="""
                 Requires the 'service_id' to be provided.

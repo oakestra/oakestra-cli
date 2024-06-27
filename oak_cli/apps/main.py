@@ -14,17 +14,23 @@ from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
-from oak_cli.utils.styling import LIVE_HELP_TEXT, display_table
+from oak_cli.utils.styling import display_table
 from oak_cli.utils.typer_augmentations import AliasGroup
-from oak_cli.utils.types import Application, ApplicationId, Verbosity
+from oak_cli.utils.types import (
+    LIVE_VIEW_FLAG_TYPE,
+    VERBOSITY_FLAG_TYPE,
+    Application,
+    ApplicationId,
+    Verbosity,
+)
 
 app = typer.Typer(cls=AliasGroup)
 
 
 @app.command("show, s", help="Shows current applications")
 def show_current_applications(
-    live: Annotated[Optional[bool], typer.Option("-l", help=LIVE_HELP_TEXT)] = False,
-    verbosity: Annotated[Optional[Verbosity], typer.Option("-v")] = Verbosity.SIMPLE.value,
+    live: LIVE_VIEW_FLAG_TYPE = False,
+    verbosity: VERBOSITY_FLAG_TYPE = Verbosity.SIMPLE.value,  # type: ignore
 ) -> None:
     current_applications = get_applications()
     if not live and not current_applications:
@@ -38,7 +44,10 @@ def show_current_applications(
 
     display_table(
         live,
-        table_generator=lambda: generate_current_application_table(verbosity=verbosity, live=live),
+        table_generator=lambda: generate_current_application_table(
+            verbosity=Verbosity(verbosity),
+            live=live,
+        ),
     )
 
 

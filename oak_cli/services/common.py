@@ -8,7 +8,7 @@ from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.types import ApplicationId, Id, Service, ServiceId
 
 
-def get_single_service(service_id: ServiceId) -> Service:
+def get_single_service(service_id: ServiceId) -> Service:  # type: ignore
     try:
         return custom_requests.CustomRequest(
             custom_requests.RequestCore(
@@ -27,7 +27,7 @@ def get_single_service(service_id: ServiceId) -> Service:
         )
 
 
-def get_all_services(app_id: ApplicationId = None) -> List[Service]:
+def get_all_services(app_id: Optional[ApplicationId] = None) -> List[Service]:
     what_should_happen = "Get all services"
     if app_id:
         what_should_happen += f" of app '{app_id}'"

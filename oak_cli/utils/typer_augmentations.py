@@ -8,7 +8,7 @@ def typer_help_text(subject: str) -> str:
     return f"Command for {subject} related activities."
 
 
-class AliasGroup(typer.core.TyperGroup):
+class AliasGroup(typer.core.TyperGroup):  # type: ignore
 
     _CMD_SPLIT_P = r"[,| ?\/]"  # Adds other delimiters inside the [ ]
 

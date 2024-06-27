@@ -8,7 +8,7 @@ from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.types import Application, ApplicationId
 
 
-def get_application(app_id: ApplicationId) -> Application:
+def get_application(app_id: ApplicationId) -> Application:  # type: ignore
     try:
         return custom_requests.CustomRequest(
             custom_requests.RequestCore(

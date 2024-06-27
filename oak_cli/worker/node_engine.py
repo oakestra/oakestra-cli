@@ -12,7 +12,7 @@ from oak_cli.configuration.local_machine_purpose import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )
-from oak_cli.utils.common import run_in_shell
+from oak_cli.utils.common import CaptureOutputType, run_in_shell
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup
 from oak_cli.worker.common import ProcessStatus, get_process_status, stop_process
@@ -35,6 +35,7 @@ def start_node_engine(
     use_ml_data_server_for_flops_addon_learner: Annotated[
         Optional[bool], typer.Option("--ml_data_server_for_flops_addon_learner")
     ] = False,
+    background: Annotated[bool, typer.Option("-b", help="Run in background.")] = False,
 ) -> None:
     if get_node_engine_status(print_status=False) == ProcessStatus.RUNNING:
         logger.info("The NodeEngine is already running.")
@@ -42,15 +43,26 @@ def start_node_engine(
 
     cmd = " ".join(
         (
-            NODE_ENGINE_CMD_PREFIX,
+            str(NODE_ENGINE_CMD_PREFIX),
             "-p 6000 -p 10100",
             "-a",
-            get_config_value(ConfigurableConfigKey.CLUSTER_MANAGER_IP),
+            str(get_config_value(ConfigurableConfigKey.CLUSTER_MANAGER_IP)),
         )
     )
     if use_ml_data_server_for_flops_addon_learner:
         cmd += " -l"
-    run_in_shell(shell_cmd=cmd, capture_output=False, check=False)
+    if background:
+        cmd += " &"
+    run_in_shell(
+        shell_cmd=cmd,
+        capture_output_type=(
+            CaptureOutputType.HIDE_OUTPUT if background else CaptureOutputType.TO_STDOUT
+        ),
+        check=False,
+        pure_shell=background,
+    )
+    if background:
+        logger.info("Started the NodeEngine.")
 
 
 @app.command("status", help=f"Show the status of the {NODE_ENGINE_NAME}.")
@@ -67,6 +79,12 @@ def stop_node_engine() -> None:
     stop_process(process_cmd=NODE_ENGINE_CMD_PREFIX, process_name=NODE_ENGINE_NAME)
 
 
+@app.command("restart", help=f"restarts the {NODE_ENGINE_NAME}.")
+def restart_node_engine() -> None:
+    stop_node_engine()
+    start_node_engine()
+
+
 if check_if_local_machine_has_required_purposes(
     required_purposes=[LocalMachinePurpose.DEVELOPMENT]
 ):
@@ -77,12 +95,9 @@ if check_if_local_machine_has_required_purposes(
     )
     def rebuild_node_engine(
         # NOTE: Theoretically this is wrong but it only works like this - typer is WIP after all.
-        architecture: Architecture = Architecture.AMD64.value,
+        architecture: Architecture = Architecture.AMD64.value,  # type: ignore
         restart: bool = True,
     ) -> None:
-        if restart:
-            stop_node_engine()
-
         node_engine_build_path = get_main_oak_repo_path() / "go_node_engine" / "build"
         os.chdir(node_engine_build_path)
         run_in_shell(shell_cmd="bash build.sh")
@@ -90,4 +105,4 @@ if check_if_local_machine_has_required_purposes(
         logger.info("Successfully rebuild the NodeEngine.")
 
         if restart:
-            start_node_engine()
+            restart_node_engine()

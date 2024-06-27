@@ -1,4 +1,4 @@
-import rich
+from rich.table import Table
 
 from oak_cli.apps.common import get_applications
 from oak_cli.utils.styling import (
@@ -11,7 +11,7 @@ from oak_cli.utils.styling import (
 from oak_cli.utils.types import Verbosity
 
 
-def generate_current_application_table(verbosity: Verbosity, live: bool) -> rich.table.Table:
+def generate_current_application_table(verbosity: Verbosity, live: bool) -> Table:
     table = create_table(
         caption="Current Applications",
         verbosity=verbosity,

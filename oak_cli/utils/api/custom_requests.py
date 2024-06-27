@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass, field
 from http import HTTPStatus
-from typing import NamedTuple
+from typing import Any, NamedTuple, Optional
 
 import requests
 
@@ -14,11 +14,11 @@ from oak_cli.utils.logging import logger
 
 class RequestCore(NamedTuple):
     base_url: str
-    api_endpoint: str = None
-    query_params: str = None
+    api_endpoint: str = ""
+    query_params: str = ""
     http_method: HttpMethod = HttpMethod.GET
-    custom_headers: dict = None
-    data: dict = None
+    custom_headers: Optional[dict] = None
+    data: Optional[dict] = None
 
 
 class RequestAuxiliaries(NamedTuple):
@@ -34,10 +34,10 @@ class CustomRequest:
     core: RequestCore
     aux: RequestAuxiliaries
 
-    headers: dict = field(default=None, init=False)
-    url: str = field(default=None, init=False)
-    args: dict = field(default=None, init=False)
-    response: requests.Response = field(default=None, init=False)
+    headers: Optional[dict] = field(default=None, init=False)
+    url: str = field(default="", init=False)
+    args: Optional[dict] = field(default=None, init=False)
+    response: Optional[requests.Response] = field(default=None, init=False)
 
     def __post_init__(self):
         self._prepare()
@@ -76,7 +76,7 @@ class CustomRequest:
             )
         )
 
-    def execute(self) -> any:
+    def execute(self) -> Any:
         error_msg = ""
         try:
             self.response = self.core.http_method.call(**self.args)

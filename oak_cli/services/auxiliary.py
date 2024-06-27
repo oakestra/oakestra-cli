@@ -1,12 +1,13 @@
-from typing import List
+from typing import List, Optional
 
-import rich
 from oakestra_utils.types.statuses import (
     DeploymentStatus,
     NegativeSchedulingStatus,
     PositiveSchedulingStatus,
     convert_to_status,
 )
+from rich import box
+from rich.table import Table
 
 from oak_cli.services.common import get_all_services, get_single_service
 from oak_cli.utils.styling import (
@@ -21,7 +22,7 @@ from oak_cli.utils.styling import (
 from oak_cli.utils.types import ApplicationId, ServiceId, Verbosity
 
 
-def add_icon_to_status(status_name: str) -> str:
+def add_icon_to_status(status_name: Optional[str]) -> str:
     if not status_name:
         return "-"
 
@@ -41,16 +42,16 @@ def add_icon_to_status(status_name: str) -> str:
     if isinstance(status, NegativeSchedulingStatus):
         status_icon = "❌"
     else:
-        status_icon = STATUS_ICON_MAP.get(status, "❓")
+        status_icon = STATUS_ICON_MAP.get(status, "❓")  # type: ignore
 
     return f"{status} {status_icon}"
 
 
 def create_instances_sub_table(
     instances: List[dict], verbosity: Verbosity = Verbosity.SIMPLE
-) -> rich.table.Table:
+) -> Table:
     table = create_table(
-        box=rich.box.SIMPLE,
+        box=box.SIMPLE,  # type: ignore
         pad_edge=False,
         padding=0,
         show_header=(verbosity == Verbosity.DETAILED),
@@ -74,10 +75,10 @@ def create_instances_sub_table(
 
 
 def generate_current_services_table(
-    app_id: ApplicationId,
+    app_id: Optional[ApplicationId],
     verbosity: Verbosity,
     live: bool = False,
-) -> rich.table.Table:
+) -> Table:
     current_services = get_all_services(app_id)
     caption = "Current Services"
     if app_id:
@@ -132,7 +133,7 @@ def generate_current_services_table(
 def generate_service_inspection_table(
     service_id: ServiceId,
     live: bool = False,
-) -> rich.table.Table:
+) -> Table:
     # NOTE: Initially the instance number and instance status had their own status.
     # This lead to a lot of unused screen space.
     # To maximize the available screen space all contents are placed into a single column.
@@ -151,7 +152,7 @@ def generate_service_inspection_table(
     caption = " | ".join(
         (
             f"image: {service['image']}",
-            f"cmd: {' '.join(service.get('cmd')) if service.get('cmd') else '-'}",
+            f"cmd: {' '.join(service.get('cmd')) if service.get('cmd') else '-'}",  # type: ignore
         )
     )
     table = create_table(caption=caption, live=live)

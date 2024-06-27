@@ -36,14 +36,15 @@ def open_local_config() -> configparser.ConfigParser:
 
 def update_config_value(key: ConfigKey, value: Any) -> None:
     config = open_local_config()
-    config[InternalConfigKey.CONFIG_MAIN_KEY.value][key.value] = value
+    config[InternalConfigKey.CONFIG_MAIN_KEY.value][key.value] = value  # type: ignore
     _update_config(config)
 
 
 def get_config_value(
     key: ConfigKey, terminate_if_key_is_missing_from_conf: bool = True
 ) -> Optional[str]:
-    value_from_config = open_local_config()[InternalConfigKey.CONFIG_MAIN_KEY.value].get(key.value)
+    config = open_local_config()[InternalConfigKey.CONFIG_MAIN_KEY.value]
+    value_from_config = config.get(key.value)  # type: ignore
     if not value_from_config and terminate_if_key_is_missing_from_conf:
         _handle_missing_key_access_attempt(key)
     return value_from_config
@@ -84,7 +85,7 @@ def _handle_missing_key_access_attempt(key: ConfigKey) -> None:
     logger.error(
         "\n".join(
             (
-                f"The '{key.value.replace('_', ' ')}' was not found in your oak-CLI config.",
+                f"The '{key}' was not found in your oak-CLI config.",
                 "Please first configure it by running the matching oak-cli configuration cmd.",
             )
         )

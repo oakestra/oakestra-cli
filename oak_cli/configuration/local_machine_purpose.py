@@ -69,12 +69,12 @@ def configure_local_machine_purpose(
     # NOTE: Sets are not yet supported by the frameworks.
     local_machine_purposes: List[LocalMachinePurpose],
 ) -> None:
-    local_machine_purposes = set(local_machine_purposes)
-    if LocalMachinePurpose.EVERYTHING in local_machine_purposes:
-        local_machine_purposes = [LocalMachinePurpose.EVERYTHING]
+    local_machine_purposes_set = set(local_machine_purposes)
+    if LocalMachinePurpose.EVERYTHING in local_machine_purposes_set:
+        local_machine_purposes_set = {LocalMachinePurpose.EVERYTHING}
     check_and_handle_config_file()
     update_config_value(
         key=ConfigurableConfigKey.LOCAL_MACHINE_PURPOSE,
         # NOTE: The config only supports strings.
-        value=json.dumps([purpose.value for purpose in local_machine_purposes]),
+        value=json.dumps([purpose.value for purpose in local_machine_purposes_set]),
     )
