@@ -79,7 +79,7 @@ class CustomRequest:
     def execute(self) -> Any:
         error_msg = ""
         try:
-            self.response = self.core.http_method.call(**self.args)
+            self.response = self.core.http_method.call(**self.args)  # type: ignore
             self.response.status = HTTPStatus(self.response.status_code)
             if self.response.status == HTTPStatus.OK:
                 if self.aux.show_msg_on_success:

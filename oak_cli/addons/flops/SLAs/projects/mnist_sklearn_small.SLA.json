@@ -8,9 +8,9 @@
         "mode": "classic",
         "data_tags": ["mnist"],
         "training_rounds": 2,
-        "min_available_learners":2,
-        "min_fit_learners": 2,
-        "min_evaluate_learners": 2
+        "min_available_clients":2,
+        "min_fit_clients": 2,
+        "min_evaluate_clients": 2
     },
     "post_training_steps": ["build_image_for_trained_model", "deploy_trained_model_image"],
     "resource_constraints": {
