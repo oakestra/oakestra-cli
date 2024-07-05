@@ -1,6 +1,6 @@
 import typer
 
-import oak_cli.worker.complete_worker
+import oak_cli.worker.all_components
 import oak_cli.worker.ctr
 import oak_cli.worker.net_manager
 import oak_cli.worker.node_engine
@@ -29,7 +29,7 @@ app.add_typer(
 )
 
 app.add_typer(
-    typer_instance=oak_cli.worker.complete_worker.app,
+    typer_instance=oak_cli.worker.all_components.app,
     name="all-components",
     help=typer_help_text("all-components"),
 )

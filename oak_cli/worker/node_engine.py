@@ -33,7 +33,7 @@ app = typer.Typer(cls=AliasGroup)
 @app.command("start", help=f"Starts the {NODE_ENGINE_NAME}.")
 def start_node_engine(
     use_ml_data_server_for_flops_addon_learner: Annotated[
-        Optional[bool], typer.Option("--ml_data_server_for_flops_addon_learner")
+        Optional[bool], typer.Option("--flops-learner")
     ] = False,
     background: Annotated[bool, typer.Option("-b", help="Run in background.")] = False,
 ) -> None:
@@ -50,13 +50,10 @@ def start_node_engine(
         )
     )
     if use_ml_data_server_for_flops_addon_learner:
-        cmd += " -l"
+        cmd += " --flops-learner"
     if background:
         cmd += " &"
 
-    from icecream import ic
-
-    ic(cmd)
     run_in_shell(
         shell_cmd=cmd,
         capture_output_type=(

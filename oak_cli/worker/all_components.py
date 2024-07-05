@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 import typer
@@ -18,6 +19,8 @@ def start_worker(
     ] = False,
 ) -> None:
     start_net_manager(use_debug_mode=use_debug_mode, background=True)
+    # NOTE: Wait for the NetManager to be fully running, otherwise the NodeEngine will fail.
+    time.sleep(1)
     start_node_engine(
         background=True,
         use_ml_data_server_for_flops_addon_learner=use_ml_data_server_for_flops_addon_learner,
