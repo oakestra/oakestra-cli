@@ -14,5 +14,5 @@ def configure_config_key(key: ConfigurableConfigKey, value: str = "") -> None:
         if key.is_path():
             value = str(prompt_for_path(key.get_pleasant_name()))
         else:
-            value = typer.prompt(f"What values should '{key.get_pleasant_name()}' have?")
+            value = typer.prompt(f"What value(s) should '{key.get_pleasant_name()}' have?")
     update_config_value(key=key, value=value)

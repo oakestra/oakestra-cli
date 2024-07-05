@@ -29,10 +29,10 @@ app = typer.Typer(
     help=" ".join(
         (
             "Run Oakestra's CLI.",
-            "Many commands are hidden initially to avoid overwhelming new users"
+            "Many commands are hidden initially to avoid overwhelming new users",
             "and to focus on the reasonable commands for the current configuration.",
             "New commands can be un-locked by configuring your OAK-CLI installation further.",
-            "If you want to unlock all capabilities of the CLI,"
+            "If you want to unlock all capabilities of the CLI",
             "configure the purpose for this machine as 'everything'.",
         )
     ),

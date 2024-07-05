@@ -44,7 +44,7 @@ def start_node_engine(
     cmd = " ".join(
         (
             str(NODE_ENGINE_CMD_PREFIX),
-            "-p 6000 -p 10100",
+            "-n 6000 -p 10100",
             "-a",
             str(get_config_value(ConfigurableConfigKey.CLUSTER_MANAGER_IP)),
         )
@@ -53,6 +53,10 @@ def start_node_engine(
         cmd += " -l"
     if background:
         cmd += " &"
+
+    from icecream import ic
+
+    ic(cmd)
     run_in_shell(
         shell_cmd=cmd,
         capture_output_type=(
