@@ -79,3 +79,26 @@ def get_tracking_url(customer_id: str = "Admin") -> None:
         ),
     ).execute()
     ic(result)
+
+
+@app.command(
+    "reset-database, redb",
+    help="""
+        (Only allowed if you are an Admin)
+        Resets the FLOps Addon Database.
+        """,
+)
+def reset_database(customer_id: str = "Admin") -> None:
+    custom_requests.CustomRequest(
+        custom_requests.RequestCore(
+            http_method=HttpMethod.DELETE,
+            base_url=ROOT_FL_MANAGER_URL,
+            api_endpoint="/api/flops/database",
+            data={"customerID": customer_id},
+        ),
+        custom_requests.RequestAuxiliaries(
+            what_should_happen="Reset the FLOps Database",
+            show_msg_on_success=True,
+            oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
+        ),
+    ).execute()
