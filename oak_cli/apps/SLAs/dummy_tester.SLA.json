@@ -14,9 +14,7 @@
                     "microservice_namespace": "test",
                     "virtualization": "container",
                     "cmd": [
-                        "sh",
-                        "-c",
-                        "tail -f /dev/null"
+                        "sleep", "infinity"
                     ],
                     "memory": 100,
                     "vcpus": 1,
@@ -25,24 +23,11 @@
                     "bandwidth_in": 0,
                     "bandwidth_out": 0,
                     "storage": 0,
-                    "code": "docker.io/curlimages/curl:7.82.0",
+                    "code": "ghcr.io/malyuk-a/addon/flops/aux/miniconda3:latest",
                     "state": "",
                     "port": "9080",
                     "added_files": [],
-                    "constraints":[
-                        {
-                            "type":"clusters",
-                            "allowed": [
-                                "alex_cluster"
-                            ]
-                        },
-                        {
-                            "type":"addons",
-                            "needs": [
-                                "FLOps-learner"
-                            ]
-                        }
-                    ]
+                    "constraints":[]
                 }
             ]
         }

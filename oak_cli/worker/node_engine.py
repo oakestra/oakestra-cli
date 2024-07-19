@@ -35,6 +35,9 @@ def start_node_engine(
     use_ml_data_server_for_flops_addon_learner: Annotated[
         Optional[bool], typer.Option("--flops-learner")
     ] = False,
+    use_multi_platform_image_builder: Annotated[
+        Optional[bool], typer.Option("--image-builder")
+    ] = False,
     background: Annotated[bool, typer.Option("-b", help="Run in background.")] = False,
 ) -> None:
     if get_node_engine_status(print_status=False) == ProcessStatus.RUNNING:
@@ -51,6 +54,8 @@ def start_node_engine(
     )
     if use_ml_data_server_for_flops_addon_learner:
         cmd += " --flops-learner"
+    if use_multi_platform_image_builder:
+        cmd += " --image-builder"
     if background:
         cmd += " &"
 

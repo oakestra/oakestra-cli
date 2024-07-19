@@ -105,7 +105,7 @@ def generate_current_services_table(
         if verbosity == Verbosity.DETAILED:
             special_row_items += [
                 service["image"],
-                " ".join(service["cmd"]) if service["cmd"] else "-",
+                " ".join(service["cmd"]) if service.get("cmd") else "-",
             ]
 
         service_status = service.get("status", "")
