@@ -5,7 +5,7 @@ import pathlib
 import sys
 from typing import Any
 
-from oak_cli.configuration.keys.enums import ConfigKey, InternalConfigKey
+from oak_cli.configuration.keys.enums import ConfigKey, ConfigurableConfigKey, InternalConfigKey
 from oak_cli.utils.logging import logger
 
 OAK_CLI_CONFIG_PATH = pathlib.Path.home() / ".oak_cli_config"
@@ -61,6 +61,7 @@ def _create_initial_unconfigured_config_file() -> None:
     config[InternalConfigKey.CONFIG_MAIN_KEY.value] = {}
     _update_config(config=config)
     update_config_value(key=InternalConfigKey.CONFIG_VERSION, value=CONFIG_VERSION)
+    update_config_value(key=ConfigurableConfigKey.EVALUATION_DEBUG, value="True")
     logger.info(
         "\n".join(
             (
