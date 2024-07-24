@@ -6,10 +6,7 @@ import time
 
 import ansible_runner
 import daemon
-import matplotlib.pyplot as plt
-import pandas as pd
 import psutil
-import seaborn as sns
 import typer
 
 from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook

@@ -31,6 +31,7 @@ def _login_and_set_token() -> str:
             ),
         ).execute()
     except OakCLIException as e:
+        print(e)
         e.handle_exception(
             oak_cli_execption_type=OakCLIExceptionTypes.LOGIN,
             special_message="Unable to log in. Make sure Oakestra is properly running.",
