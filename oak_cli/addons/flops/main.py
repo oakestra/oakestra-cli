@@ -9,8 +9,11 @@ import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
 from oak_cli.addons.flops.SLAs.mocks.common import FLOpsMockDataProviderSLAs
 from oak_cli.addons.flops.SLAs.projects.common import FLOpsProjectSLAs
+from oak_cli.configuration.auxiliary import get_flops_addon_repo_path
 from oak_cli.utils.api.custom_http import HttpMethod
+from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
+from oak_cli.utils.styling import create_spinner
 from oak_cli.utils.typer_augmentations import AliasGroup
 
 ROOT_FL_MANAGER_URL = f"http://{os.environ.get('SYSTEM_MANAGER_URL')}:5072"
@@ -102,3 +105,34 @@ def reset_database(customer_id: str = "Admin") -> None:
             oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),
     ).execute()
+
+
+# TODO split this file up into multiple ones
+
+
+@app.command("restart-management, restart, re")
+def restart_flops_manager() -> None:
+    flops_compose = get_flops_addon_repo_path() / "docker" / "flops_management.docker_compose.yml"
+    cmd = "&& ".join(
+        (
+            f"docker compose -f {flops_compose} down",
+            f"docker compose -f {flops_compose} up --build -d",
+        )
+    )
+    with create_spinner(message="Restarting FLOps Management (Docker Compose)'"):
+        run_in_shell(shell_cmd=cmd, pure_shell=True)
+
+
+@app.command("clear-registry")
+def clear_registry() -> None:
+    # TODO unify this compose path
+    flops_compose = get_flops_addon_repo_path() / "docker" / "flops_management.docker_compose.yml"
+    cmd = " ".join(
+        (
+            f"docker compose -f {flops_compose}",
+            "exec flops_image_registry",
+            "bash -c",
+            "'rm -rf /var/lib/registry/*'",
+        )
+    )
+    run_in_shell(shell_cmd=cmd, pure_shell=True)

@@ -1,0 +1,6 @@
+venv: /tmp/oak-ansible
+venv_python: "{{ venv }}/bin/python"
+venv_pip: "{{ venv_python }} -m pip"
+venv_oak: "{{ venv_python }} -m oak_cli.main"
+
+indicator_builder_stage_fin: "Undeploy FLActorsImageBuilder"

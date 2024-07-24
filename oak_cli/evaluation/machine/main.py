@@ -112,11 +112,11 @@ def stop() -> None:
     - Clears its PID file contents
     """
     if not PIDFILE.exists():
-        logger.warning(f"The file '{PIDFILE}' does not exist.")
-        sys.exit(1)
+        logger.info(f"The file '{PIDFILE}' does not exist.")
+        return
     if PIDFILE.stat().st_size == 0:
-        logger.warning(f"The file '{PIDFILE}' is empty.")
-        sys.exit(1)
+        logger.info(f"The file '{PIDFILE}' is empty.")
+        return
 
     with open(PIDFILE, "r") as file:
         pid = int(file.readline())

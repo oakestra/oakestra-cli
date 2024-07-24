@@ -23,3 +23,9 @@ def prompt_for_path(path_name: str) -> pathlib.Path:
 def get_main_oak_repo_path() -> pathlib.Path:
     config_value = get_config_value(ConfigurableConfigKey.MAIN_OAK_REPO_PATH)
     return pathlib.Path(config_value)
+
+
+# TODO maybe better place this directly in the FLOPs dir
+def get_flops_addon_repo_path() -> pathlib.Path:
+    config_value = get_config_value(ConfigurableConfigKey.FLOPS_REPO_PATH)
+    return pathlib.Path(config_value)
