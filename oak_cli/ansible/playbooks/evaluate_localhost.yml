@@ -1,0 +1,12 @@
+- name: Evaluate the local host metrics.
+  hosts: localhost
+  become: yes
+  # vars:
+  #   oak: /home/alex/miniconda3/envs/alex/bin/oak
+  # tasks:
+  #   - command: "{{oak}} a s"
+  #   #- command: "which {{ oak }}"
+  #     register: lel
+  #   - debug: var=lel.stdout
+  roles:
+    - evaluate_localhost

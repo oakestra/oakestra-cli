@@ -1,0 +1,6 @@
+- command:
+    cmd: ./test.py
+    chdir: "{{ role_path }}/files"
+  register: result
+  
+- debug: var=result
