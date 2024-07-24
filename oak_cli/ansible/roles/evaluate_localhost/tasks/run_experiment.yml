@@ -1,0 +1,71 @@
+- pause:
+    seconds: 3
+
+- name: Trigger FLOps Project
+  command: "{{ venv_oak }} addon flops p mnist_sklearn_small"
+
+### START - Project ###
+
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Create new FLOpsProject application"
+
+# START - FL Actors Builder #
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Deploy FLActorsImageBuilder"
+
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Undeploy FLActorsImageBuilder"
+# FIN - FL Actors Builder #
+
+# START - FL Training #
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Start handling FL training processes"
+
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Aggregator successfully finished training"
+# FIN - FL Training #
+
+## START - Post Training Steps ##
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Start handling FL post training"
+
+# START - Trained Model Builder #
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Deploy TrainedModelImageBuilder"
+  
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Undeploy TrainedModelImageBuilder"
+# FIN - Trained Model Builder #
+
+# START - Trained Model Inference Service (Deployment) #
+- include_role:
+    name: wait_for_flops_experiment_stage
+  vars:
+    stage_indicator: "Deploy TrainedModel"
+
+- include_tasks: check_trained_model_service.yml
+# Make sure the service stays active/alive and not dies instantly.
+- pause:
+    seconds: 5
+- include_tasks: check_trained_model_service.yml
+# FIN - Trained Model Inference Service (Deployment) #
+
+## FIN - Post Training Steps ##
+
+### FIN - Project ###

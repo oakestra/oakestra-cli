@@ -1,0 +1,9 @@
+argument_specs:
+  main:
+    options:
+      venv_oak:
+        type: str
+        required: true
+      clear_containerd_images:
+        type: bool
+        required: true

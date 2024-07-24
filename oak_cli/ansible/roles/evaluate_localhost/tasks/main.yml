@@ -1,80 +1,16 @@
 - include_tasks: prepare_oak_cli.yml
 
-# become: true <- IMPORTANT: For what ever reason - when using become - OAK-CLI login even fails ....
+- include_tasks: clear_components.yml
 
-# - name: Clean up before starting a new experiment
-#   command: "{{ venv_oak }} eval machine clean"
+- name: Clean up before starting a new experiment
+  command: "{{ venv_oak }} eval machine clean"
 
-# - name: Start evaluation (daemon)
-#   command: "{{ venv_oak }} eval machine start"
+- name: Start evaluation (daemon)
+  command: "{{ venv_oak }} eval machine start"
 
-# - name: Dummy load
-#   command: "{{ venv_oak }} a c default_app_with_services -d"
+- include_tasks: run_experiment.yml
 
-# - pause:
-#     seconds: 15
+- name: Stop evaluation (daemon)
+  command: "{{ venv_oak }} eval machine stop"
 
-# - name: Remove Dummy load
-#   command: "{{ venv_oak }} a d"
-
-# - pause:
-#     seconds: 10
-
-# - name: Stop evaluation (daemon)
-#   command: "{{ venv_oak }} eval machine stop"
-
-
-
-
-- name: Make sure no other OAK applications/services are running.
-  command: "{{ venv_oak }} a d"
-
-- name: Clear any containerd images (ctr)
-  command: "{{ venv_oak }} w ctr delete-images"
-
-# - name: Restart FLOps Management (Docker Compose)
-#   command: "{{ venv_oak }} addon flops restart-management"
-
-- name: Clear FLOps Manager DB
-  command: "{{ venv_oak }} addon flops reset-database"
-
-- name: Clear FLOps Image Registry
-  command: "{{ venv_oak }} addon flops clear-registry"
-
-- pause:
-    seconds: 5
-
-- name: Trigger FLOps Project
-  command: "{{ venv_oak }} addon flops p mnist_sklearn_small"
-
-# - name: Wait for specific log message
-# # Success: 'Undeploy FLActorsImageBuilder  service for FLOps'
-#   #shell: docker logs flops_manager | grep 'FLOps Manager started.'
-#   #shell: docker logs flops_manager | grep 'Undeploy FLActorsImageBuilder'
-#   shell: docker logs flops_manager
-#   register: log_output
-#   #until: "FLOps Manager started.' in log_output.stdout"
-#   until: "Undeploy FLActorsImageBuilder' in log_output.stdout"
-#   retries: 0 # infinite retries
-#   delay: 30
-#   ignore_errors: yes
-
-
-- name: Wait for specific log message
-  #shell: docker logs flops_manager | grep 'FLOps Manager started.'
-  #shell: docker logs flops_manager | grep 'Undeploy FLActorsImageBuilder'
-  shell: docker logs flops_manager
-  register: log_output
-  #until: "FLOps Manager started.' in log_output.stdout"
-  # NOTE: The FLOps Manager uses colored logs. It seems that colored logs get sent to stderr by docker logs.
-  until: indicator_builder_stage_fin in log_output.stdout or indicator_builder_stage_fin in log_output.stderr
-  retries: 999 # AFAIK retires need to be specified - there is not "infinite" retries.
-  delay: 30
-  #ignore_errors: yes
-
-
-- name: Proceed with next task after log condition met
-  debug:
-    msg: "Log condition met, proceeding with next task."
-
-- debug: var=log_output
+- include_tasks: clear_components.yml

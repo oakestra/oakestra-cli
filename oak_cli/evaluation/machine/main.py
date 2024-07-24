@@ -41,7 +41,6 @@ def start() -> None:
             writer.writerow(
                 [
                     "Timestamp (Unix Epoch)",
-                    "Timestamp (Human Readable)",
                     "Time since experiment start",
                     "Disk Space Utilization (%)",
                     "Disk Space change since start",
@@ -51,7 +50,6 @@ def start() -> None:
             )
             while True:
                 current_time_unix = time.time()
-                current_time_human_readable = time.ctime(current_time_unix)
                 time_since_experiment_start = current_time_unix - experiment_start_time
                 disk_stats = psutil.disk_usage("/")
                 # Convert bytes to megabytes for easier reading
@@ -62,7 +60,6 @@ def start() -> None:
                 writer.writerow(
                     [
                         current_time_unix,
-                        current_time_human_readable,
                         time_since_experiment_start,
                         current_disk_utilization_percentage,
                         diff_used_mb_since_start,
