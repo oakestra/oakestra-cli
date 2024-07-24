@@ -1,6 +1,6 @@
 import typer
 
-import oak_cli.evaluation.machine as machine_evaluations
+import oak_cli.evaluation.machine.main as machine_evaluations
 from oak_cli.utils.typer_augmentations import typer_help_text
 
 app = typer.Typer()

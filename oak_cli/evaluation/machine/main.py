@@ -1,5 +1,6 @@
 import csv
 import os
+import pathlib
 import sys
 import time
 
@@ -30,10 +31,10 @@ app = typer.Typer()
 def start() -> None:
     if PIDFILE.exists() and PIDFILE.stat().st_size > 0:
         logger.warning("Previous evaluation will be terminated.")
-        stop()
-        clear_evaluation_csv()
+        clean_up()
     # https://peps.python.org/pep-3143/
     with daemon.DaemonContext():
+        experiment_start_time = time.time()
         with open(PIDFILE, mode="w") as file:
             # NOTE: This needs to be called in the daemon context, otherwise the PID will be wrong!
             file.write(str(os.getpid()))
@@ -44,6 +45,7 @@ def start() -> None:
                 [
                     "Timestamp (Unix Epoch)",
                     "Timestamp (Human Readable)",
+                    "Time since experiment start",
                     "CPU Usage (%)",
                     "Memory Usage (%)",
                 ]
@@ -51,10 +53,12 @@ def start() -> None:
             while True:
                 current_time_unix = time.time()
                 current_time_human_readable = time.ctime(current_time_unix)
+                time_since_experiment_start = current_time_unix - experiment_start_time
                 writer.writerow(
                     [
                         current_time_unix,
                         current_time_human_readable,
+                        time_since_experiment_start,
                         psutil.cpu_percent(),
                         psutil.virtual_memory().percent,
                     ]
@@ -76,39 +80,30 @@ def show_results(live: bool = False, graph: bool = False) -> None:
         )
         return
 
-    # Load the CSV file into a DataFrame
-    df = pd.read_csv(EVALUATION_CSV)
-
-    # Convert the timestamp column to datetime format
-    df["Timestamp (Human Readable)"] = pd.to_datetime(df["Timestamp (Human Readable)"])
-
-    # Set the timestamp column as the index
-    df.set_index("Timestamp (Unix Epoch)", inplace=True)
-
-    print("Columns:", df.columns.tolist())
-    from icecream import ic
-
-    # ic(df["Timestamp (Human Readable)"])
-    # Create the time series plot
-    plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
-    sns.lineplot(data=df[["Timestamp (Human Readable)", "CPU Usage (%)", "Memory Usage (%)"]])
-    plt.title("Time Series of CPU and Memory Usage")
-    print(1)
-    plt.xlabel("Date")
-    plt.ylabel("Usage (%)")
-    plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
-    print(2)
-    plt.show()
-    print(3)
+    # NOTE: Ideally this function would not only open the notebook (what it already does)
+    # but also run all cells (to avoid the one manual click left).
+    # So far I could not find a nice way of doing this.
+    # TODO -> put into uval utils
+    path = pathlib.Path(__file__).resolve().parent / "graph.ipynb"
+    run_in_shell(shell_cmd=f"code {path}")
 
 
-@app.command("clear-csv")
-def clear_evaluation_csv() -> None:
+@app.command("clean")
+def clean_up() -> None:
+    """Cleans any remaining experiment artifacts to be ready for a new experiment.
+    - Clears the contents of the PID and CSV file(s).
+    - Kills any daemons.
+    """
     clear_file(EVALUATION_CSV)
+    stop()
 
 
 @app.command("stop")
 def stop() -> None:
+    """Stops the experiment.
+    - Kills its daemon
+    - Clears its PID file contents
+    """
     if not PIDFILE.exists():
         logger.warning(f"The file '{PIDFILE}' does not exist.")
         sys.exit(1)
