@@ -2,7 +2,7 @@ import os
 import pathlib
 import signal
 
-SCRAPE_INTERVAL = 1  # In seconds
+SCRAPE_INTERVAL = 5  # In seconds
 
 PID_FILE_PREFIX = pathlib.Path("/tmp")
 EVALUATION_CSV_PREFIX = pathlib.Path("/tmp")

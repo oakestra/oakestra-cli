@@ -31,7 +31,15 @@ def start() -> None:
     # https://peps.python.org/pep-3143/
     with daemon.DaemonContext():
         experiment_start_time = time.time()
-        experiment_start_disk_space_used = psutil.disk_usage("/").used / (1024 * 1024)
+        # Disk
+        experiment_start_disk_space_used_mb = psutil.disk_usage("/").used / (1024 * 1024)
+        last_disk_space_used_mb = experiment_start_disk_space_used_mb
+        # Network
+        experiment_start_bytes_received = psutil.net_io_counters().bytes_recv
+        experiment_start_bytes_send = psutil.net_io_counters().bytes_sent
+        last_bytes_received = experiment_start_bytes_received
+        last_bytes_send = experiment_start_bytes_send
+
         with open(PIDFILE, mode="w") as file:
             # NOTE: This needs to be called in the daemon context, otherwise the PID will be wrong!
             file.write(str(os.getpid()))
@@ -40,31 +48,72 @@ def start() -> None:
             # Create the header row for CSV.
             writer.writerow(
                 [
+                    "Stage",
+                    # Time
                     "Timestamp (Unix Epoch)",
                     "Time since experiment start",
+                    # Disk
                     "Disk Space Utilization (%)",
                     "Disk Space change since start",
+                    "Disk Space used",
+                    "Next Disk diff",
+                    # CPU & Memory
                     "CPU Usage (%)",
                     "Memory Usage (%)",
+                    # Network
+                    "Net Received Delta compared to start",
+                    "Net Set Delta compared to start",
+                    "Net Received Delta compared to last",
+                    "Net Set Delta compared to last",
                 ]
             )
             while True:
                 current_time_unix = time.time()
                 time_since_experiment_start = current_time_unix - experiment_start_time
+                # Disk
                 disk_stats = psutil.disk_usage("/")
-                # Convert bytes to megabytes for easier reading
                 current_used_mb = disk_stats.used / (1024 * 1024)
-                diff_used_mb_since_start = experiment_start_disk_space_used - current_used_mb
+                diff_used_mb_since_start = current_used_mb - experiment_start_disk_space_used_mb
                 current_disk_utilization_percentage = disk_stats.percent
+                next_disk_space_used = current_used_mb - last_disk_space_used_mb
+                last_disk_space_used_mb = current_used_mb
+                # Network
+                current_bytes_received = psutil.net_io_counters().bytes_recv
+                current_bytes_send = psutil.net_io_counters().bytes_sent
+
+                compared_to_start_received = (
+                    current_bytes_received - experiment_start_bytes_received
+                )
+                compared_to_start_send = current_bytes_send - experiment_start_bytes_send
+
+                new_received = current_bytes_received - last_bytes_received
+                new_send = current_bytes_send - last_bytes_send
+
+                last_bytes_received = current_bytes_received
+                last_bytes_send = current_bytes_send
+
+
+                stage = #TODO handle STAGE file
 
                 writer.writerow(
                     [
+                        stage,
+                        # Time
                         current_time_unix,
                         time_since_experiment_start,
+                        # Disk
                         current_disk_utilization_percentage,
                         diff_used_mb_since_start,
+                        disk_stats.used,
+                        next_disk_space_used,
+                        # CPU & Memory
                         psutil.cpu_percent(),
                         psutil.virtual_memory().percent,
+                        # Network
+                        compared_to_start_received / 1024 / 1024,
+                        compared_to_start_send / 1024 / 1024,
+                        new_received / 1024 / 1024,
+                        new_send / 1024 / 1024,
                     ]
                 )
                 file.flush()
