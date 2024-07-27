@@ -6,6 +6,7 @@ SCRAPE_INTERVAL = 5  # In seconds
 
 PID_FILE_PREFIX = pathlib.Path("/tmp")
 EVALUATION_CSV_PREFIX = pathlib.Path("/tmp")
+STAGE_FILE_PREFIX = pathlib.Path("/tmp")
 
 
 def clear_file(file: pathlib.Path) -> None:
@@ -15,4 +16,11 @@ def clear_file(file: pathlib.Path) -> None:
 
 
 def kill_process(pid: int) -> None:
-    os.kill(pid, signal.SIGTERM)
+    # TODO rework
+    try:
+        # Attempt to send SIGTERM to the process
+        os.kill(pid, signal.SIGTERM)
+        print(f"Sent SIGTERM to process {pid}")
+    except ProcessLookupError:
+        # Handle case where pid does not exist
+        print(f"No process found with PID {pid}")

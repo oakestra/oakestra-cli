@@ -14,6 +14,7 @@ from oak_cli.evaluation.auxiliary import (
     EVALUATION_CSV_PREFIX,
     PID_FILE_PREFIX,
     SCRAPE_INTERVAL,
+    STAGE_FILE_PREFIX,
     clear_file,
     kill_process,
 )
@@ -22,12 +23,17 @@ from oak_cli.utils.logging import logger
 
 EVALUATION_CSV = EVALUATION_CSV_PREFIX / "machine_metrics.csv"
 PIDFILE = PID_FILE_PREFIX / "oak_cli_evaluation_cpu"
+STAGE_FILE = STAGE_FILE_PREFIX / "flops_stage"
 
 app = typer.Typer()
 
 
 @app.command("start")
 def start() -> None:
+    if not STAGE_FILE.exists():
+        with open(STAGE_FILE, "w") as file:
+            file.write("experiment start")
+
     # https://peps.python.org/pep-3143/
     with daemon.DaemonContext():
         experiment_start_time = time.time()
@@ -92,8 +98,8 @@ def start() -> None:
                 last_bytes_received = current_bytes_received
                 last_bytes_send = current_bytes_send
 
-
-                stage = #TODO handle STAGE file
+                with open(STAGE_FILE, "r") as stage_file:
+                    stage = stage_file.readline().replace("\n", "") or "experiment start"
 
                 writer.writerow(
                     [
@@ -148,6 +154,7 @@ def clean_up() -> None:
     - Kills any daemons.
     """
     clear_file(EVALUATION_CSV)
+    clear_file(STAGE_FILE)
     stop()
 
 
@@ -168,6 +175,7 @@ def stop() -> None:
         pid = int(file.readline())
     kill_process(pid)
     clear_file(PIDFILE)
+    clear_file(STAGE_FILE)
 
 
 @app.command("test")
