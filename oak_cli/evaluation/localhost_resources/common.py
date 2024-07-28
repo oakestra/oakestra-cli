@@ -11,7 +11,6 @@ class ExperimentCSVKeys(enum.Enum):
     TIME_SINCE_START = "Time Since Experiment Start"
     # Disk
     DISK_SPACE_CHANGE_SINCE_START = "Disk Space Change Since Start"
-    DISK_SPACE_USED = "Disk Space Used"
     DISK_SPACE_CHANGE_SINCE_LAST_MEASUREMENT = "Disk Space Change Since Last Measurement"
     # CPU & Memory
     CPU_USAGE = "CPU Usage"

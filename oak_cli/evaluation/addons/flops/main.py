@@ -67,7 +67,7 @@
 #         last_bytes_send = experiment_start_bytes_send
 
 #         with open(PIDFILE, mode="w") as file:
-#             # NOTE: This needs to be called in the daemon context, otherwise the PID will be wrong.
+#             # NOTE: This needs to be called in a daemon context, otherwise the PID will be wrong.
 #             file.write(str(os.getpid()))
 #         with open(EVALUATION_CSV, mode="a", newline="") as file:
 #             writer = csv.writer(file)

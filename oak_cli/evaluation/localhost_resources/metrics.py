@@ -16,10 +16,10 @@ def start_metrics_collector_daemon():
 
 
 def collect_metrics():
-    experiment_start_time = time.time()
+    time__experiment_start__s = time.time()
     # Disk
-    experiment_start_disk_space_used_mb = to_mb(psutil.disk_usage("/").used)
-    last_disk_space_used_mb = experiment_start_disk_space_used_mb
+    disk_space_used__experiment_start__mb = to_mb(psutil.disk_usage("/").used)
+    disk_space_used__last_measurement__mb = disk_space_used__experiment_start__mb
     # Network
     experiment_start_bytes_received = psutil.net_io_counters().bytes_recv
     experiment_start_bytes_send = psutil.net_io_counters().bytes_sent
@@ -34,14 +34,18 @@ def collect_metrics():
         # Write CSV Header
         writer.writerow([key.value for key in ExperimentCSVKeys])
         while True:
-            current_time_unix = time.time()
-            time_since_experiment_start = current_time_unix - experiment_start_time
+            time__current_unix__s = time.time()
+            time__since_experiment_start__s = time__current_unix__s - time__experiment_start__s
             # Disk
             disk_stats = psutil.disk_usage("/")
-            current_used_mb = to_mb(disk_stats.used)
-            diff_used_disk_mb_since_start = current_used_mb - experiment_start_disk_space_used_mb
-            next_disk_space_used = current_used_mb - last_disk_space_used_mb
-            last_disk_space_used_mb = current_used_mb
+            disk_space_used__current__mb = to_mb(disk_stats.used)
+            disk_space_used__diff_since_start__mb = (
+                disk_space_used__current__mb - disk_space_used__experiment_start__mb
+            )
+            disk_space_used__diff_since_last_measurement__mb = (
+                disk_space_used__current__mb - disk_space_used__last_measurement__mb
+            )
+            disk_space_used__last_measurement__mb = disk_space_used__current__mb
             # Network
             current_bytes_received = psutil.net_io_counters().bytes_recv
             current_bytes_send = psutil.net_io_counters().bytes_sent
@@ -58,12 +62,11 @@ def collect_metrics():
             writer.writerow(
                 [
                     # Time
-                    current_time_unix,
-                    time_since_experiment_start,
+                    time__current_unix__s,
+                    time__since_experiment_start__s,
                     # Disk
-                    diff_used_disk_mb_since_start,
-                    disk_stats.used,
-                    next_disk_space_used,
+                    disk_space_used__diff_since_start__mb,
+                    disk_space_used__diff_since_last_measurement__mb,
                     # CPU & Memory
                     psutil.cpu_percent(),
                     psutil.virtual_memory().percent,
