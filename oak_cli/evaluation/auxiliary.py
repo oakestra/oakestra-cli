@@ -1,5 +1,6 @@
 import os
 import pathlib
+import shutil
 import signal
 
 SCRAPE_INTERVAL = 5  # In seconds
@@ -18,6 +19,11 @@ def clear_file(file: pathlib.Path) -> None:
         pass  # No need to write anything; just opening in 'w' mode clears the file
 
 
+def clear_dir(dir: pathlib.Path) -> None:
+    if dir.exists():
+        shutil.rmtree(dir)
+
+
 def kill_process(pid: int) -> None:
     # TODO rework
     try:
@@ -27,3 +33,12 @@ def kill_process(pid: int) -> None:
     except ProcessLookupError:
         # Handle case where pid does not exist
         print(f"No process found with PID {pid}")
+
+
+def get_csv_file_path(csv_dir: pathlib.Path, experiment_id: int = 1) -> pathlib.Path:
+    return csv_dir / f"experiment_{experiment_id}.csv"
+
+
+import seaborn as sns
+
+sns.lineplot()

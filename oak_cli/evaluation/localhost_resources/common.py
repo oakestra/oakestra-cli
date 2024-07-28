@@ -1,11 +1,12 @@
 import enum
 import pathlib
 
-EVALUATION_CSV = pathlib.Path("/tmp/machine_metrics.csv")
-PIDFILE = pathlib.Path("/tmp/oak_cli_evaluation_cpu")
+CSV_DIR = pathlib.Path("/tmp/localhost_resources_metrics/")
+PIDFILE = pathlib.Path("/tmp/oak_cli_evaluation_pid_file")
 
 
 class ExperimentCSVKeys(enum.Enum):
+    EXPERIMENT_ID = "Experiment ID"
     # Time
     UNIX_TIMESTAMP = "UNIX Timestamp"
     TIME_SINCE_START = "Time Since Experiment Start"

@@ -1,17 +1,12 @@
 - include_role:
     name: prepare_oak_cli
 
-- include_tasks: clear_components.yml
-
-- name: Clean up before starting a new experiment
+- name: Clean up before starting the experiments
   command: "{{ venv_oak }} eval localhost clean"
 
-- name: Start evaluation (daemon)
-  command: "{{ venv_oak }} eval localhost start-manual-experiment"
+- name: "Handle all '{{ number_of_experiment_runs }}' experiments"
+  include_tasks: handle_experiment.yml
+  vars:
+    experiment_id: "{{ item }}"
+  with_sequence: start=1 end="{{ number_of_experiment_runs }}"
 
-- include_tasks: run_experiment.yml
-
-- name: Stop evaluation (daemon)
-  command: "{{ venv_oak }} eval localhost stop-experiment"
-
-- include_tasks: clear_components.yml
