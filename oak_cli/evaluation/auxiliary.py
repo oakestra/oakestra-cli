@@ -6,7 +6,10 @@ SCRAPE_INTERVAL = 5  # In seconds
 
 PID_FILE_PREFIX = pathlib.Path("/tmp")
 EVALUATION_CSV_PREFIX = pathlib.Path("/tmp")
-STAGE_FILE_PREFIX = pathlib.Path("/tmp")
+
+
+def to_mb(value: float) -> float:
+    return value / (1024 * 1024)
 
 
 def clear_file(file: pathlib.Path) -> None:

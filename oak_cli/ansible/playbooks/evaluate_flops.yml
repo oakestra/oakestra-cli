@@ -1,0 +1,4 @@
+- name: Evaluate the local host metrics.
+  hosts: localhost
+  roles:
+    - evaluate_localhost

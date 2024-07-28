@@ -2,3 +2,8 @@
     name: clear_root_orchestrator
   vars:
     clear_containerd_images: true
+
+- include_role:
+    name: clear_flops_addon
+  vars:
+    clear_image_registry: true

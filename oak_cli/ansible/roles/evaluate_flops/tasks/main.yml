@@ -4,14 +4,14 @@
 - include_tasks: clear_components.yml
 
 - name: Clean up before starting a new experiment
-  command: "{{ venv_oak }} eval localhost clean"
+  command: "{{ venv_oak }} eval machine clean"
 
 - name: Start evaluation (daemon)
-  command: "{{ venv_oak }} eval localhost start-manual-experiment"
+  command: "{{ venv_oak }} eval machine start"
 
 - include_tasks: run_experiment.yml
 
 - name: Stop evaluation (daemon)
-  command: "{{ venv_oak }} eval localhost stop-experiment"
+  command: "{{ venv_oak }} eval machine stop"
 
 - include_tasks: clear_components.yml
