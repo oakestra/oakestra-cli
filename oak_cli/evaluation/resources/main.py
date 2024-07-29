@@ -5,7 +5,7 @@ import typer
 
 from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook
 from oak_cli.evaluation.common import get_csv_file_path
-from oak_cli.evaluation.resources.common import CSV_DIR, PIDFILE
+from oak_cli.evaluation.resources.common import RESOURCES_CSV_DIR, RESOURCES_PIDFILE
 from oak_cli.utils.common import (
     CaptureOutputType,
     clear_dir,
@@ -32,7 +32,7 @@ def start_evaluation_cycle(number_of_evaluation_runs: int = 10) -> None:
 
 @app.command("show-csv")
 def show_csv(live: bool = False, evaluation_run_id: int = 1) -> None:
-    csv_file = get_csv_file_path(csv_dir=CSV_DIR, evaluation_run_id=evaluation_run_id)
+    csv_file = get_csv_file_path(csv_dir=RESOURCES_CSV_DIR, evaluation_run_id=evaluation_run_id)
     if not csv_file.exists():
         logger.warning(f"The file '{csv_file}' does not exist.")
         sys.exit(1)
@@ -50,7 +50,7 @@ def clean_up() -> None:
     - Clears the contents of the PID and CSV files.
     - Kills any daemons.
     """
-    clear_dir(CSV_DIR)
+    clear_dir(RESOURCES_CSV_DIR)
     stop_evaluation_run()
 
 
@@ -60,14 +60,14 @@ def stop_evaluation_run() -> None:
     - Kills its daemon
     - Clears its PID file contents
     """
-    if not PIDFILE.exists():
-        logger.debug(f"The file '{PIDFILE}' does not exist.")
+    if not RESOURCES_PIDFILE.exists():
+        logger.debug(f"The file '{RESOURCES_PIDFILE}' does not exist.")
         return
-    if PIDFILE.stat().st_size == 0:
-        logger.debug(f"The file '{PIDFILE}' is empty.")
+    if RESOURCES_PIDFILE.stat().st_size == 0:
+        logger.debug(f"The file '{RESOURCES_PIDFILE}' is empty.")
         return
 
-    with open(PIDFILE, "r") as file:
+    with open(RESOURCES_PIDFILE, "r") as file:
         pid = int(file.readline())
     kill_process(pid)
-    clear_file(PIDFILE)
+    clear_file(RESOURCES_PIDFILE)

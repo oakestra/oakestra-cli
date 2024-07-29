@@ -2,7 +2,6 @@ import ansible_runner
 import typer
 
 from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook
-from oak_cli.evaluation.resources.metrics import start_evaluation_run_daemon
 
 app = typer.Typer()
 

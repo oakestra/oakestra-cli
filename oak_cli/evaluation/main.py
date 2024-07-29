@@ -1,7 +1,7 @@
 import typer
 
 import oak_cli.evaluation.resources.main as resources
-from oak_cli.evaluation.resources.metrics import start_evaluation_run_daemon
+from oak_cli.evaluation.common import start_evaluation_run_daemon
 from oak_cli.utils.typer_augmentations import typer_help_text
 
 app = typer.Typer()

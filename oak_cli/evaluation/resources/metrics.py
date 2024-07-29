@@ -2,18 +2,15 @@ import csv
 import os
 import time
 
-import daemon
 import psutil
 
 from oak_cli.evaluation.common import SCRAPE_INTERVAL, get_csv_file_path
-from oak_cli.evaluation.resources.common import CSV_DIR, PIDFILE, EvaluationRunCSVKeys
+from oak_cli.evaluation.resources.common import (
+    RESOURCES_CSV_DIR,
+    RESOURCES_PIDFILE,
+    ResourcesCSVKeys,
+)
 from oak_cli.utils.common import to_mb
-
-
-def start_evaluation_run_daemon(evaluation_run_id: int = 1) -> None:
-    # https://peps.python.org/pep-3143/
-    with daemon.DaemonContext():
-        collect_metrics(evaluation_run_id)
 
 
 def collect_metrics(evaluation_run_id: int = 1) -> None:
@@ -27,14 +24,14 @@ def collect_metrics(evaluation_run_id: int = 1) -> None:
     last_bytes_received = evaluation_run_start_bytes_received
     last_bytes_send = evaluation_run_start_bytes_send
 
-    with open(PIDFILE, mode="w") as file:
+    with open(RESOURCES_PIDFILE, mode="w") as file:
         # NOTE: This needs to be called in the daemon context, otherwise the PID will be wrong.
         file.write(str(os.getpid()))
 
-    if not CSV_DIR.exists():
-        CSV_DIR.mkdir(parents=True)
+    if not RESOURCES_CSV_DIR.exists():
+        RESOURCES_CSV_DIR.mkdir(parents=True)
 
-    csv_file = get_csv_file_path(csv_dir=CSV_DIR, evaluation_run_id=evaluation_run_id)
+    csv_file = get_csv_file_path(csv_dir=RESOURCES_CSV_DIR, evaluation_run_id=evaluation_run_id)
 
     if not csv_file.exists():
         csv_file.touch()
@@ -46,7 +43,7 @@ def collect_metrics(evaluation_run_id: int = 1) -> None:
     ) as file:
         writer = csv.writer(file)
         # Write CSV Header
-        writer.writerow([key.value for key in EvaluationRunCSVKeys])
+        writer.writerow([key.value for key in ResourcesCSVKeys])
         while True:
             time__current_unix__s = time.time()
             time__since_evaluation_run_start__s = (
