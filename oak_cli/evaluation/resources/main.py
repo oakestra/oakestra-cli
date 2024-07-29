@@ -27,7 +27,6 @@ class ResourcesCSVKeys(CSVKeys):
 
 class ResourcesMetricManager(MetricsManager):
     scenario = EvaluationScenario.RESOURCES
-    csv_keys = ResourcesCSVKeys
 
     time__evaluation_run_start__s: float = time.time()
     # Disk
@@ -38,6 +37,9 @@ class ResourcesMetricManager(MetricsManager):
     evaluation_run_start_bytes_send: int = psutil.net_io_counters().bytes_sent
     last_bytes_received: int = evaluation_run_start_bytes_received
     last_bytes_send: int = evaluation_run_start_bytes_send
+
+    def create_csv_header(self) -> List[str]:
+        return [key.value for key in ResourcesCSVKeys]
 
     def create_csv_line_entries(self) -> List[Any]:
         time__current_unix__s = time.time()

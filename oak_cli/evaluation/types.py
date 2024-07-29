@@ -16,10 +16,10 @@ class CSVKeys(str, enum.Enum):
 
 class MetricsManager(BaseModel):
     scenario: ClassVar[EvaluationScenario]
-    csv_keys: ClassVar[CSVKeys.__class__]
 
+    @abstractmethod
     def create_csv_header(self) -> List[str]:
-        return [key.value for key in self.csv_keys]  # type: ignore
+        pass
 
     @abstractmethod
     def create_csv_line_entries() -> List[Any]:

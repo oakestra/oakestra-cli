@@ -43,10 +43,9 @@ def get_current_stage() -> EvaluationRunFLOpsProjectStage:
 
 class FLOpsMetricManager(ResourcesMetricManager):
     scenario = EvaluationScenario.FLOPS
-    csv_keys = FLOpsExclusiveCSVKeys
 
     def create_csv_header(self) -> List[str]:
-        return [key.value for key in self.csv_keys] + super().create_csv_header()
+        return [key.value for key in FLOpsExclusiveCSVKeys] + super().create_csv_header()
 
     def create_csv_line_entries(self) -> List[Any]:
         return [get_current_stage().value] + super().create_csv_line_entries()
