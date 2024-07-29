@@ -1,73 +1,87 @@
-import sys
+import time
+from typing import Any, List
 
-import ansible_runner
-import typer
+import psutil
 
-from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook
-from oak_cli.evaluation.common import get_csv_file_path
-from oak_cli.evaluation.resources.common import RESOURCES_CSV_DIR, RESOURCES_PIDFILE
-from oak_cli.utils.common import (
-    CaptureOutputType,
-    clear_dir,
-    clear_file,
-    kill_process,
-    run_in_shell,
-)
-from oak_cli.utils.logging import logger
-
-app = typer.Typer()
+from oak_cli.evaluation.types import CSVKeys, EvaluationScenario, MetricsManager
+from oak_cli.utils.common import to_mb
 
 
-@app.command("start-automatic-evaluation-cycle")
-def start_evaluation_cycle(number_of_evaluation_runs: int = 10) -> None:
-    # NOTE: This playbook requires ansible-galaxy dependencies to be installed on the machine.
-    # Installing it via a dedicated playbook does not work due to ansible-access right issues.
-    run_in_shell(shell_cmd="ansible-galaxy collection install community.docker")
-    ansible_runner.run(
-        project_dir=str(CLI_ANSIBLE_PATH),
-        playbook=CliPlaybook.EVALUATE_RESOURCES.get_path(),
-        extravars={"number_of_evaluation_runs": number_of_evaluation_runs},
-    )
+class ResourcesCSVKeys(CSVKeys):
+    EVALUATION_RUN_ID = "Evaluation-Run ID"
+    # Time
+    UNIX_TIMESTAMP = "UNIX Timestamp"
+    TIME_SINCE_START = "Time Since Evaluation-Run Start"
+    # Disk
+    DISK_SPACE_CHANGE_SINCE_START = "Disk Space Change Since Start"
+    DISK_SPACE_CHANGE_SINCE_LAST_MEASUREMENT = "Disk Space Change Since Last Measurement"
+    # CPU & Memory
+    CPU_USAGE = "CPU Usage"
+    MEMORY_USAGE = "Memory Usage"
+    # Network
+    NETWORK_RECEIVED_SINCE_START = "Network Received Since Start"
+    NETWORK_SENT_SINCE_START = "Network Sent Since Start"
+    NETWORK_RECEIVED_COMPARED_TO_LAST_MEASUREMENT = "Network Received Compared To Last Measurement"
+    NETWORK_SENT_COMPARED_TO_LAST_MEASUREMENT = "Network Sent Compared To Last Measurement"
 
 
-@app.command("show-csv")
-def show_csv(live: bool = False, evaluation_run_id: int = 1) -> None:
-    csv_file = get_csv_file_path(csv_dir=RESOURCES_CSV_DIR, evaluation_run_id=evaluation_run_id)
-    if not csv_file.exists():
-        logger.warning(f"The file '{csv_file}' does not exist.")
-        sys.exit(1)
+class ResourcesMetricManager(MetricsManager):
+    scenario = EvaluationScenario.RESOURCES
+    csv_keys = ResourcesCSVKeys
 
-    run_in_shell(
-        shell_cmd=f"tail -f {csv_file}" if live else f"cat {csv_file}",
-        capture_output_type=CaptureOutputType.TO_STDOUT,
-    )
+    time__evaluation_run_start__s: float = time.time()
+    # Disk
+    disk_space_used__evaluation_run_start__mb: float = to_mb(psutil.disk_usage("/").used)
+    disk_space_used__last_measurement__mb: float = disk_space_used__evaluation_run_start__mb
+    # Network
+    evaluation_run_start_bytes_received: int = psutil.net_io_counters().bytes_recv
+    evaluation_run_start_bytes_send: int = psutil.net_io_counters().bytes_sent
+    last_bytes_received: int = evaluation_run_start_bytes_received
+    last_bytes_send: int = evaluation_run_start_bytes_send
 
+    def create_csv_line_entries(self) -> List[Any]:
+        time__current_unix__s = time.time()
+        time__since_evaluation_run_start__s = (
+            time__current_unix__s - self.time__evaluation_run_start__s
+        )
+        # Disk
+        disk_stats = psutil.disk_usage("/")
+        disk_space_used__current__mb = to_mb(disk_stats.used)
+        disk_space_used__diff_since_start__mb = (
+            disk_space_used__current__mb - self.disk_space_used__evaluation_run_start__mb
+        )
+        disk_space_used__diff_since_last_measurement__mb = (
+            disk_space_used__current__mb - self.disk_space_used__last_measurement__mb
+        )
+        self.disk_space_used__last_measurement__mb = disk_space_used__current__mb
+        # Network
+        current_bytes_received = psutil.net_io_counters().bytes_recv
+        current_bytes_send = psutil.net_io_counters().bytes_sent
 
-@app.command("clean")
-def clean_up() -> None:
-    """Cleans any remaining artifacts to be ready for a fresh new evaluation-cycle.
-    This function should not be called between evaluation-runs.
-    - Clears the contents of the PID and CSV files.
-    - Kills any daemons.
-    """
-    clear_dir(RESOURCES_CSV_DIR)
-    stop_evaluation_run()
+        compared_to_start_received = (
+            current_bytes_received - self.evaluation_run_start_bytes_received
+        )
+        compared_to_start_send = current_bytes_send - self.evaluation_run_start_bytes_send
 
+        new_received = current_bytes_received - self.last_bytes_received
+        new_send = current_bytes_send - self.last_bytes_send
 
-@app.command("stop-evaluation-run")
-def stop_evaluation_run() -> None:
-    """Stops the current evaluation-run.
-    - Kills its daemon
-    - Clears its PID file contents
-    """
-    if not RESOURCES_PIDFILE.exists():
-        logger.debug(f"The file '{RESOURCES_PIDFILE}' does not exist.")
-        return
-    if RESOURCES_PIDFILE.stat().st_size == 0:
-        logger.debug(f"The file '{RESOURCES_PIDFILE}' is empty.")
-        return
+        self.last_bytes_received = current_bytes_received
+        self.last_bytes_send = current_bytes_send
 
-    with open(RESOURCES_PIDFILE, "r") as file:
-        pid = int(file.readline())
-    kill_process(pid)
-    clear_file(RESOURCES_PIDFILE)
+        return [
+            # Time
+            time__current_unix__s,
+            time__since_evaluation_run_start__s,
+            # Disk
+            disk_space_used__diff_since_start__mb,
+            disk_space_used__diff_since_last_measurement__mb,
+            # CPU & Memory
+            psutil.cpu_percent(),
+            psutil.virtual_memory().percent,
+            # Network
+            to_mb(compared_to_start_received),
+            to_mb(compared_to_start_send),
+            to_mb(new_received),
+            to_mb(new_send),
+        ]

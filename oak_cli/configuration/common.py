@@ -5,7 +5,7 @@ import pathlib
 import sys
 from typing import Any
 
-from oak_cli.configuration.keys.enums import ConfigKey, ConfigurableConfigKey, InternalConfigKey
+from oak_cli.configuration.keys.enums import ConfigKey, InternalConfigKey
 from oak_cli.utils.logging import logger
 
 OAK_CLI_CONFIG_PATH = pathlib.Path.home() / ".oak_cli_config"
