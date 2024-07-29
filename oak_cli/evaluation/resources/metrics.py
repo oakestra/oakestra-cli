@@ -5,8 +5,9 @@ import time
 import daemon
 import psutil
 
-from oak_cli.evaluation.auxiliary import SCRAPE_INTERVAL, get_csv_file_path, to_mb
+from oak_cli.evaluation.common import SCRAPE_INTERVAL, get_csv_file_path
 from oak_cli.evaluation.resources.common import CSV_DIR, PIDFILE, EvaluationRunCSVKeys
+from oak_cli.utils.common import to_mb
 
 
 def start_evaluation_run_daemon(evaluation_run_id: int = 1) -> None:
