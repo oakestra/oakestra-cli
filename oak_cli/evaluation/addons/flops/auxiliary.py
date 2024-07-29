@@ -4,8 +4,8 @@ import pathlib
 STAGE_FILE = pathlib.Path("/tmp/flops_stage")
 
 
-class FLOpsExperimentProjectStage(enum.Enum):
-    EXPERIMENT_START = "Experiment Start"
+class EvaluationRunFLOpsProjectStage(enum.Enum):
+    EVALUATION_RUN_START = "Evaluation-Run Start"
     PROJECT_START = "Project Start"
     FL_ACTORS_IMAGE_BUIL = "FL-Actors Image Build"
     FL_TRAINING = "FL Training"
@@ -14,11 +14,11 @@ class FLOpsExperimentProjectStage(enum.Enum):
     DEPLOY_TRAINED_MODEL = "Deploy Trained-Model"
 
 
-class FLOpsExperimentCSVKeys(enum.Enum):
+class EvaluationRunFLOpsCSVKeys(enum.Enum):
     STAGE = "Stage"
     # Time
     UNIX_TIMESTAMP = "UNIX Timestamp"
-    TIME_SINCE_START = "Time Since Experiment Start"
+    TIME_SINCE_START = "Time Since Evaluation-Run Start"
     # Disk
     DISK_SPACE_CHANGE_SINCE_START = "Disk Space Change Since Start"
     DISK_SPACE_USED = "Disk Space Used"
@@ -33,15 +33,15 @@ class FLOpsExperimentCSVKeys(enum.Enum):
     NETWORK_SENT_COMPARED_TO_LAST_MEASUREMENT = "Network Sent Compared To Last Measurement"
 
 
-def handle_stage_file_at_experiment_start() -> None:
+def handle_stage_file_at_evaluation_run_start() -> None:
     if not STAGE_FILE.exists():
         with open(STAGE_FILE, "w") as stage_file:
-            stage_file.write(FLOpsExperimentProjectStage.EXPERIMENT_START.value)
+            stage_file.write(EvaluationRunFLOpsProjectStage.EVALUATION_RUN_START.value)
 
 
-def get_current_stage() -> FLOpsExperimentProjectStage:
+def get_current_stage() -> EvaluationRunFLOpsProjectStage:
     with open(STAGE_FILE, "r") as stage_file:
         return (
-            FLOpsExperimentProjectStage(stage_file.readline().replace("\n", ""))
-            or FLOpsExperimentProjectStage.EXPERIMENT_START
+            EvaluationRunFLOpsProjectStage(stage_file.readline().replace("\n", ""))
+            or EvaluationRunFLOpsProjectStage.EVALUATION_RUN_START
         )

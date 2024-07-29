@@ -3,15 +3,15 @@
 
 - include_tasks: clear_components.yml
 
-- name: Clean up before starting a new experiment
+- name: Clean up before starting a new evaluation-cycle
   command: "{{ venv_oak }} eval machine clean"
 
-- name: Start evaluation (daemon)
+- name: Start evaluation-run (daemon)
   command: "{{ venv_oak }} eval machine start"
 
-- include_tasks: run_experiment.yml
+- include_tasks: perform_evaluation_run.yml
 
-- name: Stop evaluation (daemon)
+- name: Stop evaluation-run (daemon)
   command: "{{ venv_oak }} eval machine stop"
 
 - include_tasks: clear_components.yml

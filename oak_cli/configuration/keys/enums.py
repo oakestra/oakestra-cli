@@ -24,8 +24,6 @@ class ConfigurableConfigKey(ConfigKey, enum.Enum):
     CLUSTER_NAME = "cluster_name"
     CLUSTER_LOCATION = "cluster_location"
 
-    EVALUATION_DEBUG = "evaluation_debug"
-
     def is_path(self) -> bool:
         return self.value.endswith("_path")
 
