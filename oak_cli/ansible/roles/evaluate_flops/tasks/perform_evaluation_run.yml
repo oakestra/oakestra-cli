@@ -6,7 +6,7 @@
   vars:
     stage_name: "Project Start"
 - name: Trigger FLOps Project
-  command: "{{ venv_oak }} addon flops p mnist_sklearn_small"
+  command: "{{ venv_oak }} addon flops p mnist_sklearn_large"
 - include_tasks: wait_for_flops_project_stage.yml
   vars:
     stage_indicator: "Create new FLOpsProject application"
