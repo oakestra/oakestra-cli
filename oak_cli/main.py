@@ -68,7 +68,7 @@ if check_if_local_machine_has_required_purposes(
 
     app.add_typer(
         typer_instance=oak_evaluation.app,
-        name="evaluation",
+        name="evaluate",
         help=typer_help_text("evaluation"),
     )
 

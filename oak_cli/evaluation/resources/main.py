@@ -5,17 +5,11 @@ import typer
 
 from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook
 from oak_cli.evaluation.auxiliary import clear_dir, clear_file, get_csv_file_path, kill_process
-from oak_cli.evaluation.localhost_resources.common import CSV_DIR, PIDFILE
-from oak_cli.evaluation.localhost_resources.metrics import start_evaluation_run_daemon
+from oak_cli.evaluation.resources.common import CSV_DIR, PIDFILE
 from oak_cli.utils.common import CaptureOutputType, run_in_shell
 from oak_cli.utils.logging import logger
 
 app = typer.Typer()
-
-
-@app.command("start-manual-evaluation-run")
-def start_evaluation_run(evaluation_run_id: int = 1) -> None:
-    start_evaluation_run_daemon(evaluation_run_id)
 
 
 @app.command("start-automatic-evaluation-cycle")
@@ -25,7 +19,7 @@ def start_evaluation_cycle(number_of_evaluation_runs: int = 10) -> None:
     run_in_shell(shell_cmd="ansible-galaxy collection install community.docker")
     ansible_runner.run(
         project_dir=str(CLI_ANSIBLE_PATH),
-        playbook=CliPlaybook.EVALUATE_LOCALHOST.get_path(),
+        playbook=CliPlaybook.EVALUATE_RESOURCES.get_path(),
         extravars={"number_of_evaluation_runs": number_of_evaluation_runs},
     )
 

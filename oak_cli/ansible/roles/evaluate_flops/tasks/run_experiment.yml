@@ -9,13 +9,13 @@
 - name: Trigger FLOps Project
   command: "{{ venv_oak }} addon flops p mnist_sklearn_small"
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Create new FLOpsProject application"
 
 
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Deploy FLActorsImageBuilder"
 - include_role:
@@ -23,13 +23,13 @@
   vars:
     stage_name: "FL-Actors Image Build"
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Undeploy FLActorsImageBuilder"
 
 
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Start handling FL training processes"
 - include_role:
@@ -37,13 +37,13 @@
   vars:
     stage_name: "FL Training"
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Aggregator successfully finished training"
 
 
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Start handling FL post training"
 - include_role:
@@ -53,7 +53,7 @@
 
 
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Deploy TrainedModelImageBuilder"
 - include_role:
@@ -61,13 +61,13 @@
   vars:
     stage_name: "Trained-Model Image Build"
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Undeploy TrainedModelImageBuilder"
 
 
 - include_role:
-    name: wait_for_flops_experiment_stage
+    name: wait_for_flops_project_stage
   vars:
     stage_indicator: "Deploy TrainedModel"
 - include_role:

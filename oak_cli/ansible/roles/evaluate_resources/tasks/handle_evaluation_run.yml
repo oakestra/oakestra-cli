@@ -1,11 +1,11 @@
 - include_tasks: clear_components.yml
 
 - name: Start evaluation-run (daemon)
-  command: "{{ venv_oak }} evaluation localhost start-manual-evaluation-run  --evaluation-run-id {{ evaluation_run_id }}"
+  command: "{{ venv_oak }} evaluate start-manual-evaluation-run  --evaluation-run-id {{ evaluation_run_id }}"
 
 - include_tasks: perform_evaluation_run.yml
 
 - name: Stop evaluation-run (daemon)
-  command: "{{ venv_oak }} evaluation localhost stop-evaluation-run"
+  command: "{{ venv_oak }} evaluate resources stop-evaluation-run"
 
 - include_tasks: clear_components.yml

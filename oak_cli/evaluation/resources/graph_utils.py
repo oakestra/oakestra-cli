@@ -1,4 +1,4 @@
-from oak_cli.evaluation.localhost_resources.common import EvaluationRunCSVKeys
+from oak_cli.evaluation.resources.common import EvaluationRunCSVKeys
 
 CPU_AND_MEMORY_KEYS = [
     EvaluationRunCSVKeys.CPU_USAGE.value,
