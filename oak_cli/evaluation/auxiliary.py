@@ -37,8 +37,3 @@ def kill_process(pid: int) -> None:
 
 def get_csv_file_path(csv_dir: pathlib.Path, experiment_id: int = 1) -> pathlib.Path:
     return csv_dir / f"experiment_{experiment_id}.csv"
-
-
-import seaborn as sns
-
-sns.lineplot()
