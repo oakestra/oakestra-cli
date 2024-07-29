@@ -18,6 +18,20 @@ class EvaluationRunFLOpsProjectStage(enum.Enum):
     DEPLOY_TRAINED_MODEL = "Deploy Trained-Model"
 
 
+# NOTE: One could also turn the enum values above into tuples.
+# E.g. PROJECT_START = "Project Start", 1
+# To avoid confusion we use a dedicated map instead.
+FLOPS_STAGES_INDEX_MAP = {
+    EvaluationRunFLOpsProjectStage.EVALUATION_RUN_START: 0,
+    EvaluationRunFLOpsProjectStage.PROJECT_START: 1,
+    EvaluationRunFLOpsProjectStage.FL_ACTORS_IMAGE_BUIL: 2,
+    EvaluationRunFLOpsProjectStage.FL_TRAINING: 3,
+    EvaluationRunFLOpsProjectStage.START_POST_TRAINING_STEPS: 4,
+    EvaluationRunFLOpsProjectStage.TRAINED_MODEL_IMAGE_BUILD: 5,
+    EvaluationRunFLOpsProjectStage.DEPLOY_TRAINED_MODEL: 6,
+}
+
+
 class FLOpsExclusiveCSVKeys(CSVKeys):
     """NOTE: The FLOPs Evaluation CSV also includes the same CSV keys as the ResourcesCSV
     (AFAIK) it is not trivially possible to extend Enums.
