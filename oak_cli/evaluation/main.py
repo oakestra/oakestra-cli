@@ -2,14 +2,14 @@ import sys
 
 import ansible_runner
 import typer
-from icecream import ic
 
 from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook
+from oak_cli.evaluation.addons.flops.main import STAGE_FILE
 from oak_cli.evaluation.common import (
     get_csv_dir_for_scenario,
     get_csv_file_path,
     get_pid_file_for_scenario,
-    start_evaluation_run_daemon,
+    start_evaluation_process,
 )
 from oak_cli.evaluation.types import EvaluationScenario
 from oak_cli.utils.common import (
@@ -32,7 +32,7 @@ def start_evaluation_run(
     scenario: EvaluationScenario = EvaluationScenario.RESOURCES.value,  # type: ignore
     evaluation_run_id: int = 1,
 ) -> None:
-    start_evaluation_run_daemon(
+    start_evaluation_process(
         # NOTE: This strange enum handing is due to current Typer limitations.
         scenario=EvaluationScenario(scenario),
         evaluation_run_id=evaluation_run_id,
@@ -48,6 +48,7 @@ def start_evaluation_cycle(
     number_of_evaluation_runs: int = 10,
 ) -> None:
     scenario = EvaluationScenario(scenario)
+    extra_vars = {"number_of_evaluation_runs": number_of_evaluation_runs}
     match scenario:
         case EvaluationScenario.RESOURCES:
             # NOTE:
@@ -58,10 +59,14 @@ def start_evaluation_cycle(
             ansible_runner.run(
                 project_dir=str(CLI_ANSIBLE_PATH),
                 playbook=CliPlaybook.EVALUATE_RESOURCES.get_path(),
-                extravars={"number_of_evaluation_runs": number_of_evaluation_runs},
+                extravars=extra_vars,
             )
         case EvaluationScenario.FLOPS:
-            pass
+            ansible_runner.run(
+                project_dir=str(CLI_ANSIBLE_PATH),
+                playbook=CliPlaybook.EVALUATE_FLOPS.get_path(),
+                extravars=extra_vars,
+            )
 
 
 @app.command("show-csv")
@@ -95,6 +100,8 @@ def clean_up(
     """
     scenario = EvaluationScenario(scenario)
     clear_dir(get_csv_dir_for_scenario(scenario))
+    if scenario == EvaluationScenario.FLOPS:
+        clear_file(STAGE_FILE)
     stop_evaluation_run(scenario=scenario)
 
 
@@ -119,3 +126,6 @@ def stop_evaluation_run(
         pid = int(file.readline())
     kill_process(pid)
     clear_file(pidfile)
+
+    if scenario == EvaluationScenario.FLOPS:
+        clear_file(STAGE_FILE)

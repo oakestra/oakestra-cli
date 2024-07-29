@@ -1,7 +1,0 @@
-argument_specs:
-  main:
-    options:
-      stage_name:
-        type: str
-        required: true
-        # TODO description: "Specific log keyword(s) that indicate that a certain stage has been reach (FLOps Project, e.g. The Builder is ready)"

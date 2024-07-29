@@ -5,6 +5,10 @@ import time
 
 import daemon
 
+from oak_cli.evaluation.addons.flops.main import (
+    FLOpsMetricManager,
+    handle_stage_file_at_evaluation_run_start,
+)
 from oak_cli.evaluation.resources.main import ResourcesMetricManager
 from oak_cli.evaluation.types import EvaluationScenario, MetricsManager
 
@@ -16,8 +20,7 @@ def get_metrics_manager_for_scenario(scenario: EvaluationScenario) -> MetricsMan
         case EvaluationScenario.RESOURCES:
             return ResourcesMetricManager()
         case EvaluationScenario.FLOPS:
-            # TODO
-            pass
+            return FLOpsMetricManager()
 
 
 def get_pid_file_for_scenario(scenario: EvaluationScenario) -> pathlib.Path:
@@ -42,10 +45,13 @@ def get_csv_file_path(csv_dir: pathlib.Path, evaluation_run_id: int = 1) -> path
     return csv_dir / f"evaluation_run_{evaluation_run_id}.csv"
 
 
-def start_evaluation_run_daemon(
+def start_evaluation_process(
     scenario: EvaluationScenario,
     evaluation_run_id: int,
 ) -> None:
+    if scenario == EvaluationScenario.FLOPS:
+        handle_stage_file_at_evaluation_run_start()
+
     # https://peps.python.org/pep-3143/
     with daemon.DaemonContext():
         metrics_manager = get_metrics_manager_for_scenario(scenario)
@@ -53,7 +59,6 @@ def start_evaluation_run_daemon(
         csv_dir = get_csv_dir_for_scenario(scenario)
 
         with open(pid_file, mode="w") as file:
-            # NOTE: This needs to be called in the daemon context, otherwise the PID will be wrong.
             file.write(str(os.getpid()))
 
         if not csv_dir.exists():

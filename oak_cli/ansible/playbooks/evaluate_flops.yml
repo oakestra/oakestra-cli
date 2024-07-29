@@ -1,4 +1,4 @@
-- name: Evaluate the local host metrics.
+- name: Evaluate FLOps.
   hosts: localhost
   roles:
-    - evaluate_resources
+    - evaluate_flops
