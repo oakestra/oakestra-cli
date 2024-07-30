@@ -7,7 +7,7 @@ import daemon
 
 from oak_cli.evaluation.addons.flops.main import (
     FLOpsMetricManager,
-    handle_stage_file_at_evaluation_run_start,
+    handle_flops_files_at_evaluation_run_start,
 )
 from oak_cli.evaluation.resources.main import ResourcesMetricManager
 from oak_cli.evaluation.types import EvaluationScenario, MetricsManager
@@ -50,7 +50,7 @@ def start_evaluation_process(
     evaluation_run_id: int,
 ) -> None:
     if scenario == EvaluationScenario.FLOPS:
-        handle_stage_file_at_evaluation_run_start()
+        handle_flops_files_at_evaluation_run_start()
 
     # https://peps.python.org/pep-3143/
     with daemon.DaemonContext():

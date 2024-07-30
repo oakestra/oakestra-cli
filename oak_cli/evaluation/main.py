@@ -4,7 +4,7 @@ import ansible_runner
 import typer
 
 from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook
-from oak_cli.evaluation.addons.flops.main import STAGE_FILE
+from oak_cli.evaluation.addons.flops.main import STAGE_FILE, TRAINED_MODEL_PERFORMANCE_CSV
 from oak_cli.evaluation.common import (
     get_csv_dir_for_scenario,
     get_csv_file_path,
@@ -102,6 +102,7 @@ def clean_up(
     clear_dir(get_csv_dir_for_scenario(scenario))
     if scenario == EvaluationScenario.FLOPS:
         clear_file(STAGE_FILE)
+        clear_file(TRAINED_MODEL_PERFORMANCE_CSV)
     stop_evaluation_run(scenario=scenario)
 
 

@@ -33,6 +33,7 @@
   vars:
     stage_indicator: "Aggregator successfully finished training"
 
+- include_tasks: record_trained_model_metrics.yml
 
 - include_tasks: wait_for_flops_project_stage.yml
   vars:
