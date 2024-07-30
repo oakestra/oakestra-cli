@@ -12,9 +12,12 @@ TRAINED_MODEL_PERFORMANCE_CSV = pathlib.Path("/tmp/flops_trained_models.csv")
 class EvaluationRunFLOpsProjectStage(enum.Enum):
     EVALUATION_RUN_START = "Evaluation-Run Start"
     PROJECT_START = "Project Start"
-    FL_ACTORS_IMAGE_BUIL = "FL-Actors Image Build"
+    FL_ACTORS_IMAGE_BUILDER_DEPLOYMENT = "FL-Actors Image-Builder Deployment"
+    FL_ACTORS_IMAGE_BUILD = "FL-Actors Image Build"
+    AGGREGATOR_DEPLOYMENT = "Aggregator Deployment"
     FL_TRAINING = "FL Training"
     START_POST_TRAINING_STEPS = "Start Post-Training Steps"
+    TRAINED_MODEL_IMAGE_BUILDER_DEPLOYMENT = "Trained-Model Image-Builder Deployment"
     TRAINED_MODEL_IMAGE_BUILD = "Trained-Model Image Build"
     DEPLOY_TRAINED_MODEL = "Deploy Trained-Model"
 
@@ -25,11 +28,14 @@ class EvaluationRunFLOpsProjectStage(enum.Enum):
 FLOPS_STAGES_INDEX_MAP = {
     EvaluationRunFLOpsProjectStage.EVALUATION_RUN_START: 0,
     EvaluationRunFLOpsProjectStage.PROJECT_START: 1,
-    EvaluationRunFLOpsProjectStage.FL_ACTORS_IMAGE_BUIL: 2,
-    EvaluationRunFLOpsProjectStage.FL_TRAINING: 3,
-    EvaluationRunFLOpsProjectStage.START_POST_TRAINING_STEPS: 4,
-    EvaluationRunFLOpsProjectStage.TRAINED_MODEL_IMAGE_BUILD: 5,
-    EvaluationRunFLOpsProjectStage.DEPLOY_TRAINED_MODEL: 6,
+    EvaluationRunFLOpsProjectStage.FL_ACTORS_IMAGE_BUILDER_DEPLOYMENT: 2,
+    EvaluationRunFLOpsProjectStage.FL_ACTORS_IMAGE_BUILD: 3,
+    EvaluationRunFLOpsProjectStage.AGGREGATOR_DEPLOYMENT: 4,
+    EvaluationRunFLOpsProjectStage.FL_TRAINING: 5,
+    EvaluationRunFLOpsProjectStage.START_POST_TRAINING_STEPS: 6,
+    EvaluationRunFLOpsProjectStage.TRAINED_MODEL_IMAGE_BUILDER_DEPLOYMENT: 7,
+    EvaluationRunFLOpsProjectStage.TRAINED_MODEL_IMAGE_BUILD: 8,
+    EvaluationRunFLOpsProjectStage.DEPLOY_TRAINED_MODEL: 9,
 }
 
 

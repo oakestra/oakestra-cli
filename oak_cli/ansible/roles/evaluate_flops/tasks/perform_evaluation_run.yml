@@ -17,6 +17,12 @@
     stage_indicator: "Deploy FLActorsImageBuilder"
 - include_tasks: handle_new_stage.yml
   vars:
+    stage_name: "FL-Actors Image-Builder Deployment"
+- include_tasks: wait_for_flops_project_stage.yml
+  vars:
+    stage_indicator: "FL_ACTORS_IMAGE_BUILDER_STARTED"
+- include_tasks: handle_new_stage.yml
+  vars:
     stage_name: "FL-Actors Image Build"
 - include_tasks: wait_for_flops_project_stage.yml
   vars:
@@ -26,6 +32,12 @@
 - include_tasks: wait_for_flops_project_stage.yml
   vars:
     stage_indicator: "Start handling FL training processes"
+- include_tasks: handle_new_stage.yml
+  vars:
+    stage_name: "Aggregator Deployment"
+- include_tasks: wait_for_flops_project_stage.yml
+  vars:
+    stage_indicator: "AGGREGATOR_STARTED"
 - include_tasks: handle_new_stage.yml
   vars:
     stage_name: "FL Training"
@@ -46,6 +58,12 @@
 - include_tasks: wait_for_flops_project_stage.yml
   vars:
     stage_indicator: "Deploy TrainedModelImageBuilder"
+- include_tasks: handle_new_stage.yml
+  vars:
+    stage_name: "Trained-Model Image-Builder Deployment"
+- include_tasks: wait_for_flops_project_stage.yml
+  vars:
+    stage_indicator: "TRAINED_MODEL_IMAGE_BUILDER_STARTED"
 - include_tasks: handle_new_stage.yml
   vars:
     stage_name: "Trained-Model Image Build"

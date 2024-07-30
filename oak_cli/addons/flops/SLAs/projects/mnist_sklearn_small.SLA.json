@@ -3,7 +3,7 @@
     "customerID": "Admin",
     "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_mnist_sklearn",
     "ml_model_flavor": "sklearn",
-    "use_devel_base_images": true,
+    "use_devel_base_images": false,
     "supported_platforms": ["linux/amd64"],
     "training_configuration": {
         "mode": "classic",
