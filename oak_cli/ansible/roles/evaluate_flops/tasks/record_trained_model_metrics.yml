@@ -2,42 +2,13 @@
 - shell: docker logs flops_manager 2>&1 | grep "flops_manager/aggregator/success" | awk -F"'" '{print $2}'
   register: log_output
 
-- debug: var=log_output.stdout
-
 - name: Extract JSON string from log
   set_fact:
     json_string: "{{ log_output.stdout | from_json }}"
   
-- debug: var=json_string.accuracy
-- debug: var=json_string.loss
-
-# - set_fact:
-#     cleaned_string: "{{ relevant_string | trim | replace('hi', '') }}"
-
-# - debug: var=cleaned_string
-
-# - set_fact:
-#     accuracy: "{{ relevant_string.split('accuracy')[1] }}"
-
-# - debug: var=accuracy
-# - set_fact:
-#     #proper_json: "{{ json_string | regex_replace('^\"', '') | regex_replace('\"]$', '') | from_json }}"
-#     #proper_json: "{{ json_string | regex_replace('^\"', '') | regex_replace('\"]$', '') }}"
-#     #cleaned_json_string: "{{ json_string | regex_replace('^\\\'', '') | regex_replace('\\\''$", '') | regex_replace('\\"', '\\\"') | regex_replace('\\\\', '\\\\') }}"
-
-
-# - debug: var=cleaned_json_string
-
-
-# - set_fact:
-#     json_json: "{{ json_string | from_json }}"
-
-#- debug: var=json_string
-
-# - name: Parse JSON and set accuracy and loss
-#   set_fact:
-#     accuracy: "{{ (cleaned_json_string | from_json).accuracy }}"
-#     loss: "{{ (cleaned_json_string | from_json).loss }}"
-
-# - debug: var=accuracy
-# - debug: var=loss
+- name: Append new entry to CSV file
+  ansible.builtin.lineinfile:
+    path: /tmp/flops_trained_models.csv
+    line: "{{ item }},{{ json_string.accuracy }},{{ json_string.loss }}"
+    state: present
+    create: yes

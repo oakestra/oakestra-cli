@@ -42,13 +42,16 @@ class FLOpsExclusiveCSVKeys(CSVKeys):
     FLOPS_PROJECT_STAGE = "FLOps Project Stage"
 
 
+class FLOpsTrainedModelCSVKeys(CSVKeys):
+    EVALUATION_RUN = "Evaluation-Run"
+    ACCURACY = "Accuracy"
+    LOSS = "Loss"
+
+
 def handle_flops_files_at_evaluation_run_start() -> None:
     if not STAGE_FILE.exists():
         with open(STAGE_FILE, "w") as stage_file:
             stage_file.write(EvaluationRunFLOpsProjectStage.EVALUATION_RUN_START.value)
-
-    if not TRAINED_MODEL_PERFORMANCE_CSV.exists():
-        TRAINED_MODEL_PERFORMANCE_CSV.touch()
 
 
 def get_current_stage() -> EvaluationRunFLOpsProjectStage:
