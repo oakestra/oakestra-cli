@@ -1,10 +1,5 @@
 from oak_cli.evaluation.resources.main import ResourcesCSVKeys
 
-CPU_AND_MEMORY_KEYS = [
-    ResourcesCSVKeys.CPU_USAGE.value,
-    ResourcesCSVKeys.MEMORY_USAGE.value,
-]
-
 
 def get_evaluation_run_duration_label(use_minutes: bool = True) -> str:
     return "Evaluation-Run Duration " + "(minutes)" if use_minutes else "(seconds)"
