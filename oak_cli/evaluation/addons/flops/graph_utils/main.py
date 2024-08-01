@@ -9,37 +9,8 @@ from pydantic import BaseModel
 from oak_cli.evaluation.addons.flops.main import (
     EvaluationRunFLOpsProjectStage,
     FLOpsExclusiveCSVKeys,
-    FLOpsTrainedModelCSVKeys,
 )
-from oak_cli.evaluation.graph_utils import PALETTE, adjust_xticks, get_evaluation_run_duration_label
-from oak_cli.evaluation.resources.main import ResourcesCSVKeys
-
-TIME_START_KEY = ResourcesCSVKeys.TIME_SINCE_START.value
-RUN_ID_KEY = ResourcesCSVKeys.EVALUATION_RUN_ID.value
-STAGE_KEY = FLOpsExclusiveCSVKeys.FLOPS_PROJECT_STAGE.value
-NUMBER_OF_TOTAL_STAGES = len(list(EvaluationRunFLOpsProjectStage))
-
-
-CPU_KEY = ResourcesCSVKeys.CPU_USAGE.value
-MEMORY_KEY = ResourcesCSVKeys.MEMORY_USAGE.value
-
-
-DISK_START_KEY = ResourcesCSVKeys.DISK_SPACE_CHANGE_SINCE_START.value
-DISK_LAST_KEY = ResourcesCSVKeys.DISK_SPACE_CHANGE_SINCE_LAST_MEASUREMENT.value
-
-
-NETWORK_START_RECEIVED_KEY = ResourcesCSVKeys.NETWORK_RECEIVED_SINCE_START.value
-NETWORK_START_SENT_KEY = ResourcesCSVKeys.NETWORK_SENT_SINCE_START.value
-NETWORK_START_KEYS = [NETWORK_START_RECEIVED_KEY, NETWORK_START_SENT_KEY]
-
-NETWORK_LAST_RECEIVED_KEY = ResourcesCSVKeys.NETWORK_RECEIVED_COMPARED_TO_LAST_MEASUREMENT.value
-NETWORK_LAST_SENT_KEY = ResourcesCSVKeys.NETWORK_SENT_COMPARED_TO_LAST_MEASUREMENT.value
-NETWORK_LAST_KEYS = [NETWORK_LAST_RECEIVED_KEY, NETWORK_LAST_SENT_KEY]
-
-
-ACCURACY_KEY = FLOpsTrainedModelCSVKeys.ACCURACY.value
-LOSS_KEY = FLOpsTrainedModelCSVKeys.LOSS.value
-TRAINED_MODEL_RUN_ID_KEY = FLOpsTrainedModelCSVKeys.EVALUATION_RUN.value
+from oak_cli.evaluation.graph_utils import adjust_xticks, get_evaluation_run_duration_label
 
 
 class _Stage_Info(BaseModel):
@@ -66,10 +37,18 @@ def _draw_stages(
 
         if last_stage != current_stage:
             last_stage = current_stage
-            plt.axvline(x=index, color="grey", linestyle="--", ymax=100)
+            plt.axvline(
+                x=index,  # type: ignore
+                color="grey",
+                linestyle="--",
+                ymax=100,
+            )
             _last_stage = stages[-1]
-            _last_stage.end = float(index)
-            next_stage = _Stage_Info(start=index, stage=current_stage)
+            _last_stage.end = float(index)  # type: ignore
+            next_stage = _Stage_Info(
+                start=index,  # type: ignore
+                stage=current_stage,
+            )
             stages.append(next_stage)
 
     stages[-1].end = max(data.index)
@@ -162,82 +141,3 @@ def draw_graph(
         )
 
     plt.show()
-
-
-def draw_line_graph_with_all_runs(
-    data: pd.DataFrame,
-    y_label: str,
-    key: str,
-    title: str = "All Evaluation Runs - Duration Diversity",
-) -> None:
-    draw_graph(
-        title=title,
-        y_label=y_label,
-        size=(15, 8),
-        data=data,
-        plot_functions=[
-            lambda: sns.lineplot(
-                data=data,
-                x=TIME_START_KEY,
-                y=key,
-                hue=RUN_ID_KEY,
-            )
-        ],
-        use_percentage_limits=True,
-    )
-
-
-def draw_box_violin_plot_for_each_stage(
-    data: pd.DataFrame,
-    y_label: str,
-    key: str,
-    title: Optional[str] = "",
-    y_lim: Optional[Tuple[float, float]] = None,
-) -> None:
-    draw_graph(
-        title=title,
-        y_label=y_label,
-        size=(25, 10),
-        data=data,
-        plot_functions=[
-            lambda: sns.violinplot(
-                x=STAGE_KEY,
-                y=key,
-                data=data,
-                hue=STAGE_KEY,
-                alpha=0.3,
-                palette=PALETTE,
-            ),
-            lambda: sns.boxplot(
-                x=STAGE_KEY,
-                y=key,
-                data=data,
-                hue=STAGE_KEY,
-                palette=PALETTE,
-            ),
-        ],
-        y_lim=y_lim,
-    )
-
-
-def draw_trained_model_comparison_graph(
-    data: pd.DataFrame,
-    key: str,
-    y_label: str,
-) -> None:
-    _data = data.copy()
-    _data[key] = _data[key] * 100
-    draw_graph(
-        data=_data,
-        y_label=y_label,
-        plot_functions=[
-            lambda: sns.barplot(
-                x=TRAINED_MODEL_RUN_ID_KEY,
-                y=key,
-                data=_data,
-                palette=PALETTE,
-                hue=TRAINED_MODEL_RUN_ID_KEY,
-                legend=False,
-            )
-        ],
-    )
