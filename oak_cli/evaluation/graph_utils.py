@@ -1,4 +1,4 @@
-from oak_cli.evaluation.resources.main import ResourcesCSVKeys
+PALETTE = "rainbow"
 
 
 def get_evaluation_run_duration_label(use_minutes: bool = True) -> str:
