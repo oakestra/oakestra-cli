@@ -18,6 +18,9 @@ def draw_line_graph_with_all_runs(
     y_label: str,
     key: str,
     title: str = "All Evaluation Runs - Duration Diversity",
+    font_size_multiplier: float = 1,
+    y_axis_font_size_multiplier: Optional[float] = None,
+    x_axis_font_size_multiplier: Optional[float] = None,
 ) -> None:
     draw_graph(
         title=title,
@@ -33,6 +36,9 @@ def draw_line_graph_with_all_runs(
             )
         ],
         use_percentage_limits=True,
+        font_size_multiplier=font_size_multiplier,
+        y_axis_font_size_multiplier=y_axis_font_size_multiplier,
+        x_axis_font_size_multiplier=x_axis_font_size_multiplier,
     )
 
 
@@ -42,11 +48,14 @@ def draw_box_violin_plot_for_each_stage(
     key: str,
     title: Optional[str] = "",
     y_lim: Optional[Tuple[float, float]] = None,
+    font_size_multiplier: float = 1,
+    y_axis_font_size_multiplier: float = 1.5,
+    x_axis_font_size_multiplier: Optional[float] = None,
 ) -> None:
     draw_graph(
         title=title,
         y_label=y_label,
-        size=(25, 10),
+        size=(30, 10),
         data=data,
         plot_functions=[
             lambda: sns.violinplot(
@@ -66,6 +75,9 @@ def draw_box_violin_plot_for_each_stage(
             ),
         ],
         y_lim=y_lim,
+        font_size_multiplier=font_size_multiplier,
+        y_axis_font_size_multiplier=y_axis_font_size_multiplier,
+        x_axis_font_size_multiplier=x_axis_font_size_multiplier,
     )
 
 
@@ -73,6 +85,9 @@ def draw_trained_model_comparison_graph(
     data: pd.DataFrame,
     key: str,
     y_label: str,
+    font_size_multiplier: float = 1,
+    y_axis_font_size_multiplier: Optional[float] = None,
+    x_axis_font_size_multiplier: Optional[float] = None,
 ) -> None:
     _data = data.copy()
     _data[key] = _data[key] * 100
@@ -89,4 +104,7 @@ def draw_trained_model_comparison_graph(
                 legend=False,
             )
         ],
+        font_size_multiplier=font_size_multiplier,
+        y_axis_font_size_multiplier=y_axis_font_size_multiplier,
+        x_axis_font_size_multiplier=x_axis_font_size_multiplier,
     )

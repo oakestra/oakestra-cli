@@ -12,6 +12,8 @@ from oak_cli.evaluation.addons.flops.main import (
 )
 from oak_cli.evaluation.graph_utils import adjust_xticks, get_evaluation_run_duration_label
 
+_DEFAULT_FONT_SIZE = 10
+
 
 class _Stage_Info(BaseModel):
     stage: EvaluationRunFLOpsProjectStage
@@ -106,6 +108,9 @@ def draw_graph(
     stages_color_intensity: float = 0.3,
     stages_color_height: float = 100,
     use_percentage_limits: bool = False,
+    font_size_multiplier: float = 1,
+    y_axis_font_size_multiplier: Optional[float] = None,
+    x_axis_font_size_multiplier: Optional[float] = None,
 ) -> None:
     fig, ax = plt.subplots(figsize=size)
     if title:
@@ -116,9 +121,21 @@ def draw_graph(
     else:
         for plot_function in plot_functions:
             plot_function()
-    plt.xlabel(get_evaluation_run_duration_label())
-    plt.ylabel(y_label)
+
+    x_font_size = _DEFAULT_FONT_SIZE * (x_axis_font_size_multiplier or font_size_multiplier)
+    plt.xlabel(
+        get_evaluation_run_duration_label(),
+        fontsize=x_font_size,
+    )
+    plt.tick_params(axis="x", labelsize=x_font_size)
     adjust_xticks(ax)
+
+    y_font_size = _DEFAULT_FONT_SIZE * (y_axis_font_size_multiplier or font_size_multiplier)
+    plt.ylabel(
+        y_label,
+        fontsize=y_font_size,
+    )
+    plt.tick_params(axis="y", labelsize=y_font_size)
 
     if use_percentage_limits:
         if not y_lim:
