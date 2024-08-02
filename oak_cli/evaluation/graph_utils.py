@@ -1,4 +1,5 @@
 PALETTE = "rainbow"
+ROUNDING_PRECISION = 1  # Decimal places/digits
 
 
 def get_evaluation_run_duration_label() -> str:
