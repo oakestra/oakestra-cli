@@ -9,7 +9,7 @@ from oak_cli.evaluation.addons.flops.graph_utils.keys import (
     TIME_START_KEY,
     TRAINED_MODEL_RUN_ID_KEY,
 )
-from oak_cli.evaluation.addons.flops.graph_utils.main import draw_graph
+from oak_cli.evaluation.addons.flops.graph_utils.main import STAGE_ID_KEY, draw_graph
 from oak_cli.evaluation.graph_utils import PALETTE
 
 
@@ -44,40 +44,46 @@ def draw_line_graph_with_all_runs(
 
 def draw_box_violin_plot_for_each_stage(
     data: pd.DataFrame,
-    y_label: str,
     key: str,
+    x_label: str = "",
+    y_label: str = "",
     title: Optional[str] = "",
+    x_lim: Optional[Union[Tuple[float, float], float]] = (0, 100),
     y_lim: Optional[Union[Tuple[float, float], float]] = None,
     font_size_multiplier: float = 1,
-    y_axis_font_size_multiplier: float = 1.5,
+    y_axis_font_size_multiplier: float = 1,
     x_axis_font_size_multiplier: Optional[float] = None,
 ) -> None:
+    data = data.copy().sort_values(by=STAGE_ID_KEY)
     draw_graph(
         title=title,
+        x_label=x_label,
         y_label=y_label,
-        size=(30, 10),
+        size=(10, 8),
         data=data,
         plot_functions=[
             lambda: sns.violinplot(
-                x=STAGE_KEY,
-                y=key,
+                x=key,
+                y=STAGE_KEY,
                 data=data,
                 hue=STAGE_KEY,
                 alpha=0.3,
                 palette=PALETTE,
             ),
             lambda: sns.boxplot(
-                x=STAGE_KEY,
-                y=key,
+                x=key,
+                y=STAGE_KEY,
                 data=data,
                 hue=STAGE_KEY,
                 palette=PALETTE,
             ),
         ],
+        x_lim=x_lim,
         y_lim=y_lim,
         font_size_multiplier=font_size_multiplier,
         y_axis_font_size_multiplier=y_axis_font_size_multiplier,
         x_axis_font_size_multiplier=x_axis_font_size_multiplier,
+        sort_by_stage_id=True,
     )
 
 

@@ -12,6 +12,9 @@ from oak_cli.evaluation.addons.flops.main import (
 )
 from oak_cli.evaluation.graph_utils import adjust_xticks, get_evaluation_run_duration_label
 
+# Auxiliary numerical stage ID (instead of the string) for future numerical manipulations.
+STAGE_ID_KEY = "STAGE ID"
+
 _DEFAULT_FONT_SIZE = 10
 
 
@@ -102,6 +105,7 @@ def draw_graph(
     plot_functions: Optional[List[Callable]] = None,
     x_lim: Optional[Union[Tuple[float, float], float]] = None,
     y_lim: Optional[Union[Tuple[float, float], float]] = None,
+    x_label: str = "",
     y_label: str = "",
     size: Tuple[int, int] = (10, 5),
     show_stages: bool = False,
@@ -111,7 +115,10 @@ def draw_graph(
     font_size_multiplier: float = 1,
     y_axis_font_size_multiplier: Optional[float] = None,
     x_axis_font_size_multiplier: Optional[float] = None,
+    sort_by_stage_id: bool = False,
 ) -> None:
+    if sort_by_stage_id:
+        data = data.copy().sort_values(by=STAGE_ID_KEY)
     fig, ax = plt.subplots(figsize=size)
     if title:
         ax.set_title(title)
@@ -124,7 +131,7 @@ def draw_graph(
 
     x_font_size = _DEFAULT_FONT_SIZE * (x_axis_font_size_multiplier or font_size_multiplier)
     plt.xlabel(
-        get_evaluation_run_duration_label(),
+        x_label or get_evaluation_run_duration_label(),
         fontsize=x_font_size,
     )
     plt.tick_params(axis="x", labelsize=x_font_size)
