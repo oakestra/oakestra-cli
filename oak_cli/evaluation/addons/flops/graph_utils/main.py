@@ -102,7 +102,7 @@ def draw_graph(
     plot_functions: Optional[List[Callable]] = None,
     x_lim: Optional[Union[Tuple[float, float], float]] = None,
     y_lim: Optional[Union[Tuple[float, float], float]] = None,
-    y_label: str = "Resource Usage (%)",
+    y_label: str = "",
     size: Tuple[int, int] = (10, 5),
     show_stages: bool = False,
     stages_color_intensity: float = 0.3,
