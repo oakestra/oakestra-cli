@@ -1,8 +1,8 @@
 PALETTE = "rainbow"
 
 
-def get_evaluation_run_duration_label(use_minutes: bool = True) -> str:
-    return "Evaluation-Run Duration " + "(minutes)" if use_minutes else "(seconds)"
+def get_evaluation_run_duration_label() -> str:
+    return "Evaluation-Run Duration " + "(minutes)"
 
 
 def adjust_xticks(ax) -> None:
