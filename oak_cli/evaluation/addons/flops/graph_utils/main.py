@@ -1,4 +1,4 @@
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -100,8 +100,8 @@ def draw_graph(
     data: pd.DataFrame,
     title: Optional[str] = "",
     plot_functions: Optional[List[Callable]] = None,
-    x_lim: Optional[Tuple[float, float]] = None,
-    y_lim: Optional[Tuple[float, float]] = None,
+    x_lim: Optional[Union[Tuple[float, float], float]] = None,
+    y_lim: Optional[Union[Tuple[float, float], float]] = None,
     y_label: str = "Resource Usage (%)",
     size: Tuple[int, int] = (10, 5),
     show_stages: bool = False,
@@ -138,17 +138,21 @@ def draw_graph(
     plt.tick_params(axis="y", labelsize=y_font_size)
 
     if use_percentage_limits:
-        if not y_lim:
+        if y_lim is None:
             y_lim = (0, 100)
-        if not x_lim:
+        if x_lim is None:
             x_lim = (0, max(data.index))
 
-    if x_lim:
-        plt.xlim([x_lim[0], x_lim[1]])
-    if y_lim:
-        plt.ylim([y_lim[0], y_lim[1]])
-    else:
-        plt.ylim(0)
+    if x_lim is not None:
+        if isinstance(x_lim, tuple):
+            plt.xlim([x_lim[0], x_lim[1]])
+        else:
+            plt.xlim(x_lim)
+    if y_lim is not None:
+        if isinstance(y_lim, tuple):
+            plt.ylim([y_lim[0], y_lim[1]])
+        else:
+            plt.ylim(y_lim)
 
     if show_stages:
         _draw_stages(

@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import pandas as pd
 import seaborn as sns
@@ -47,7 +47,7 @@ def draw_box_violin_plot_for_each_stage(
     y_label: str,
     key: str,
     title: Optional[str] = "",
-    y_lim: Optional[Tuple[float, float]] = None,
+    y_lim: Optional[Union[Tuple[float, float], float]] = None,
     font_size_multiplier: float = 1,
     y_axis_font_size_multiplier: float = 1.5,
     x_axis_font_size_multiplier: Optional[float] = None,
