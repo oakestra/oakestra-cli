@@ -8,4 +8,5 @@ from oak_cli.evaluation.addons.flops.utils.main import Evaluation, prepare_noteb
 from oak_cli.evaluation.addons.flops.utils.special_graphs.auxiliary import *
 from oak_cli.evaluation.addons.flops.utils.special_graphs.box_violin_plot import *
 from oak_cli.evaluation.addons.flops.utils.special_graphs.main import *
+from oak_cli.evaluation.addons.flops.utils.special_graphs.stage_durations import *
 from oak_cli.evaluation.addons.flops.utils.special_graphs.trained_model import *
