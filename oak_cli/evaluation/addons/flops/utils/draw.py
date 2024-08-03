@@ -29,6 +29,7 @@ def draw_graph(
     x_axis_font_size_multiplier: Optional[float] = None,
     sort_by_stage_id: bool = False,
     use_median_stages: bool = False,
+    show_legend_in_right_bottom_corner: bool = False,
 ) -> None:
     if sort_by_stage_id:
         data = data.copy().sort_values(by=STAGE_ID_KEY)
@@ -81,5 +82,9 @@ def draw_graph(
             stages_color_height=stages_color_height,
             use_median_stages=use_median_stages,
         )
+
+    if show_legend_in_right_bottom_corner:
+        handles, labels = ax.get_legend_handles_labels()
+        plt.legend(handles, labels, bbox_to_anchor=(1, 0), loc="lower right")
 
     plt.show()
