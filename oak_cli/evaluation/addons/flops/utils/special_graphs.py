@@ -3,13 +3,14 @@ from typing import Optional, Tuple, Union
 import pandas as pd
 import seaborn as sns
 
-from oak_cli.evaluation.addons.flops.graph_utils.keys import (
+from oak_cli.evaluation.addons.flops.utils.draw import draw_graph
+from oak_cli.evaluation.addons.flops.utils.keys import (
     RUN_ID_KEY,
     STAGE_KEY,
     TIME_START_KEY,
     TRAINED_MODEL_RUN_ID_KEY,
 )
-from oak_cli.evaluation.addons.flops.graph_utils.main import STAGE_ID_KEY, draw_graph
+from oak_cli.evaluation.addons.flops.utils.stages.main import STAGE_ID_KEY
 from oak_cli.evaluation.graph_utils import PALETTE
 
 
