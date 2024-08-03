@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 
 from oak_cli.evaluation.addons.flops.utils.draw import draw_graph
-from oak_cli.evaluation.addons.flops.utils.keys import CPU_KEY, MEMORY_KEY, STAGE_KEY
+from oak_cli.evaluation.addons.flops.utils.keys import CPU_KEY, DISK_LAST_KEY, MEMORY_KEY, STAGE_KEY
 from oak_cli.evaluation.addons.flops.utils.stages.auxiliary import get_stage_color_mapping
 from oak_cli.evaluation.addons.flops.utils.stages.main import STAGE_ID_KEY
 
@@ -23,6 +23,17 @@ def draw_box_violin_plot_for_each_stage_for_memory(data: pd.DataFrame) -> None:
         key=MEMORY_KEY,
         x_label="Memory Usage (%)",
         x_lim=(40, 80),
+    )
+
+
+def draw_box_violin_plot_for_each_stage_for_disk_space(data: pd.DataFrame) -> None:
+    _data = data.copy()
+    _data[[DISK_LAST_KEY]] = round(_data[[DISK_LAST_KEY]] / 5, 0)
+    draw_box_violin_plot_for_each_stage(
+        data=_data,
+        key=DISK_LAST_KEY,
+        x_label="Disk Space Change (MB/s)",
+        x_lim=(-750, 600),
     )
 
 
