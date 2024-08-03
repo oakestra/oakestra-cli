@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import pandas as pd
 import seaborn as sns
@@ -58,12 +58,16 @@ def populate_stages_info_via_median(data: pd.DataFrame) -> List[_Stage_Info]:
     return stages
 
 
-def get_stage_color_mapping() -> Dict[EvaluationRunFLOpsProjectStage, Tuple[float, float, float]]:
+def get_stage_color_mapping(
+    use_stage_names_as_keys: bool = False,
+) -> Dict[Union[EvaluationRunFLOpsProjectStage, str], Tuple[float, float, float]]:
     def get_color(index: int) -> Tuple[float, float, float]:
         return sns.color_palette("tab10", 10)[index]
 
     mapping = {}
     for stage_enum in EvaluationRunFLOpsProjectStage:
-        mapping[stage_enum] = get_color(stage_enum.get_index())
+        mapping[stage_enum.value if use_stage_names_as_keys else stage_enum] = get_color(
+            stage_enum.get_index()
+        )
 
     return mapping

@@ -10,6 +10,7 @@ from oak_cli.evaluation.addons.flops.utils.keys import (
     TIME_START_KEY,
     TRAINED_MODEL_RUN_ID_KEY,
 )
+from oak_cli.evaluation.addons.flops.utils.stages.auxiliary import get_stage_color_mapping
 from oak_cli.evaluation.addons.flops.utils.stages.main import STAGE_ID_KEY
 from oak_cli.evaluation.graph_utils import PALETTE
 
@@ -56,6 +57,7 @@ def draw_box_violin_plot_for_each_stage(
     x_axis_font_size_multiplier: Optional[float] = None,
 ) -> None:
     data = data.copy().sort_values(by=STAGE_ID_KEY)
+    stage_color_map = get_stage_color_mapping(use_stage_names_as_keys=True)
     draw_graph(
         title=title,
         x_label=x_label,
@@ -69,14 +71,14 @@ def draw_box_violin_plot_for_each_stage(
                 data=data,
                 hue=STAGE_KEY,
                 alpha=0.3,
-                palette=PALETTE,
+                palette=stage_color_map,
             ),
             lambda: sns.boxplot(
                 x=key,
                 y=STAGE_KEY,
                 data=data,
                 hue=STAGE_KEY,
-                palette=PALETTE,
+                palette=stage_color_map,
             ),
         ],
         x_lim=x_lim,
