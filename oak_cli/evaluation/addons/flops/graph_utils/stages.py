@@ -159,3 +159,6 @@ def draw_stages(
     plt.gca().legend(
         handles=combined_handles, labels=combined_labels, bbox_to_anchor=(1, 1), loc="upper left"
     )
+
+
+# def create_stage_color_palette(data: pd.DataFrame) -> List[str]

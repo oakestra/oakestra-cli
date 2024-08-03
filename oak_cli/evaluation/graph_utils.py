@@ -11,3 +11,4 @@ def adjust_xticks(ax) -> None:
     current_ticks = ax.get_xticks()
     new_ticks = [tick for tick in current_ticks if round(tick * 2) == tick * 2]
     ax.set_xticks(new_ticks)
+    # ax.set_xticklabels([f"{tick:.1f}" for tick in new_ticks])
