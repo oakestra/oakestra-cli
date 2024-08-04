@@ -32,6 +32,10 @@ def _enforce_settings() -> None:
         pd.set_option("display.max_rows", None)
         pd.set_option("display.max_columns", None)
 
+        import warnings
+
+        warnings.simplefilter(action="ignore", category=FutureWarning)
+
 
 def _set_styling() -> None:
     sns.set_style("whitegrid")

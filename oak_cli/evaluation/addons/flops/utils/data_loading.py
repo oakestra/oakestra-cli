@@ -1,6 +1,6 @@
 import glob
 import pathlib
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import pandas as pd
 
@@ -20,10 +20,14 @@ class PreparedDataFrames(NamedTuple):
     trained_models_df: pd.DataFrame
 
 
-def load_and_prepare_data(evaluation: Evaluation) -> PreparedDataFrames:
-    evaluations_root = pathlib.Path(__file__).parents[1] / "evaluations"
-    csv_dir_name = f"{evaluation.value}_{evaluation.name.lower()}"
-    csv_dir_path = evaluations_root / csv_dir_name / "csvs"
+def load_and_prepare_data(evaluation: Optional[Evaluation] = None) -> PreparedDataFrames:
+    if evaluation:
+        evaluations_root = pathlib.Path(__file__).parents[1] / "evaluations"
+        csv_dir_name = f"{evaluation.value}_{evaluation.name.lower()}"
+        csv_dir_path = evaluations_root / csv_dir_name / "csvs"
+    else:
+        csv_dir_path = pathlib.Path.cwd().parent / "csvs"
+
     csv_files = glob.glob(f"{csv_dir_path}/evaluation_run_*.csv")
 
     df = pd.concat([pd.read_csv(file) for file in csv_files], ignore_index=True)
