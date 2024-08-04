@@ -33,8 +33,9 @@ class ResourcesMetricManager(MetricsManager):
     disk_space_used__evaluation_run_start__mb: float = to_mb(psutil.disk_usage("/").used)
     disk_space_used__last_measurement__mb: float = disk_space_used__evaluation_run_start__mb
     # Network
-    evaluation_run_start_bytes_received: int = psutil.net_io_counters().bytes_recv
-    evaluation_run_start_bytes_send: int = psutil.net_io_counters().bytes_sent
+    # https://www.educative.io/answers/what-is-the-psutilnetiocounters-method
+    evaluation_run_start_bytes_received: int = psutil.net_io_counters(nowrap=True).bytes_recv
+    evaluation_run_start_bytes_send: int = psutil.net_io_counters(nowrap=True).bytes_sent
     last_bytes_received: int = evaluation_run_start_bytes_received
     last_bytes_send: int = evaluation_run_start_bytes_send
 
@@ -57,8 +58,8 @@ class ResourcesMetricManager(MetricsManager):
         )
         self.disk_space_used__last_measurement__mb = disk_space_used__current__mb
         # Network
-        current_bytes_received = psutil.net_io_counters().bytes_recv
-        current_bytes_send = psutil.net_io_counters().bytes_sent
+        current_bytes_received = psutil.net_io_counters(nowrap=True).bytes_recv
+        current_bytes_send = psutil.net_io_counters(nowrap=True).bytes_sent
 
         compared_to_start_received = (
             current_bytes_received - self.evaluation_run_start_bytes_received
