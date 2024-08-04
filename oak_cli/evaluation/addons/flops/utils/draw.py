@@ -30,6 +30,7 @@ def draw_graph(
     sort_by_stage_id: bool = False,
     use_median_stages: bool = False,
     show_legend_in_right_bottom_corner: bool = False,
+    show_only_stage_legend: bool = False,
 ) -> None:
     if sort_by_stage_id:
         data = data.copy().sort_values(by=STAGE_ID_KEY)
@@ -75,12 +76,13 @@ def draw_graph(
         else:
             plt.ylim(y_lim)
 
-    if show_stages:
+    if show_stages or show_only_stage_legend:
         draw_stages(
             data=data,
             color_intensity=stages_color_intensity,
             stages_color_height=stages_color_height,
             use_median_stages=use_median_stages,
+            show_only_stage_legend=show_only_stage_legend,
         )
 
     if show_legend_in_right_bottom_corner:

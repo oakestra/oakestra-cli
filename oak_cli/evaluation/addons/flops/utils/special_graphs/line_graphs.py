@@ -6,6 +6,7 @@ from oak_cli.evaluation.addons.flops.utils.keys import (
     CPU_KEY,
     DISK_START_KEY,
     MEMORY_KEY,
+    NETWORK_START_KEYS,
     RUN_ID_KEY,
     STAGE_KEY,
 )
@@ -33,6 +34,23 @@ def draw_disk_space_linegraph(normalized_data: pd.DataFrame) -> None:
         data=_normalized_df[[DISK_START_KEY, STAGE_KEY, RUN_ID_KEY]],
         plot_functions=[lambda: sns.lineplot(data=_normalized_df[[DISK_START_KEY, STAGE_KEY]])],
         y_label="Disk Space Change (GB)",
+        x_lim=(0, max(_normalized_df.index)),
+        y_lim=0,
+        show_stages=True,
+        use_median_stages=True,
+    )
+
+
+def draw_network_linegraph(normalized_data: pd.DataFrame) -> None:
+    _normalized_df = normalized_data.copy()
+    _normalized_df[NETWORK_START_KEYS] = _normalized_df[NETWORK_START_KEYS] / 1024
+    draw_graph(
+        title="Evaluation Runs Average",
+        data=_normalized_df[NETWORK_START_KEYS + [STAGE_KEY, RUN_ID_KEY]],
+        plot_functions=[
+            lambda: sns.lineplot(data=_normalized_df[NETWORK_START_KEYS + [STAGE_KEY]])
+        ],
+        y_label="Network Change (I/O) (GB)",
         x_lim=(0, max(_normalized_df.index)),
         y_lim=0,
         show_stages=True,

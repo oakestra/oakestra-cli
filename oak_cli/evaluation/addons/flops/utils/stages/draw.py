@@ -18,6 +18,7 @@ def draw_stages(
     color_intensity: float,
     stages_color_height: float = 100,
     use_median_stages: bool = False,
+    show_only_stage_legend: bool = False,
 ) -> None:
     if use_median_stages:
         stages = populate_stages_info_via_median(data)
@@ -25,19 +26,20 @@ def draw_stages(
         stages = populate_stages_info(data)
 
     stages[-1].end = max(data.index)
-    for stage_info in stages:
-        plt.fill_between(
-            (stage_info.start, stage_info.end),
-            stages_color_height,
-            color=get_stage_color_mapping()[stage_info.stage],
-            alpha=color_intensity,
-        )
-        plt.axvline(
-            x=stage_info.end,
-            color="grey",
-            linestyle="--",
-            ymax=100,
-        )
+    if not show_only_stage_legend:
+        for stage_info in stages:
+            plt.fill_between(
+                (stage_info.start, stage_info.end),
+                stages_color_height,
+                color=get_stage_color_mapping()[stage_info.stage],
+                alpha=color_intensity,
+            )
+            plt.axvline(
+                x=stage_info.end,
+                color="grey",
+                linestyle="--",
+                ymax=100,
+            )
 
     original_handles, original_labels = plt.gca().get_legend_handles_labels()
     stage_color_map = get_stage_color_mapping()
