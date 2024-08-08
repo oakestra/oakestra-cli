@@ -6,7 +6,7 @@
   vars:
     stage_name: "Project Start"
 - name: Trigger FLOps Project
-  command: "{{ venv_oak }} addon flops p mnist_sklearn_small"
+  command: "{{ venv_oak }} addon flops p cifar10_pytorch"
 - include_tasks: wait_for_flops_project_stage.yml
   vars:
     stage_indicator: "Create new FLOpsProject application"
@@ -72,13 +72,13 @@
     stage_indicator: "Undeploy TrainedModelImageBuilder"
 
 
-- include_tasks: wait_for_flops_project_stage.yml
-  vars:
-    stage_indicator: "Deploy TrainedModel"
-- include_tasks: handle_new_stage.yml
-  vars:
-    stage_name: "Deploy Trained-Model"
-- include_tasks: check_trained_model_service.yml
-- pause:
-    seconds: 5
-- include_tasks: check_trained_model_service.yml
+# - include_tasks: wait_for_flops_project_stage.yml
+#   vars:
+#     stage_indicator: "Deploy TrainedModel"
+# - include_tasks: handle_new_stage.yml
+#   vars:
+#     stage_name: "Deploy Trained-Model"
+# - include_tasks: check_trained_model_service.yml
+# - pause:
+#     seconds: 5
+# - include_tasks: check_trained_model_service.yml
