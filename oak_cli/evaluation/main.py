@@ -57,6 +57,7 @@ def start_evaluation_cycle(
     extra_vars["number_of_evaluation_runs"] = number_of_evaluation_runs
     if flops_project_type:
         extra_vars["flops_project_type"] = flops_project_type.value
+
     match scenario:
         case EvaluationScenario.RESOURCES:
             # NOTE:
@@ -69,10 +70,17 @@ def start_evaluation_cycle(
                 playbook=CliPlaybook.EVALUATE_RESOURCES.get_path(),
                 extravars=extra_vars,
             )
-        case EvaluationScenario.FLOPS:
+        case EvaluationScenario.FLOPS_MONOLITH:
             ansible_runner.run(
                 project_dir=str(CLI_ANSIBLE_PATH),
-                playbook=CliPlaybook.EVALUATE_FLOPS.get_path(),
+                playbook=CliPlaybook.EVALUATE_FLOPS_MONOLITH.get_path(),
+                extravars=extra_vars,
+            )
+
+        case EvaluationScenario.FLOPS_MULTI_CLUSTER:
+            ansible_runner.run(
+                project_dir=str(CLI_ANSIBLE_PATH),
+                playbook=CliPlaybook.EVALUATE_FLOPS_MULTI_CLUSTER.get_path(),
                 extravars=extra_vars,
             )
 
@@ -108,7 +116,7 @@ def clean_up(
     """
     scenario = EvaluationScenario(scenario)
     clear_dir(get_csv_dir_for_scenario(scenario))
-    if scenario == EvaluationScenario.FLOPS:
+    if scenario == EvaluationScenario.FLOPS_MONOLITH:
         clear_file(STAGE_FILE)
         clear_file(TRAINED_MODEL_PERFORMANCE_CSV)
     stop_evaluation_run(scenario=scenario)
@@ -136,5 +144,5 @@ def stop_evaluation_run(
     kill_process(pid)
     clear_file(pidfile)
 
-    if scenario == EvaluationScenario.FLOPS:
+    if scenario == EvaluationScenario.FLOPS_MONOLITH:
         clear_file(STAGE_FILE)

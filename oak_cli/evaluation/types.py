@@ -7,7 +7,8 @@ from pydantic import BaseModel
 
 class EvaluationScenario(enum.Enum):
     RESOURCES = "Resources"
-    FLOPS = "FLOps"
+    FLOPS_MONOLITH = "FLOps-Monolith"
+    FLOPS_MULTI_CLUSTER = "FLOps-multi-cluster"
 
 
 class CSVKeys(str, enum.Enum):

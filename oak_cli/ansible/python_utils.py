@@ -12,7 +12,8 @@ CLI_PLAYBOOKS_PATH = CLI_ANSIBLE_PATH / "playbooks"
 class CliPlaybook(enum.Enum):
     INSTALL_FUNDAMENTALS = "install_fundamentals"
     EVALUATE_RESOURCES = "evaluate_resources"
-    EVALUATE_FLOPS = "evaluate_flops"
+    EVALUATE_FLOPS_MONOLITH = "evaluate_flops_monolith"
+    EVALUATE_FLOPS_MULTI_CLUSTER = "evaluate_flops_multi_cluster"
 
     def get_path(self, as_string: bool = True) -> Union[str, pathlib.Path]:
         path = CLI_PLAYBOOKS_PATH / f"{self.value}.yml"
