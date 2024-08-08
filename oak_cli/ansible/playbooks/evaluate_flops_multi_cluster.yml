@@ -1,5 +1,23 @@
-- name: Evaluate FLOps Multi-Clusters.
+---
+- name: Clean up calling host (localhost) before starting the evaluation cycle
+  hosts: localhost
+  vars:
+    evaluation_results_dir: "/tmp/multi_cluster_evaluation_results"
+  tasks:
+    - name: Clear directory
+      file:
+        path: "{{ evaluation_results_dir }}"
+        state: absent
+    - name: Ensure directory to collect artifacts exists
+      file:
+        path: "{{ evaluation_results_dir }}"
+        state: directory
+
+- name: Evaluate FLOps Multi-Clusters
   any_errors_fatal: true
-  hosts: localhost, root, clusters
+  hosts: root, clusters
+  vars:
+    evaluation_results_dir: "/tmp/multi_cluster_evaluation_results"
+  environment: "{{ flops_management_env_vars }}"
   roles:
-    - evaluate_flops_multi_cluster
+    - role: evaluate_flops_multi_cluster
