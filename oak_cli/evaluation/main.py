@@ -116,7 +116,7 @@ def clean_up(
     """
     scenario = EvaluationScenario(scenario)
     clear_dir(get_csv_dir_for_scenario(scenario))
-    if scenario == EvaluationScenario.FLOPS_MONOLITH:
+    if scenario in [EvaluationScenario.FLOPS_MONOLITH, EvaluationScenario.FLOPS_MULTI_CLUSTER]:
         clear_file(STAGE_FILE)
         clear_file(TRAINED_MODEL_PERFORMANCE_CSV)
     stop_evaluation_run(scenario=scenario)
@@ -144,5 +144,5 @@ def stop_evaluation_run(
     kill_process(pid)
     clear_file(pidfile)
 
-    if scenario == EvaluationScenario.FLOPS_MONOLITH:
+    if scenario in [EvaluationScenario.FLOPS_MONOLITH, EvaluationScenario.FLOPS_MULTI_CLUSTER]:
         clear_file(STAGE_FILE)

@@ -1,11 +1,8 @@
-#- hosts: root,clusters
 - hosts: root
+#- hosts: root,clusters
   roles:
     - prepare_oak_cli
-  # tasks:
-  #   - debug: msg=hi
-  #   - debug: var=venv_oak
-  #   - ping:
-  #   - command: hostname
-  #     register: res
-  #   - debug: var=res.stdout
+  tasks:
+    - name: Clean up before starting the evaluation cycle
+      command: "{{ venv_oak }} evaluate clean --scenario FLOps-multi-cluster"
+      

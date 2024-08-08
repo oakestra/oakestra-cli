@@ -6,7 +6,8 @@ import time
 import daemon
 
 from oak_cli.evaluation.addons.flops.main import (
-    FLOpsMetricManager,
+    FLOpsMetricManagerMonolith,
+    FLOpsMetricManagerMultiCluster,
     handle_flops_files_at_evaluation_run_start,
 )
 from oak_cli.evaluation.resources.main import ResourcesMetricManager
@@ -20,9 +21,9 @@ def get_metrics_manager_for_scenario(scenario: EvaluationScenario) -> MetricsMan
         case EvaluationScenario.RESOURCES:
             return ResourcesMetricManager()
         case EvaluationScenario.FLOPS_MONOLITH:
-            return FLOpsMetricManager()
+            return FLOpsMetricManagerMonolith()
         case EvaluationScenario.FLOPS_MULTI_CLUSTER:
-            return FLOpsMetricManager()
+            return FLOpsMetricManagerMultiCluster()
 
 
 def get_pid_file_for_scenario(scenario: EvaluationScenario) -> pathlib.Path:
@@ -30,6 +31,8 @@ def get_pid_file_for_scenario(scenario: EvaluationScenario) -> pathlib.Path:
         case EvaluationScenario.RESOURCES:
             pid_file = "/tmp/resources_evaluation_pid_file"
         case EvaluationScenario.FLOPS_MONOLITH:
+            pid_file = "/tmp/flops_evaluation_pid_file"
+        case EvaluationScenario.FLOPS_MULTI_CLUSTER:
             pid_file = "/tmp/flops_evaluation_pid_file"
     return pathlib.Path(pid_file)
 
@@ -39,6 +42,8 @@ def get_csv_dir_for_scenario(scenario: EvaluationScenario) -> pathlib.Path:
         case EvaluationScenario.RESOURCES:
             pid_file = "/tmp/resources_evaluation_runs/"
         case EvaluationScenario.FLOPS_MONOLITH:
+            pid_file = "/tmp/flops_evaluation_runs/"
+        case EvaluationScenario.FLOPS_MULTI_CLUSTER:
             pid_file = "/tmp/flops_evaluation_runs/"
     return pathlib.Path(pid_file)
 
@@ -51,7 +56,7 @@ def start_evaluation_process(
     scenario: EvaluationScenario,
     evaluation_run_id: int,
 ) -> None:
-    if scenario == EvaluationScenario.FLOPS_MONOLITH:
+    if scenario in [EvaluationScenario.FLOPS_MONOLITH, EvaluationScenario.FLOPS_MULTI_CLUSTER]:
         handle_flops_files_at_evaluation_run_start()
 
     # https://peps.python.org/pep-3143/

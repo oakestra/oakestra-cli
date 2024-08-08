@@ -54,8 +54,18 @@ def get_current_stage() -> EvaluationRunFLOpsProjectStage:
         )
 
 
-class FLOpsMetricManager(ResourcesMetricManager):
+class FLOpsMetricManagerMonolith(ResourcesMetricManager):
     scenario = EvaluationScenario.FLOPS_MONOLITH
+
+    def create_csv_header(self) -> List[str]:
+        return super().create_csv_header() + [key.value for key in FLOpsExclusiveCSVKeys]
+
+    def create_csv_line_entries(self) -> List[Any]:
+        return super().create_csv_line_entries() + [get_current_stage().value]
+
+
+class FLOpsMetricManagerMultiCluster(ResourcesMetricManager):
+    scenario = EvaluationScenario.FLOPS_MULTI_CLUSTER
 
     def create_csv_header(self) -> List[str]:
         return super().create_csv_header() + [key.value for key in FLOpsExclusiveCSVKeys]

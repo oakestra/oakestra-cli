@@ -55,8 +55,3 @@
       ansible.builtin.command:
         cmd: "{{ venv_pip }} install ."
         chdir: "{{ eval_oak_cli_dir }}"
-
-
-- command: "{{ venv_oak }} version"
-  register: a
-- debug: var=a
