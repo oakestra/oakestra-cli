@@ -1,3 +1,4 @@
+# flake8: noqa
 import seaborn as sns
 from icecream import ic
 
