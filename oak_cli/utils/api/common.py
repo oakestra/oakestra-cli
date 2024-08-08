@@ -3,5 +3,4 @@ from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 
 
 def get_system_manager_url() -> str:
-    system_manager_ip = get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)
-    return f"http://{system_manager_ip}:10000"
+    return f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}:10000"
