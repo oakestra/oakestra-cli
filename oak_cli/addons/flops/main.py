@@ -10,7 +10,8 @@ from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
 from oak_cli.addons.flops.SLAs.mocks.common import FLOpsMockDataProviderSLAs
 from oak_cli.addons.flops.SLAs.projects.common import FLOpsProjectSLAs
 from oak_cli.configuration.auxiliary import get_flops_addon_repo_path
-from oak_cli.utils.api.common import get_system_manager_url
+from oak_cli.configuration.common import get_config_value
+from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
@@ -19,7 +20,7 @@ from oak_cli.utils.typer_augmentations import AliasGroup
 
 
 def get_root_fl_manager_url() -> str:
-    return f"http://{get_system_manager_url()}:5072"
+    return f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}:5072"
 
 
 app = typer.Typer(cls=AliasGroup)
