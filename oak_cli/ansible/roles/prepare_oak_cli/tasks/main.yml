@@ -39,7 +39,7 @@
   register: oak_cli_pip_show
 
 - name: Install OAK-CLI
-  when: oak_cli_pip_show.rc != 0
+  #when: oak_cli_pip_show.rc != 0
   block:
     - name: Git clone and or update oak-cli repo
       ansible.builtin.git:

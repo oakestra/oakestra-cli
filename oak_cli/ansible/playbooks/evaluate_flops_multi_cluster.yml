@@ -1,8 +1,4 @@
-- hosts: root
-#- hosts: root,clusters
+- name: Evaluate FLOps Multi-Clusters.
+  hosts: localhost, root, clusters
   roles:
-    - prepare_oak_cli
-  tasks:
-    - name: Clean up before starting the evaluation cycle
-      command: "{{ venv_oak }} evaluate clean --scenario FLOps-multi-cluster"
-      
+    - evaluate_flops_multi_cluster

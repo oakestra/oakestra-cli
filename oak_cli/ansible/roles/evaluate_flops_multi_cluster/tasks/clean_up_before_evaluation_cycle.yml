@@ -1,0 +1,27 @@
+- name: Clean up calling host (localhost) before starting the evaluation cycle
+  when: is_localhost
+  block:
+    - set_fact:
+        evaluation_results_dir: "{{ ansible_user_dir }}/multi_cluster_evaluation_results"
+    - name: Clean up evaluation artifacts results folder
+      block:
+        - name: Clear directory
+          file:
+            path: "{{ evaluation_results_dir }}"
+            state: absent
+        - name: Ensure directory to collect artifacts exists
+          file:
+            path: "{{ evaluation_results_dir }}"
+            state: directory
+
+- name: Clean up remote hosts before starting the evaluation cycle
+  when: is_cluster or is_root
+  block:
+    - name: Clean up evaluation artifacts on the remote machines
+      command: "{{ venv_oak }} evaluate clean --scenario FLOps-multi-cluster"
+    - name: Append Header to Trained-Model CSV file
+      ansible.builtin.lineinfile:
+        path: /tmp/flops_trained_models.csv
+        line: "Evaluation-Run,Accuracy,Loss"
+        state: present
+        create: yes
