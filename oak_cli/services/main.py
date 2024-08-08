@@ -10,7 +10,7 @@ from oak_cli.services.auxiliary import (
     generate_service_inspection_table,
 )
 from oak_cli.services.common import get_all_services, get_single_service, undeploy_instance
-from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
@@ -78,7 +78,7 @@ def deploy_new_instance(service_id: ServiceId) -> None:
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
-            base_url=SYSTEM_MANAGER_URL,
+            base_url=get_system_manager_url(),
             api_endpoint=f"/api/service/{service_id}/instance",
         ),
         custom_requests.RequestAuxiliaries(

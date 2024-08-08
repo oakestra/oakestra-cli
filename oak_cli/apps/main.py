@@ -10,7 +10,7 @@ from oak_cli.apps.auxiliary import generate_current_application_table
 from oak_cli.apps.common import delete_application, get_applications
 from oak_cli.apps.SLAs.common import AppSLAs, get_SLAs_path
 from oak_cli.services.main import deploy_new_instance
-from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
@@ -68,7 +68,7 @@ def create_applications(
     all_user_apps = custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
-            base_url=SYSTEM_MANAGER_URL,
+            base_url=get_system_manager_url(),
             api_endpoint="/api/application",
             data=SLA,
         ),

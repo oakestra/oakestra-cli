@@ -10,13 +10,17 @@ from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
 from oak_cli.addons.flops.SLAs.mocks.common import FLOpsMockDataProviderSLAs
 from oak_cli.addons.flops.SLAs.projects.common import FLOpsProjectSLAs
 from oak_cli.configuration.auxiliary import get_flops_addon_repo_path
+from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.styling import create_spinner
 from oak_cli.utils.typer_augmentations import AliasGroup
 
-ROOT_FL_MANAGER_URL = f"http://{os.environ.get('SYSTEM_MANAGER_URL')}:5072"
+
+def get_root_fl_manager_url() -> str:
+    return f"http://{get_system_manager_url()}:5072"
+
 
 app = typer.Typer(cls=AliasGroup)
 
@@ -31,7 +35,7 @@ def create_new_flops_project(project_sla: FLOpsProjectSLAs) -> None:
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
-            base_url=ROOT_FL_MANAGER_URL,
+            base_url=get_root_fl_manager_url(),
             api_endpoint="/api/flops/projects",
             data=_load_sla(project_sla, FLOpsProjectSLAs.get_SLAs_path()),
         ),
@@ -48,7 +52,7 @@ def create_new_mock_data_service(mock_sla: FLOpsMockDataProviderSLAs) -> None:
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
-            base_url=ROOT_FL_MANAGER_URL,
+            base_url=get_root_fl_manager_url(),
             api_endpoint="/api/flops/mocks",
             data=_load_sla(mock_sla, FLOpsMockDataProviderSLAs.get_SLAs_path()),
         ),
@@ -71,7 +75,7 @@ def get_tracking_url(customer_id: str = "Admin") -> None:
     result = custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.GET,
-            base_url=ROOT_FL_MANAGER_URL,
+            base_url=get_root_fl_manager_url(),
             api_endpoint="/api/flops/tracking",
             data={"customerID": customer_id},
         ),
@@ -95,7 +99,7 @@ def reset_database(customer_id: str = "Admin") -> None:
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.DELETE,
-            base_url=ROOT_FL_MANAGER_URL,
+            base_url=get_root_fl_manager_url(),
             api_endpoint="/api/flops/database",
             data={"customerID": customer_id},
         ),

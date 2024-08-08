@@ -1,7 +1,7 @@
 from typing import List
 
 import oak_cli.utils.api.custom_requests as custom_requests
-from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
@@ -12,7 +12,7 @@ def get_application(app_id: ApplicationId) -> Application:  # type: ignore
     try:
         return custom_requests.CustomRequest(
             custom_requests.RequestCore(
-                base_url=SYSTEM_MANAGER_URL,
+                base_url=get_system_manager_url(),
                 api_endpoint=f"/api/application/{app_id}",
             ),
             custom_requests.RequestAuxiliaries(
@@ -30,7 +30,7 @@ def get_application(app_id: ApplicationId) -> Application:  # type: ignore
 def get_applications() -> List[Application]:
     apps = custom_requests.CustomRequest(
         custom_requests.RequestCore(
-            base_url=SYSTEM_MANAGER_URL,
+            base_url=get_system_manager_url(),
             api_endpoint="/api/applications",
         ),
         custom_requests.RequestAuxiliaries(
@@ -46,7 +46,7 @@ def delete_application(app_id: ApplicationId) -> None:
         custom_requests.CustomRequest(
             custom_requests.RequestCore(
                 http_method=HttpMethod.DELETE,
-                base_url=SYSTEM_MANAGER_URL,
+                base_url=get_system_manager_url(),
                 api_endpoint=f"/api/application/{app_id}",
             ),
             custom_requests.RequestAuxiliaries(

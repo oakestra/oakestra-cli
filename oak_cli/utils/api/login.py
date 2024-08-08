@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import oak_cli.utils.api.custom_requests as custom_requests
-from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
@@ -20,7 +20,7 @@ def _login_and_set_token() -> str:
         response = custom_requests.CustomRequest(
             custom_requests.RequestCore(
                 http_method=HttpMethod.POST,
-                base_url=SYSTEM_MANAGER_URL,
+                base_url=get_system_manager_url(),
                 api_endpoint="/api/auth/login",
                 data={"username": "Admin", "password": "Admin"},
                 custom_headers={"accept": "application/json", "Content-Type": "application/json"},
@@ -38,7 +38,7 @@ def _login_and_set_token() -> str:
                 (
                     "Unable to log in.",
                     "Make sure Oakestra is properly running.",
-                    f"(base_url/SYSTEM_MANAGER_URL: '{SYSTEM_MANAGER_URL}')",
+                    f"(base_url/SYSTEM_MANAGER_URL: '{get_system_manager_url()}')",
                 )
             ),
         )

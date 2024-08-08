@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 import oak_cli.utils.api.custom_requests as custom_requests
-from oak_cli.utils.api.common import SYSTEM_MANAGER_URL
+from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
 from oak_cli.utils.exceptions.main import OakCLIException
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
@@ -12,7 +12,7 @@ def get_single_service(service_id: ServiceId) -> Service:  # type: ignore
     try:
         return custom_requests.CustomRequest(
             custom_requests.RequestCore(
-                base_url=SYSTEM_MANAGER_URL,
+                base_url=get_system_manager_url(),
                 api_endpoint=f"/api/service/{service_id}",
             ),
             custom_requests.RequestAuxiliaries(
@@ -33,7 +33,7 @@ def get_all_services(app_id: Optional[ApplicationId] = None) -> List[Service]:
         what_should_happen += f" of app '{app_id}'"
     services = custom_requests.CustomRequest(
         custom_requests.RequestCore(
-            base_url=SYSTEM_MANAGER_URL,
+            base_url=get_system_manager_url(),
             api_endpoint=f"/api/services/{app_id or ''}",
         ),
         custom_requests.RequestAuxiliaries(
@@ -52,7 +52,7 @@ def undeploy_instance(service_id: ServiceId, instance_id: Optional[Id] = None) -
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.DELETE,
-            base_url=SYSTEM_MANAGER_URL,
+            base_url=get_system_manager_url(),
             api_endpoint=f"/api/service/{service_id}/instance/{instance_id or 0}",
         ),
         custom_requests.RequestAuxiliaries(
