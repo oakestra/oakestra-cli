@@ -2,7 +2,7 @@
     name: prepare_oak_cli
 
 - name: Clean up before starting the evaluation cycle
-  command: "{{ venv_oak }} evaluate clean --scenario FLOps"
+  command: "{{ venv_oak }} evaluate clean --scenario FLOps-Monolith"
 
 - name: Append Header to Trained-Model CSV file
   ansible.builtin.lineinfile:

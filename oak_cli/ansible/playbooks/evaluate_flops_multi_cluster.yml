@@ -1,10 +1,11 @@
-- hosts: root,clusters
-#- hosts: clusters
-  # roles:
-  #   - evaluate_flops
-  tasks:
-    - debug: msg=hi
-    - ping:
-    - command: hostname
-      register: res
-    - debug: var=res.stdout
+#- hosts: root,clusters
+- hosts: root
+  roles:
+    - prepare_oak_cli
+  # tasks:
+  #   - debug: msg=hi
+  #   - debug: var=venv_oak
+  #   - ping:
+  #   - command: hostname
+  #     register: res
+  #   - debug: var=res.stdout

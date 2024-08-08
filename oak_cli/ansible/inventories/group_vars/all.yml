@@ -1,4 +1,4 @@
-venv: /tmp/oak-ansible
-venv_python: "{{ venv }}/bin/python"
-venv_pip: "{{ venv_python }} -m pip"
-venv_oak: "{{ venv_python }} -m oak_cli.main"
+venv_name: evaluation-venv
+venv_python_version: "3.10.4"
+
+eval_oak_cli_dir: "/tmp/eval-oak-cli"
