@@ -1,2 +1,0 @@
-- shell:
-    cmd: "echo '{{ stage_name }}' > /tmp/flops_stage"

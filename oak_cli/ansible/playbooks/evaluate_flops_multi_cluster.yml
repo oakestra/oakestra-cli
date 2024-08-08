@@ -1,4 +1,5 @@
 - name: Evaluate FLOps Multi-Clusters.
+  any_errors_fatal: true
   hosts: localhost, root, clusters
   roles:
     - evaluate_flops_multi_cluster

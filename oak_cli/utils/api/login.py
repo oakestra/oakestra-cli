@@ -34,7 +34,13 @@ def _login_and_set_token() -> str:
         print(e)
         e.handle_exception(
             oak_cli_execption_type=OakCLIExceptionTypes.LOGIN,
-            special_message="Unable to log in. Make sure Oakestra is properly running.",
+            special_message=" ".join(
+                (
+                    "Unable to log in.",
+                    "Make sure Oakestra is properly running.",
+                    f"(base_url/SYSTEM_MANAGER_URL: '{SYSTEM_MANAGER_URL}')",
+                )
+            ),
         )
 
     global _login_token

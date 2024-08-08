@@ -1,9 +1,15 @@
-- include_role:
-    name: clear_root_orchestrator
-  vars:
-    clear_containerd_images: true
+- name: Clear Root-Orchestrator & FLOps Manager
+  when: is_root
+  block:
+    - include_role:
+        name: clear_root_orchestrator
+    - include_role:
+        name: clear_flops_addon
+      vars:
+        clear_image_registry: true
 
-- include_role:
-    name: clear_flops_addon
-  vars:
-    clear_image_registry: true
+- name: Clear Cluster (with Worker)
+  include_role:
+    name: clear_worker_node
+  when: is_cluster
+

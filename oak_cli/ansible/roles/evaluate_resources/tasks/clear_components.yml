@@ -1,4 +1,5 @@
 - include_role:
     name: clear_root_orchestrator
-  vars:
-    clear_containerd_images: true
+
+- include_role:
+    name: clear_worker_node
