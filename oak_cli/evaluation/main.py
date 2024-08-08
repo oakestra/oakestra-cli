@@ -1,8 +1,10 @@
 import sys
+from typing import Optional
 
 import ansible_runner
 import typer
 
+from oak_cli.addons.flops.SLAs.projects.common import FLOpsProjectSLAs
 from oak_cli.ansible.python_utils import CLI_ANSIBLE_PATH, CliPlaybook
 from oak_cli.evaluation.addons.flops.main import STAGE_FILE, TRAINED_MODEL_PERFORMANCE_CSV
 from oak_cli.evaluation.common import (
@@ -46,9 +48,15 @@ def start_evaluation_run(
 def start_evaluation_cycle(
     scenario: EvaluationScenario = EvaluationScenario.RESOURCES.value,  # type: ignore
     number_of_evaluation_runs: int = 10,
+    # NOTE: dicts are sadly not yet supported by typer.
+    # extra_vars: dict = {},
+    flops_project_type: Optional[FLOpsProjectSLAs] = None,
 ) -> None:
     scenario = EvaluationScenario(scenario)
-    extra_vars = {"number_of_evaluation_runs": number_of_evaluation_runs}
+    extra_vars = {}
+    extra_vars["number_of_evaluation_runs"] = number_of_evaluation_runs
+    if flops_project_type:
+        extra_vars["flops_project_type"] = flops_project_type.value
     match scenario:
         case EvaluationScenario.RESOURCES:
             # NOTE:

@@ -9,18 +9,40 @@ from oak_cli.evaluation.addons.flops.utils.keys import (
 )
 
 
-def draw_trained_model_comparison_graph(data: pd.DataFrame) -> None:
+def draw_trained_model_comparison_graph_accuracy(data: pd.DataFrame) -> None:
     _data = data.copy()
     _data[ACCURACY_KEY] = _data[ACCURACY_KEY] * 100
-    _data[LOSS_KEY] = _data[LOSS_KEY] * 100
     melted_df = _data.melt(
         id_vars=TRAINED_MODEL_RUN_ID_KEY,
-        value_vars=[ACCURACY_KEY, LOSS_KEY],
+        value_vars=[ACCURACY_KEY],
     )
     draw_graph(
         data=_data,
         x_label="Evaluation Run",
-        y_label="Trained Model Metrics (%)",
+        y_label="Trained Model Accuracies (%)",
+        show_legend_in_right_bottom_corner=True,
+        plot_functions=[
+            lambda: sns.barplot(
+                x=TRAINED_MODEL_RUN_ID_KEY,
+                y="value",
+                data=melted_df,
+                hue="variable",
+            )
+        ],
+    )
+
+
+def draw_trained_model_comparison_graph_loss(data: pd.DataFrame) -> None:
+    _data = data.copy()
+    _data[LOSS_KEY] = _data[LOSS_KEY]
+    melted_df = _data.melt(
+        id_vars=TRAINED_MODEL_RUN_ID_KEY,
+        value_vars=[LOSS_KEY],
+    )
+    draw_graph(
+        data=_data,
+        x_label="Evaluation Run",
+        y_label="Trained Model Loss",
         show_legend_in_right_bottom_corner=True,
         plot_functions=[
             lambda: sns.barplot(

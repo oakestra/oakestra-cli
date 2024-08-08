@@ -6,7 +6,7 @@
   vars:
     stage_name: "Project Start"
 - name: Trigger FLOps Project
-  command: "{{ venv_oak }} addon flops p cifar10_pytorch"
+  command: "{{ venv_oak }} addon flops p {{ flops_project_type }}"
 - include_tasks: wait_for_flops_project_stage.yml
   vars:
     stage_indicator: "Create new FLOpsProject application"
