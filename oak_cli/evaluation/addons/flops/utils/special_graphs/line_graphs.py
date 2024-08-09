@@ -7,20 +7,73 @@ from oak_cli.evaluation.addons.flops.utils.keys import (
     DISK_START_KEY,
     MEMORY_KEY,
     NETWORK_START_KEYS,
+    NODE_KEY,
     RUN_ID_KEY,
     STAGE_KEY,
+    TIME_START_KEY,
 )
 
 
-def draw_cpu_and_memory_linegraph(normalized_data: pd.DataFrame) -> None:
+def draw_cpu_and_memory_linegraph(
+    normalized_data: pd.DataFrame,
+) -> None:
+    data_keys = [CPU_KEY, MEMORY_KEY, STAGE_KEY]
     draw_graph(
         title="Evaluation Runs Average",
-        data=normalized_data[[CPU_KEY, MEMORY_KEY, STAGE_KEY, RUN_ID_KEY]],
-        plot_functions=[
-            lambda: sns.lineplot(data=normalized_data[[CPU_KEY, MEMORY_KEY, STAGE_KEY]])
-        ],
+        data=normalized_data[data_keys + [RUN_ID_KEY]],
+        plot_functions=[lambda: sns.lineplot(data=normalized_data[data_keys])],
         use_percentage_limits=True,
         y_label="Resource Usage (%)",
+        show_stages=True,
+        use_median_stages=True,
+    )
+
+
+def draw_cpu_linegraph(
+    normalized_data: pd.DataFrame,
+    multi_cluster: bool = False,
+) -> None:
+    data_keys = [CPU_KEY, STAGE_KEY]
+    if multi_cluster:
+        data_keys.append(NODE_KEY)
+    draw_graph(
+        title="Evaluation Runs Average",
+        data=normalized_data[data_keys + [RUN_ID_KEY]],
+        plot_functions=[
+            lambda: sns.lineplot(
+                x=TIME_START_KEY,
+                y=CPU_KEY,
+                data=normalized_data[data_keys],
+                hue=NODE_KEY if multi_cluster else None,
+            )
+        ],
+        use_percentage_limits=True,
+        y_label="CPU Usage (%)",
+        show_stages=True,
+        use_median_stages=True,
+    )
+
+
+def draw_memory_linegraph(
+    normalized_data: pd.DataFrame,
+    multi_cluster: bool = False,
+) -> None:
+    data_keys = [MEMORY_KEY, STAGE_KEY]
+    if multi_cluster:
+        data_keys.append(NODE_KEY)
+    draw_graph(
+        title="Evaluation Runs Average",
+        data=normalized_data[data_keys + [RUN_ID_KEY]],
+        plot_functions=[
+            lambda: sns.lineplot(
+                x=TIME_START_KEY,
+                y=MEMORY_KEY,
+                data=normalized_data[data_keys],
+                hue=NODE_KEY if multi_cluster else None,
+            )
+        ],
+        use_percentage_limits=True,
+        y_label="Memory Usage (%)",
         show_stages=True,
         use_median_stages=True,
     )

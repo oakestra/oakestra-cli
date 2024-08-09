@@ -41,6 +41,6 @@ class Cluster(enum.Enum):
 
 
 NODE_KEY = "Node"
-NODE_ROOT = "Root"
+NODE_ROOT = "root"
 NODE_CLUSTER_A = Cluster.CLUSTER_A.value
 NODE_CLUSTER_B = Cluster.CLUSTER_B.value
