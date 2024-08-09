@@ -13,15 +13,15 @@
 
 - include_tasks: aux.yml
   vars:
-    wait_time: 30
-
-- include_tasks: aux.yml
-  vars:
     wait_time: 60
 
 - include_tasks: aux.yml
   vars:
     wait_time: 90
+
+- include_tasks: aux.yml
+  vars:
+    wait_time: 120
 
 - fail:
     msg: The trained-model was not successfully deployed

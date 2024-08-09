@@ -1,3 +1,5 @@
+import enum
+
 from oak_cli.evaluation.addons.flops.main import (
     EvaluationRunFLOpsProjectStage,
     FLOpsExclusiveCSVKeys,
@@ -31,3 +33,14 @@ NETWORK_LAST_KEYS = [NETWORK_LAST_RECEIVED_KEY, NETWORK_LAST_SENT_KEY]
 ACCURACY_KEY = FLOpsTrainedModelCSVKeys.ACCURACY.value
 LOSS_KEY = FLOpsTrainedModelCSVKeys.LOSS.value
 TRAINED_MODEL_RUN_ID_KEY = FLOpsTrainedModelCSVKeys.EVALUATION_RUN.value
+
+
+class Cluster(enum.Enum):
+    CLUSTER_A = "cluster_a"
+    CLUSTER_B = "cluster_b"
+
+
+NODE_KEY = "Node"
+NODE_ROOT = "Root"
+NODE_CLUSTER_A = Cluster.CLUSTER_A.value
+NODE_CLUSTER_B = Cluster.CLUSTER_B.value

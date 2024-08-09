@@ -19,11 +19,10 @@
     dest: "{{ result_dir }}"
     flat: true
   loop: "{{ run_csvs.stdout_lines}}"
-  #become: true
 
 - name: "Copy trained-models csv files (from '/tmp/flops_trained_models.csv') to localhost ({{ result_dir }})"
   fetch:
     src: '/tmp/flops_trained_models.csv'
     dest: "{{ result_dir }}"
     flat: true
-  #become: true
+  when: is_root

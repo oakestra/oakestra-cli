@@ -1,6 +1,6 @@
 - block:
     - shell:
-        cmd: sudo ctr -n oakestra c ls | grep "nginx"
+        cmd: sudo ctr -n oakestra c ls | grep "trained_model"
       register: ctr_output
       delegate_to: cluster_a
       ignore_errors: true
@@ -10,7 +10,7 @@
 
 - block:
     - shell:
-        cmd: sudo ctr -n oakestra c ls | grep "nginx"
+        cmd: sudo ctr -n oakestra c ls | grep "trained_model"
       register: ctr_output
       delegate_to: cluster_b
       ignore_errors: true
