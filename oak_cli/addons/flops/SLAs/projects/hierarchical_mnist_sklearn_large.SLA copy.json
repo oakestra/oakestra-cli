@@ -10,9 +10,9 @@
         "data_tags": ["mnist"],
         "training_cycles": 10,
         "training_rounds": 5,
-        "min_available_clients":3,
-        "min_fit_clients": 3,
-        "min_evaluate_clients": 3
+        "min_available_clients":4,
+        "min_fit_clients": 4,
+        "min_evaluate_clients": 4
     },
     "post_training_steps": ["build_image_for_trained_model", "deploy_trained_model_image"],
     "resource_constraints": {
