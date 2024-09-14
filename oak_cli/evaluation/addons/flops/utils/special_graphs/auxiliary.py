@@ -33,4 +33,5 @@ def draw_line_graph_with_all_runs(
         font_size_multiplier=font_size_multiplier,
         y_axis_font_size_multiplier=y_axis_font_size_multiplier,
         x_axis_font_size_multiplier=x_axis_font_size_multiplier,
+        y_lim=(40, 80),
     )

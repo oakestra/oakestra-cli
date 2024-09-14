@@ -64,4 +64,6 @@ def draw_stages(
         labels=combined_labels,
         bbox_to_anchor=(1, 1),
         loc="upper left",
+        # fontsize=14,
+        fontsize=20,
     )

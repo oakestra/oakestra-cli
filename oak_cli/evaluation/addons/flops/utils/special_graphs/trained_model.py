@@ -20,13 +20,15 @@ def draw_trained_model_comparison_graph_accuracy(data: pd.DataFrame) -> None:
         data=_data,
         x_label="Evaluation Run",
         y_label="Trained Model Accuracies (%)",
-        show_legend_in_right_bottom_corner=True,
+        size=(10, 5),
+        # y_lim=(0, 100),
+        # show_legend_in_right_bottom_corner=True,
         plot_functions=[
             lambda: sns.barplot(
                 x=TRAINED_MODEL_RUN_ID_KEY,
                 y="value",
                 data=melted_df,
-                hue="variable",
+                # hue="variable",
             )
         ],
     )
@@ -43,13 +45,15 @@ def draw_trained_model_comparison_graph_loss(data: pd.DataFrame) -> None:
         data=_data,
         x_label="Evaluation Run",
         y_label="Trained Model Loss",
-        show_legend_in_right_bottom_corner=True,
+        size=(10, 5),
+        # y_lim=(0, 100),
+        # show_legend_in_right_bottom_corner=True,
         plot_functions=[
             lambda: sns.barplot(
                 x=TRAINED_MODEL_RUN_ID_KEY,
                 y="value",
                 data=melted_df,
-                hue="variable",
+                # hue="variable",
             )
         ],
     )
