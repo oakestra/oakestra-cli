@@ -1,0 +1,22 @@
+{
+    "verbose": true,
+    "customerID": "Admin",
+    "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_mnist_sklearn",
+    "ml_model_flavor": "sklearn",
+    "use_devel_base_images": false,
+    "supported_platforms": ["linux/amd64"],
+    "training_configuration": {
+        "mode": "classic",
+        "data_tags": ["mnist"],
+        "training_rounds": 3,
+        "min_available_clients": 2,
+        "min_fit_clients": 2,
+        "min_evaluate_clients": 2
+    },
+    "post_training_steps": ["build_image_for_trained_model", "deploy_trained_model_image"],
+    "resource_constraints": {
+        "memory": 100,
+        "vcpus": 1,
+        "storage": 0
+    }
+}

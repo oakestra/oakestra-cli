@@ -1,0 +1,23 @@
+- block:
+    - shell:
+        cmd: sudo ctr -n oakestra c ls | grep "trained_model"
+      register: ctr_output
+      delegate_to: cluster_a
+      ignore_errors: true
+    - set_fact:
+        works: "{{ ctr_output.rc == 0 }}"
+  when: not works
+
+- block:
+    - shell:
+        cmd: sudo ctr -n oakestra c ls | grep "trained_model"
+      register: ctr_output
+      delegate_to: cluster_b
+      ignore_errors: true
+    - set_fact:
+        works: "{{ ctr_output.rc == 0 }}"
+  when: not works
+
+- pause:
+    seconds: "{{ wait_time }}"
+  when: not works

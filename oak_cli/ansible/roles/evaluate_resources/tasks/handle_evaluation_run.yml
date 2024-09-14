@@ -1,0 +1,11 @@
+- include_tasks: clear_components.yml
+
+- name: Start evaluation-run (daemon)
+  command: "{{ venv_oak }} evaluate start-manual-evaluation-run --scenario Resources --evaluation-run-id {{ evaluation_run_id }}"
+
+- include_tasks: perform_evaluation_run.yml
+
+- name: Stop evaluation-run (daemon)
+  command: "{{ venv_oak }} evaluate stop-evaluation-run --scenario Resources"
+
+- include_tasks: clear_components.yml

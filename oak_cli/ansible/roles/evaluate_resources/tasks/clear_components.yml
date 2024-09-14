@@ -1,0 +1,5 @@
+- include_role:
+    name: clear_root_orchestrator
+
+- include_role:
+    name: clear_worker_node

@@ -1,0 +1,7 @@
+# TODO / FUTURE WORK: 
+# The idea is to add the oakestra automation repo as a submodule
+# to the oak-CLI to be able to call its playbooks via the CLI.
+
+# [submodule "oak_cli/ansible/oakestra_automations_submodule"]
+# 	path = oak_cli/ansible/oakestra_automations_submodule
+# 	url = https://github.com/oakestra/automation.git

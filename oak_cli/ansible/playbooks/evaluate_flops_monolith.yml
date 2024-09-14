@@ -1,0 +1,4 @@
+- name: Evaluate FLOps Monolith.
+  hosts: localhost
+  roles:
+    - evaluate_flops_monolith

@@ -1,0 +1,57 @@
+# NOTE: The following combination makes invoking OAK-CLI via ansible pretty tricky:
+#- Custom python package (not from pip) - current OAK-CLI
+#- Potential python venvs
+#- Vanilla python venvs are AFAIK bound to already installed python versions - thus a lot more limited than conda envs.
+#- Thus we need to use conda envs to guarantee identical versions, etc.
+#- The latests strict Debian/Ubuntu rules that prohibit installing packages via pip directly (only via venvs)
+#- The invocation & use of ansible
+#- Calling all this from via the CLI and not directly "ad-hoc"
+
+- include_role:
+    role: set_venv_vars
+
+- name: Check if conda is already installed.
+  command: "{{ conda }} --version"
+  register: conda_result
+  ignore_errors: true
+
+# NOTE: The conda setup can also be automated but my time is finite.
+- name: Fail if conda is not yet properly installed on the machine
+  fail:
+    msg: "Conda was not found on the machine. Please install it first." 
+  when: conda_result.rc != 0
+
+- name: "Check if venv '{{venv_name}}' already exists"
+  shell:
+    cmd: "{{ conda }} env list | grep {{ venv_name }}"
+  ignore_errors: true
+  register: conda_env_list_result
+
+- name: "Create the venv '{{venv_name}}' if it does not yet exist"
+  ansible.builtin.command:
+    cmd: "{{ conda }} create -n {{ venv_name }} python={{ venv_python_version }}"
+  when: conda_env_list_result.rc != 0
+
+- name: "Check if OAK-CLI '({{ eval_oak_cli_dir }})' is already installed."
+  ansible.builtin.shell:
+    cmd: "{{ venv_pip }} show oak-cli"
+  ignore_errors: true
+  register: oak_cli_pip_show
+
+- name: Install OAK-CLI
+  #when: oak_cli_pip_show.rc != 0
+  block:
+    - name: Git clone and or update oak-cli repo
+      ansible.builtin.git:
+        repo: git@github.com:oakestra/oakestra-cli.git
+        dest: "{{ eval_oak_cli_dir }}"
+        clone: true
+        single_branch: true
+        update: true
+        # Also works for branch-names
+        version: "v0.3.0_typer_refactoring"
+
+    - name: Install or update oak-cli
+      ansible.builtin.command:
+        cmd: "{{ venv_pip }} install ."
+        chdir: "{{ eval_oak_cli_dir }}"

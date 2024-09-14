@@ -1,0 +1,26 @@
+- name: Install Fundamental non-python dependencies for Oakestra, including Git, Docker (with Compose), and Go, etc.
+  hosts: localhost
+  become: yes
+
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+        state: latest
+        update_cache: true
+
+  roles: 
+    # Install & start docker (including compose)
+    - role: geerlingguy.docker 
+      vars:
+        docker_install_compose: true
+    # Install Go
+    - role: gantsign.golang

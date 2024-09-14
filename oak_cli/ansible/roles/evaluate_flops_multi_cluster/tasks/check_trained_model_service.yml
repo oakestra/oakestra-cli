@@ -1,0 +1,28 @@
+# DISCLAIMER: I am well aware that this is not pretty.
+# Due to the fleeting time and lack of available tooling to figure this out via the 
+# current oak-cli or Oakestra API easily + ansible's very restricted syntax
+# e.g. not allowed to to until loops for blocks or include_tasks
+# this is a rather quick way of getting this done.
+
+- set_fact:
+    works: false
+
+- include_tasks: aux.yml
+  vars:
+    wait_time: 30
+
+- include_tasks: aux.yml
+  vars:
+    wait_time: 60
+
+- include_tasks: aux.yml
+  vars:
+    wait_time: 90
+
+- include_tasks: aux.yml
+  vars:
+    wait_time: 120
+
+- fail:
+    msg: The trained-model was not successfully deployed
+  when: not works

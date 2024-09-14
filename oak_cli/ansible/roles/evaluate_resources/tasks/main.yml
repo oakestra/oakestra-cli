@@ -1,0 +1,12 @@
+- include_role:
+    name: prepare_oak_cli
+
+- name: Clean up before starting the evaluation cycle
+  command: "{{ venv_oak }} evaluate clean --scenario Resources"
+
+- name: "Handle all '{{ number_of_evaluation_runs }}' evaluations"
+  include_tasks: handle_evaluation_run.yml
+  vars:
+    evaluation_run_id: "{{ item }}"
+  with_sequence: start=1 end="{{ number_of_evaluation_runs }}"
+

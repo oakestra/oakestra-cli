@@ -1,0 +1,34 @@
+{
+    "sla_version": "v2.0",
+    "customerID": "Admin",
+    "applications": [
+        {
+            "applicationID": "",
+            "application_name": "python",
+            "application_namespace": "python",
+            "application_desc": "Simple python",
+            "microservices": [
+                {
+                    "microserviceID": "",
+                    "microservice_name": "python",
+                    "microservice_namespace": "python",
+                    "virtualization": "container",
+                    "cmd": [
+                        "sleep", "infinity"
+                    ],
+                    "memory": 100,
+                    "vcpus": 1,
+                    "vgpus": 0,
+                    "vtpus": 0,
+                    "bandwidth_in": 0,
+                    "bandwidth_out": 0,
+                    "storage": 0,
+                    "code": "ghcr.io/malyuk-a/flops-project-observer:latest",
+                    "state": "",
+                    "port": "9080",
+                    "added_files": []
+                }
+            ]
+        }
+    ]
+}

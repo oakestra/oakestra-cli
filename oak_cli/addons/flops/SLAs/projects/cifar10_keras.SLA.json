@@ -1,0 +1,19 @@
+{
+    "verbose": true,
+    "customerID": "Admin",
+    "ml_repo_url": "https://github.com/Malyuk-A/flops_ml_repo_cifar10_keras",
+    "ml_model_flavor": "keras",
+    "use_devel_base_images": true,
+    "training_configuration": {
+        "data_tags": ["cifar10"],
+        "training_rounds": 10,
+        "min_available_clients":3,
+        "min_fit_clients": 3,
+        "min_evaluate_clients": 3
+    },
+    "resource_constraints": {
+        "memory": 100,
+        "vcpus": 1,
+        "storage": 0
+    }
+}

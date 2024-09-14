@@ -1,0 +1,6 @@
+- set_fact:
+    conda: "{{ ansible_user_dir }}/miniconda3/condabin/conda"
+    venv_python_path: "{{ ansible_user_dir }}/miniconda3/envs/{{ venv_name }}/bin/python3"
+- set_fact:
+    venv_pip: "{{ venv_python_path }} -m pip"
+    venv_oak: "{{ venv_python_path }} -m oak_cli.main"

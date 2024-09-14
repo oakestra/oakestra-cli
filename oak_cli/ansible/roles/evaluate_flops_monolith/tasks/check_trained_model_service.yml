@@ -1,0 +1,7 @@
+- name: Wait for the trained model service to be up and running.
+  shell: sudo ctr -n oakestra c ls | grep "trained_model"
+  register: ctr_output
+  # NOTE: The FLOps Manager uses colored logs. It seems that colored logs get sent to stderr by docker logs.
+  until: "'trained_model' in ctr_output.stdout or 'trained_model' in ctr_output.stderr"
+  retries: 999 # AFAIK retires need to be specified - there is not "infinite" retries.
+  delay: 30

@@ -1,0 +1,23 @@
+- include_tasks: set_init_vars.yml
+
+- include_role:
+    role: prepare_oak_cli
+
+- name: Clean up remote hosts before starting the evaluation cycle
+  block:
+    - name: Clean up evaluation artifacts on the remote machines
+      command: "{{ venv_oak }} evaluate clean --scenario FLOps-multi-cluster"
+    - name: Append Header to Trained-Model CSV file
+      ansible.builtin.lineinfile:
+        path: /tmp/flops_trained_models.csv
+        line: "Evaluation-Run,Accuracy,Loss"
+        state: present
+        create: yes
+
+- name: "Handle all '{{ number_of_evaluation_runs }}' evaluations"
+  include_tasks: handle_evaluation_run.yml
+  vars:
+    evaluation_run_id: "{{ item }}"
+  with_sequence: start=1 end="{{ number_of_evaluation_runs }}"
+
+- include_tasks: aggregate_results.yml

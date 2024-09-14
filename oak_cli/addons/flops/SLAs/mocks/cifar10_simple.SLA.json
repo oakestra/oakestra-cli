@@ -1,0 +1,8 @@
+{
+    "customerID": "Admin",
+    "mock_data_configuration": {
+        "dataset_name": "cifar10",
+        "number_of_partitions": 1,
+        "data_tag": "cifar10"
+    }
+}

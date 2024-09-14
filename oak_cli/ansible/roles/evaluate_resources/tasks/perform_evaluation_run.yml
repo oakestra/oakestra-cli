@@ -1,0 +1,50 @@
+- pause:
+    seconds: 3
+
+- name: Create & deploy default application & services
+  command: "{{ venv_oak }} a c default_app_with_services -d"
+
+
+- name: Generate Network & Disk-Space Changes
+  block:
+
+  - name: Check for python3-requests
+    ansible.builtin.command: dpkg -s python3-requests
+    register: python3_requests_local
+    ignore_errors: true
+  
+  - name: Install python3-requests only for this run.
+    when: python3_requests_local.rc != 0
+    block:
+      - name: Update apt cache
+        ansible.builtin.apt:
+          update_cache: yes
+        become: true
+
+      - name: Install python3-requests
+        ansible.builtin.apt:
+          name: python3-requests
+          state: present
+        become: true
+
+  - name: Make sure pytorch docker image is not available locally.
+    community.docker.docker_image:
+      name: pytorch/pytorch
+      state: absent
+
+  - name: Pull pytorch image
+    community.docker.docker_image:
+      name: pytorch/pytorch
+      source: pull
+
+  - name: Remove pytorch image again
+    community.docker.docker_image:
+      name: pytorch/pytorch
+      state: absent
+
+- name: Uninstall python3-requests again.
+  ansible.builtin.apt:
+    name: python3-requests
+    state: absent
+  when: python3_requests_local.rc != 0
+  become: true

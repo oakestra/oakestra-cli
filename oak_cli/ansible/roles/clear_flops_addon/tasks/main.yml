@@ -1,0 +1,6 @@
+- name: Restart FLOps Management (Docker Compose)
+  command: "{{ venv_oak }} addon flops restart-management"
+
+- name: Clear FLOps Image Registry
+  command: "{{ venv_oak }} addon flops clear-registry"
+  when: clear_image_registry

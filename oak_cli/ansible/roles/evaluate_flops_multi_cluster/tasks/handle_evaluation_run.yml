@@ -1,0 +1,12 @@
+- include_tasks: clear_components.yml
+
+- name: "({{ item }}) Start evaluation-run (daemon)"
+  command: "{{ venv_oak }} evaluate start-manual-evaluation-run --scenario FLOps-multi-cluster --evaluation-run-id {{ evaluation_run_id }}"
+
+- include_tasks: perform_evaluation_run.yml
+  when: is_root
+
+- name: "({{ item }}) Stop evaluation-run (daemon)"
+  command: "{{ venv_oak }} evaluate stop-evaluation-run --scenario FLOps-multi-cluster"
+
+- include_tasks: clear_components.yml

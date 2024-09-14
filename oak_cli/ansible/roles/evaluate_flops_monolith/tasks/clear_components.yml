@@ -1,0 +1,10 @@
+- include_role:
+    name: clear_root_orchestrator
+  
+- include_role:
+    name: clear_worker_node
+
+- include_role:
+    name: clear_flops_addon
+  vars:
+    clear_image_registry: true
