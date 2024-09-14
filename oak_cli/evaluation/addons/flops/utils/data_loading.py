@@ -5,7 +5,6 @@ import pathlib
 from typing import NamedTuple, Optional
 
 import pandas as pd
-from icecream import ic
 from pandas.core.groupby import DataFrameGroupBy
 
 from oak_cli.evaluation.addons.flops.main import EvaluationRunFLOpsProjectStage
