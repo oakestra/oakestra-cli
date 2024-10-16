@@ -28,7 +28,7 @@ app = typer.Typer()
 
 @app.command(
     "start-manual-evaluation-run",
-    help="Starts the evaluation daemon. This CLI endpoint mostly exist for Ansible calls.",
+    help="Start the evaluation daemon (This command primarily exist for Ansible calls)",
 )
 def start_evaluation_run(
     scenario: EvaluationScenario = EvaluationScenario.RESOURCES.value,  # type: ignore
@@ -43,7 +43,7 @@ def start_evaluation_run(
 
 @app.command(
     "start-automatic-evaluation-cycle",
-    help="Executes multiple evaluation-runs automatically via Ansible.",
+    help="Execute multiple evaluation-runs automatically via Ansible",
 )
 def start_evaluation_cycle(
     scenario: EvaluationScenario = EvaluationScenario.RESOURCES.value,  # type: ignore

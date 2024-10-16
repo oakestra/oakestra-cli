@@ -12,6 +12,8 @@ from oak_cli.configuration.keys.enums import ConfigKey, ConfigurableConfigKey, I
 from oak_cli.configuration.local_machine_purpose.enum import LocalMachinePurpose
 from oak_cli.utils.logging import logger
 
+OAK_CLI_SLA_FOLDER_PATH = OAK_CLI_USER_FOLDER_PATH / "SLAs"
+
 # Version needs to be incremented every time the config structure changes.
 _CONFIG_VERSION = "1"
 

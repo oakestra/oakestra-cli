@@ -25,15 +25,9 @@ app = typer.Typer(cls=AliasGroup)
     "local-machine-purpose",
     help=(
         "Configure the purpose of the local machine w.r.t. Oakestra.\n"
-        "You can specify one or multiple purposes at once.\n"
+        "Specify one or multiple purposes at once.\n"
         "E.g. ... --purpose A --purpose B\n| "
-        "The OAK CLI includes various features.\n"
-        "These features depend on the concrete usecase and environment.\n"
-        "Endusers and Developers require different commands.\n"
-        "Local machines that host Oakestra orchestrator components and those that do not,"
-        " require different sets of commands.\n"
-        "To support these different usecases the OAK CLI"
-        " uses the concept of local-machine-purposes."
+        "For further information run 'oak explain local-machine-purpose'"
     ),
 )
 def configure_local_machine_purpose(
@@ -87,7 +81,7 @@ app.add_typer(
 )
 
 
-@app.command("show-config, s", help="Shows your current OAK-CLI configuration.")
+@app.command("show-config, s", help="Show the current OAK-CLI configuration")
 def show_config():
     check_and_handle_config_file()
     config = open_local_config()
@@ -95,7 +89,7 @@ def show_config():
         pprint.pprint(dict(config.items(section)))
 
 
-@app.command("reset-config", help="Resets your current OAK-CLI configuration to its initial state.")
+@app.command("reset-config", help="Reset the current OAK-CLI configuration to its initial state")
 def reset_config():
     clear_file(OAK_CLI_CONFIG_PATH)
     check_and_handle_config_file()

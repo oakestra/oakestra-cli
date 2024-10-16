@@ -29,7 +29,7 @@ ic.configureOutput(prefix="")
 app = typer.Typer(cls=AliasGroup)
 
 
-@app.command("inspect, i", help="Inspect the specified service.")
+@app.command("inspect, i", help="Inspect a specific service")
 def inspect_service(
     service_id: ServiceId,
     live: LIVE_VIEW_FLAG_TYPE = False,
@@ -40,7 +40,7 @@ def inspect_service(
     )
 
 
-@app.command("show, s", help="Shows current services.")
+@app.command("show, s", help="Show current services")
 def show_current_services(
     app_id: Annotated[
         Optional[ApplicationId],
@@ -73,7 +73,7 @@ def show_current_services(
     )
 
 
-@app.command("deploy, d", help="Deploy a new service instance.")
+@app.command("deploy, d", help="Deploy a new service instance")
 def deploy_new_instance(service_id: ServiceId) -> None:
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
@@ -92,21 +92,21 @@ def deploy_new_instance(service_id: ServiceId) -> None:
 @app.command(
     "undeploy, u",
     help="""
-        Undeploy all services or only the specified ones.
-        Without any optional flags undeploys all services.
+        Undeploy all services or only the specified ones
+        (Without any optional flags undeploy all services)
         """,
 )
 def undeploy_instances(
     service_id: Annotated[
         Optional[ServiceId],
-        typer.Option(help="If provided will only undeploy all instances of that service."),
+        typer.Option(help="If provided will only undeploy all instances of that service"),
     ] = None,
     instance_id: Annotated[
         Optional[Id],
         typer.Option(
             help="""
-                Requires the 'service_id' to be provided.
-                Undeploys only the single instance of the specified service.
+                Undeploy only the single instance of the specified service
+                (Requires the 'service_id' to be provided)
                 """
         ),
     ] = None,
