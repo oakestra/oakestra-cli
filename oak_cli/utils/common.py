@@ -77,7 +77,6 @@ def clear_dir(dir: pathlib.Path) -> None:
 
 
 def kill_process(pid: int) -> None:
-    # TODO rework
     try:
         # Attempt to send SIGTERM to the process
         os.kill(pid, signal.SIGTERM)

@@ -39,7 +39,6 @@
   register: oak_cli_pip_show
 
 - name: Install OAK-CLI
-  #when: oak_cli_pip_show.rc != 0
   block:
     - name: Git clone and or update oak-cli repo
       ansible.builtin.git:
@@ -49,7 +48,7 @@
         single_branch: true
         update: true
         # Also works for branch-names
-        version: "v0.3.0_typer_refactoring"
+        version: master
 
     - name: Install or update oak-cli
       ansible.builtin.command:
