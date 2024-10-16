@@ -1,7 +1,0 @@
-- name: "Wait for '{{ stage_indicator }}' to finish."
-  shell: docker logs flops_manager
-  register: log_output
-  # NOTE: The FLOps Manager uses colored logs. It seems that colored logs get sent to stderr by docker logs.
-  until: stage_indicator in log_output.stdout or stage_indicator in log_output.stderr
-  retries: 999 # AFAIK retires need to be specified - there is not "infinite" retries.
-  delay: 30

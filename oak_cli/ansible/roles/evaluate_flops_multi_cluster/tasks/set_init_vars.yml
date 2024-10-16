@@ -1,3 +1,0 @@
-- set_fact:
-    is_cluster: "{{ inventory_hostname.startswith('cluster_') }}"
-    is_root: "{{ inventory_hostname.startswith('root_') }}"

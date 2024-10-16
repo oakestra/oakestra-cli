@@ -9,7 +9,6 @@ import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
 import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
-import oak_cli.evaluation.main as oak_evaluation
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
 import oak_cli.worker.main as oak_worker
@@ -66,11 +65,12 @@ if check_if_local_machine_has_required_purposes(
         help=typer_help_text("docker(compose)"),
     )
 
-    app.add_typer(
-        typer_instance=oak_evaluation.app,
-        name="evaluate",
-        help=typer_help_text("evaluation"),
-    )
+    # TODO: Need to review/discuss if this is actually something we want as part of the CLI.
+    # app.add_typer(
+    #     typer_instance=oak_evaluation.app,
+    #     name="evaluate",
+    #     help=typer_help_text("evaluation"),
+    # )
 
 if check_if_local_machine_has_required_purposes(
     required_purposes=[LocalMachinePurpose.ADDON_SUPPORT]

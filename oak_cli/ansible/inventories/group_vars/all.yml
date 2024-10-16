@@ -2,12 +2,3 @@ venv_name: evaluation-venv
 venv_python_version: "3.10.4"
 
 eval_oak_cli_dir: "/tmp/eval-oak-cli"
-
-
-flops_management_env_vars:
-  FLOPS_MANAGER_IP: '131.159.25.104'
-  FLOPS_MQTT_BROKER_IP: '131.159.25.104'
-  FLOPS_IMAGE_REGISTRY_IP: '131.159.25.104'
-  ARTIFACT_STORE_IP: '131.159.25.104'
-  BACKEND_STORE_IP: '131.159.25.104'
-  DATA_MANAGER_IP: '131.159.25.104'
