@@ -41,7 +41,7 @@ app = typer.Typer(
 )
 
 if check_if_local_machine_has_required_purposes(
-    required_purposes=[LocalMachinePurpose.ROOT_ORCHESTRATOR, LocalMachinePurpose.INITIAL]
+    required_purposes=[LocalMachinePurpose.ROOT_ORCHESTRATOR], initial_purpose_support=True
 ):
     app.add_typer(
         typer_instance=oak_applications.app,
