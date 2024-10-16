@@ -9,24 +9,10 @@ from oak_cli.configuration.common import (
     update_config_value,
 )
 from oak_cli.configuration.keys.enums import ConfigurableConfigKey
+from oak_cli.configuration.local_machine_purpose.enum import LocalMachinePurpose
 from oak_cli.utils.typer_augmentations import AliasGroup
-from oak_cli.utils.types import CustomEnum
 
 app = typer.Typer(cls=AliasGroup)
-
-
-class LocalMachinePurpose(CustomEnum):
-    """A machine can have one, multiple, or all of these purposes."""
-
-    EVERYTHING = "everything"
-
-    ROOT_ORCHESTRATOR = "root_orchestrator"
-    CLUSTER_ORCHESTRATOR = "cluster_orchestrator"
-    WORKER_NODE = "worker_node"
-
-    ADDON_SUPPORT = "addon_support"
-
-    DEVELOPMENT = "development"
 
 
 def get_local_machine_purposes_from_config(
@@ -72,9 +58,10 @@ def configure_local_machine_purpose(
     local_machine_purposes_set = set(local_machine_purposes)
     if LocalMachinePurpose.EVERYTHING in local_machine_purposes_set:
         local_machine_purposes_set = {LocalMachinePurpose.EVERYTHING}
+    if LocalMachinePurpose.INITIAL in local_machine_purposes_set:
+        local_machine_purposes_set = {LocalMachinePurpose.INITIAL}
     check_and_handle_config_file()
     update_config_value(
         key=ConfigurableConfigKey.LOCAL_MACHINE_PURPOSE,
-        # NOTE: The config only supports strings.
         value=json.dumps([purpose.value for purpose in local_machine_purposes_set]),
     )
