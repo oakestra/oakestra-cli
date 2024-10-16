@@ -39,6 +39,11 @@ def check_if_local_machine_has_required_purposes(
         return False
     if LocalMachinePurpose.EVERYTHING in local_machine_purposes:
         return True
+    if (
+        LocalMachinePurpose.INITIAL in local_machine_purposes
+        and LocalMachinePurpose.INITIAL in required_purposes
+    ):
+        return True
     return set(required_purposes).issubset(set(local_machine_purposes))
 
 
