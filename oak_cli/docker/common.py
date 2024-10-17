@@ -2,7 +2,7 @@ import json
 import pathlib
 import sys
 
-from oak_cli.configuration.auxiliary import get_main_oak_repo_path
+from oak_cli.configuration.common import get_main_oak_repo_path
 from oak_cli.docker.enums import OakestraDockerComposeService, RootOrchestratorService
 from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.logging import logger

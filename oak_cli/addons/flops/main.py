@@ -4,14 +4,16 @@ import pathlib
 import typer
 
 import oak_cli.utils.api.custom_requests as custom_requests
-from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
-from oak_cli.addons.flops.SLAs.mocks.common import FLOpsMockDataProviderSLAs
-from oak_cli.addons.flops.SLAs.projects.common import FLOpsProjectSLAs
-from oak_cli.configuration.auxiliary import get_flops_addon_repo_path
+from oak_cli.addons.flops.auxiliary import get_flops_addon_repo_path
+from oak_cli.addons.flops.SLAs.main import (
+    OAK_CLI_FLOPS_MOCKS_SLA_FOLDER_PATH,
+    OAK_CLI_FLOPS_PROJECT_SLA_FOLDER_PATH,
+    get_sla_file_path,
+)
 from oak_cli.configuration.common import get_config_value
 from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.utils.api.custom_http import HttpMethod
-from oak_cli.utils.common import run_in_shell
+from oak_cli.utils.common import print_sla, run_in_shell
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.styling import create_spinner
 from oak_cli.utils.typer_augmentations import AliasGroup
@@ -24,22 +26,33 @@ def get_root_fl_manager_url() -> str:
 app = typer.Typer(cls=AliasGroup)
 
 
-def _load_sla(sla: FLOpsSLAs, sla_path: pathlib.Path) -> dict:
-    with open(sla_path / f"{sla.value}.SLA.json", "r") as f:
+def _load_sla(sla_file_path: pathlib.Path) -> dict:
+    with open(sla_file_path, "r") as f:
         return json.load(f)
 
 
 @app.command("project, p", help="Starts a new FLOps project.")
-def create_new_flops_project(project_sla: FLOpsProjectSLAs) -> None:
+def create_new_flops_project(
+    project_sla_name: str = "",
+    show: bool = typer.Option(False, help="Only displays the SLA."),
+) -> None:
+    sla_file_path = get_sla_file_path(
+        sla_name=project_sla_name,
+        sla_folder=OAK_CLI_FLOPS_PROJECT_SLA_FOLDER_PATH,
+    )
+    if show:
+        print_sla(sla_file_path)
+        return
+
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
             base_url=get_root_fl_manager_url(),
             api_endpoint="/api/flops/projects",
-            data=_load_sla(project_sla, FLOpsProjectSLAs.get_SLAs_path()),
+            data=_load_sla(sla_file_path),
         ),
         custom_requests.RequestAuxiliaries(
-            what_should_happen=f"Init new FLOps project for SLA '{project_sla}'",
+            what_should_happen=f"Init new FLOps project for SLA '{sla_file_path}'",
             show_msg_on_success=True,
             oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),
@@ -47,16 +60,27 @@ def create_new_flops_project(project_sla: FLOpsProjectSLAs) -> None:
 
 
 @app.command("mock_data, m", help="Deploys a mock-data-provider.")
-def create_new_mock_data_service(mock_sla: FLOpsMockDataProviderSLAs) -> None:
+def create_new_mock_data_service(
+    mock_sla_name: str = "",
+    show: bool = typer.Option(False, help="Only displays the SLA."),
+) -> None:
+    sla_file_path = get_sla_file_path(
+        sla_name=mock_sla_name,
+        sla_folder=OAK_CLI_FLOPS_MOCKS_SLA_FOLDER_PATH,
+    )
+    if show:
+        print_sla(sla_file_path)
+        return
+
     custom_requests.CustomRequest(
         custom_requests.RequestCore(
             http_method=HttpMethod.POST,
             base_url=get_root_fl_manager_url(),
             api_endpoint="/api/flops/mocks",
-            data=_load_sla(mock_sla, FLOpsMockDataProviderSLAs.get_SLAs_path()),
+            data=_load_sla(sla_file_path),
         ),
         custom_requests.RequestAuxiliaries(
-            what_should_happen=f"Init new FLOps mock data service for SLA '{mock_sla}'",
+            what_should_happen=f"Init new FLOps mock data service for SLA '{sla_file_path}'",
             show_msg_on_success=True,
             oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),

@@ -2,7 +2,7 @@ import typer
 
 import oak_cli.docker.cluster_orchestrator
 import oak_cli.docker.root_orchestrator
-from oak_cli.configuration.local_machine_purpose import (
+from oak_cli.configuration.local_machine_purpose.main import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )

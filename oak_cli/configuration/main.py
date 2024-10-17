@@ -1,21 +1,84 @@
 import pprint
+from typing import List, Optional
 
 import typer
+from typing_extensions import Annotated
 
 import oak_cli.configuration.keys.main
-import oak_cli.configuration.local_machine_purpose
+import oak_cli.configuration.local_machine_purpose.main
 import oak_cli.docker.cluster_orchestrator
 import oak_cli.docker.root_orchestrator
-from oak_cli.configuration.common import check_and_handle_config_file, open_local_config
+from oak_cli.configuration.common import (
+    OAK_CLI_CONFIG_PATH,
+    check_and_handle_config_file,
+    open_local_config,
+)
+from oak_cli.configuration.local_machine_purpose.enum import LocalMachinePurpose
+from oak_cli.configuration.local_machine_purpose.main import set_local_machine_purposes
+from oak_cli.utils.common import clear_file
 from oak_cli.utils.typer_augmentations import AliasGroup
 
 app = typer.Typer(cls=AliasGroup)
 
-app.add_typer(
-    typer_instance=oak_cli.configuration.local_machine_purpose.app,
-    name="local-machine-purpose",
-    help="Manage the local machine purpose w.r.t. Oakestra",
+
+@app.command(
+    "local-machine-purpose",
+    help=(
+        "Configure the purpose of the local machine w.r.t. Oakestra.\n"
+        "You can specify one or multiple purposes at once.\n"
+        "E.g. ... --purpose A --purpose B\n| "
+        "The OAK CLI includes various features.\n"
+        "These features depend on the concrete usecase and environment.\n"
+        "Endusers and Developers require different commands.\n"
+        "Local machines that host Oakestra orchestrator components and those that do not,"
+        " require different sets of commands.\n"
+        "To support these different usecases the OAK CLI"
+        " uses the concept of local-machine-purposes."
+    ),
 )
+def configure_local_machine_purpose(
+    # NOTE: Sets are not yet supported by the frameworks.
+    # local_machine_purposes: Optional[List[LocalMachinePurpose]] = None,
+    local_machine_purposes: Annotated[
+        Optional[List[LocalMachinePurpose]],
+        typer.Option("--purpose", help="A local machine purposes."),
+    ] = None,
+) -> None:
+
+    if local_machine_purposes:
+        set_local_machine_purposes(set(local_machine_purposes))
+        return
+
+    if typer.confirm(
+        "Do you want to use all OAK-CLI capabilities?\n"
+        "(NOTE: All features at once are only usable on a monolith system"
+        " that hosts all Oakestra components.)"
+    ):
+        set_local_machine_purposes(set([LocalMachinePurpose.EVERYTHING]))
+        return
+
+    if typer.confirm("Do you want to use the default initial capabilities?"):
+        set_local_machine_purposes(set([LocalMachinePurpose.INITIAL]))
+        return
+
+    requested_purposes = []
+    if typer.confirm("Does your local machine host Oakestra's Root Orchestrator?"):
+        requested_purposes.append(LocalMachinePurpose.ROOT_ORCHESTRATOR)
+
+    if typer.confirm("Does your local machine host Oakestra's Cluster Orchestrator?"):
+        requested_purposes.append(LocalMachinePurpose.CLUSTER_ORCHESTRATOR)
+
+    if typer.confirm("Is your local machine an Oakestra's Worker Node?"):
+        requested_purposes.append(LocalMachinePurpose.WORKER_NODE)
+
+    if typer.confirm("Do you want to use Oakestra Addons?"):
+        requested_purposes.append(LocalMachinePurpose.ADDON_SUPPORT)
+
+    if typer.confirm("Are you an Oakestra Contributor or Developer?"):
+        requested_purposes.append(LocalMachinePurpose.DEVELOPMENT)
+
+    set_local_machine_purposes(set(requested_purposes))
+
 
 app.add_typer(
     typer_instance=oak_cli.configuration.keys.main.app,
@@ -30,3 +93,9 @@ def show_config():
     config = open_local_config()
     for section in config.sections():
         pprint.pprint(dict(config.items(section)))
+
+
+@app.command("reset-config", help="Resets your current OAK-CLI configuration to its initial state.")
+def reset_config():
+    clear_file(OAK_CLI_CONFIG_PATH)
+    check_and_handle_config_file()
