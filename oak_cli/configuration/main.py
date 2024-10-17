@@ -2,7 +2,6 @@ import pprint
 from typing import List, Optional
 
 import typer
-from icecream import ic
 from typing_extensions import Annotated
 
 import oak_cli.configuration.keys.main
@@ -12,9 +11,7 @@ import oak_cli.docker.root_orchestrator
 from oak_cli.configuration.common import (
     OAK_CLI_CONFIG_PATH,
     check_and_handle_config_file,
-    get_config_value,
     open_local_config,
-    update_config_value,
 )
 from oak_cli.configuration.local_machine_purpose.enum import LocalMachinePurpose
 from oak_cli.configuration.local_machine_purpose.main import set_local_machine_purposes
@@ -26,12 +23,17 @@ app = typer.Typer(cls=AliasGroup)
 
 @app.command(
     "local-machine-purpose",
-    help="\n".join(
-        (
-            "Configure the purpose of the local machine w.r.t. Oakestra.",
-            "You can specify one or multiple purposes at once.",
-            "E.g. ... --purpose A --purpose B",
-        )
+    help=(
+        "Configure the purpose of the local machine w.r.t. Oakestra.\n"
+        "You can specify one or multiple purposes at once.\n"
+        "E.g. ... --purpose A --purpose B\n| "
+        "The OAK CLI includes various features.\n"
+        "These features depend on the concrete usecase and environment.\n"
+        "Endusers and Developers require different commands.\n"
+        "Local machines that host Oakestra orchestrator components and those that do not,"
+        " require different sets of commands.\n"
+        "To support these different usecases the OAK CLI"
+        " uses the concept of local-machine-purposes."
     ),
 )
 def configure_local_machine_purpose(
@@ -41,36 +43,41 @@ def configure_local_machine_purpose(
         Optional[List[LocalMachinePurpose]],
         typer.Option("--purpose", help="A local machine purposes."),
     ] = None,
-    show_explanation: bool = True,
 ) -> None:
-    ic("hiiiiiiiiii")
-    ic(local_machine_purposes)
-    ic("chao")
 
     if local_machine_purposes:
         set_local_machine_purposes(set(local_machine_purposes))
         return
 
-    if show_explanation:
-        show_explanation = typer.confirm(
-            "Do you want to learn more about OAK's local-machine-purposes?"
-        )
+    if typer.confirm(
+        "Do you want to use all OAK-CLI capabilities?\n"
+        "(NOTE: All features at once are only usable on a monolith system"
+        " that hosts all Oakestra components.)"
+    ):
+        set_local_machine_purposes(set([LocalMachinePurpose.EVERYTHING]))
+        return
 
-    if show_explanation:
-        ic(show_explanation, "blala explain ...")
+    if typer.confirm("Do you want to use the default initial capabilities?"):
+        set_local_machine_purposes(set([LocalMachinePurpose.INITIAL]))
+        return
 
-    TODO cont
+    requested_purposes = []
+    if typer.confirm("Does your local machine host Oakestra's Root Orchestrator?"):
+        requested_purposes.append(LocalMachinePurpose.ROOT_ORCHESTRATOR)
 
-    # local_machine_purposes_set = set(local_machine_purposes)
-    # if LocalMachinePurpose.EVERYTHING in local_machine_purposes_set:
-    #     local_machine_purposes_set = {LocalMachinePurpose.EVERYTHING}
-    # if LocalMachinePurpose.INITIAL in local_machine_purposes_set:
-    #     local_machine_purposes_set = {LocalMachinePurpose.INITIAL}
-    # check_and_handle_config_file()
-    # update_config_value(
-    #     key=ConfigurableConfigKey.LOCAL_MACHINE_PURPOSE,
-    #     value=json.dumps([purpose.value for purpose in local_machine_purposes_set]),
-    # )
+    if typer.confirm("Does your local machine host Oakestra's Cluster Orchestrator?"):
+        requested_purposes.append(LocalMachinePurpose.CLUSTER_ORCHESTRATOR)
+
+    if typer.confirm("Is your local machine an Oakestra's Worker Node?"):
+        requested_purposes.append(LocalMachinePurpose.WORKER_NODE)
+
+    if typer.confirm("Do you want to use Oakestra Addons?"):
+        requested_purposes.append(LocalMachinePurpose.ADDON_SUPPORT)
+
+    if typer.confirm("Are you an Oakestra Contributor or Developer?"):
+        requested_purposes.append(LocalMachinePurpose.DEVELOPMENT)
+
+    set_local_machine_purposes(set(requested_purposes))
 
 
 app.add_typer(
@@ -91,6 +98,4 @@ def show_config():
 @app.command("reset-config", help="Resets your current OAK-CLI configuration to its initial state.")
 def reset_config():
     clear_file(OAK_CLI_CONFIG_PATH)
-    # config = open_local_config()
-    # config.clear()
     check_and_handle_config_file()

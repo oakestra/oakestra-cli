@@ -9,7 +9,9 @@ from oak_cli.configuration.keys.enums import ConfigKey, ConfigurableConfigKey, I
 from oak_cli.configuration.local_machine_purpose.enum import LocalMachinePurpose
 from oak_cli.utils.logging import logger
 
-OAK_CLI_CONFIG_PATH = pathlib.Path.home() / ".oak_cli_config"
+OAK_CLI_USER_FOLDER_PATH = pathlib.Path.home() / "oak_cli"
+OAK_CLI_CONFIG_PATH = OAK_CLI_USER_FOLDER_PATH / ".oak_cli_config"
+OAK_CLI_SLA_FOLDER_PATH = OAK_CLI_USER_FOLDER_PATH / "SLAs"
 
 # Version needs to be incremented every time the config structure changes.
 CONFIG_VERSION = "1"
@@ -82,7 +84,17 @@ def _create_initial_unconfigured_config_file() -> None:
     )
 
 
+def _check_user_oak_folder_and_content() -> None:
+    if not OAK_CLI_USER_FOLDER_PATH.is_dir():
+        OAK_CLI_USER_FOLDER_PATH.mkdir(exist_ok=True)
+
+    if not OAK_CLI_SLA_FOLDER_PATH.is_dir():
+        OAK_CLI_SLA_FOLDER_PATH.mkdir(exist_ok=True)
+
+
 def check_and_handle_config_file() -> None:
+    _check_user_oak_folder_and_content()
+
     if _check_local_config_valid():
         return
 
