@@ -1,4 +1,5 @@
 import enum
+import json
 import os
 import pathlib
 import shlex
@@ -6,6 +7,8 @@ import shutil
 import signal
 import subprocess
 import sys
+
+from rich import print_json
 
 from oak_cli.utils.logging import logger
 
@@ -84,3 +87,10 @@ def kill_process(pid: int) -> None:
     except ProcessLookupError:
         # Handle case where pid does not exist
         print(f"No process found with PID {pid}")
+
+
+def print_sla(sla_file_path: pathlib.Path) -> None:
+    with open(sla_file_path) as f:
+        data = json.load(f)
+    logger.info(f"SLA '{sla_file_path}':")
+    print_json(data=data)

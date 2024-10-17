@@ -3,7 +3,6 @@ from typing import List, Optional
 
 import typer
 from icecream import ic
-from rich import print_json
 from typing_extensions import Annotated
 
 import oak_cli.utils.api.custom_requests as custom_requests
@@ -13,6 +12,7 @@ from oak_cli.apps.prepared_SLAs.main import get_sla_file_path
 from oak_cli.services.main import deploy_new_instance
 from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
+from oak_cli.utils.common import print_sla
 from oak_cli.utils.exceptions.types import OakCLIExceptionTypes
 from oak_cli.utils.logging import logger
 from oak_cli.utils.styling import display_table
@@ -104,6 +104,4 @@ def delete_applications(
 @app.command("sla", help="Displays the SLA of the specified application.")
 def display_app_sla(sla_name: Optional[str] = "") -> None:
     sla_file_path = get_sla_file_path(sla_name)
-    with open(sla_file_path) as f:
-        data = json.load(f)
-    print_json(data=data)
+    print_sla(sla_file_path)

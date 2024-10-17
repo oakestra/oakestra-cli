@@ -5,6 +5,7 @@ import json
 import pathlib
 import sys
 
+from oak_cli.addons.flops.SLAs.main import check_flops_folders
 from oak_cli.apps.prepared_SLAs.main import check_sla_folder
 from oak_cli.configuration.consts import OAK_CLI_CONFIG_PATH, OAK_CLI_USER_FOLDER_PATH
 from oak_cli.configuration.keys.enums import ConfigKey, ConfigurableConfigKey, InternalConfigKey
@@ -87,6 +88,7 @@ def _check_user_oak_folder_and_content() -> None:
         OAK_CLI_USER_FOLDER_PATH.mkdir(exist_ok=True)
 
     check_sla_folder()
+    check_flops_folders()
 
 
 def check_and_handle_config_file() -> None:
