@@ -5,16 +5,14 @@ import json
 import pathlib
 import sys
 
+from oak_cli.apps.prepared_SLAs.main import check_sla_folder
+from oak_cli.configuration.consts import OAK_CLI_CONFIG_PATH, OAK_CLI_USER_FOLDER_PATH
 from oak_cli.configuration.keys.enums import ConfigKey, ConfigurableConfigKey, InternalConfigKey
 from oak_cli.configuration.local_machine_purpose.enum import LocalMachinePurpose
 from oak_cli.utils.logging import logger
 
-OAK_CLI_USER_FOLDER_PATH = pathlib.Path.home() / "oak_cli"
-OAK_CLI_CONFIG_PATH = OAK_CLI_USER_FOLDER_PATH / ".oak_cli_config"
-OAK_CLI_SLA_FOLDER_PATH = OAK_CLI_USER_FOLDER_PATH / "SLAs"
-
 # Version needs to be incremented every time the config structure changes.
-CONFIG_VERSION = "1"
+_CONFIG_VERSION = "1"
 
 
 def _check_local_config_valid() -> bool:
@@ -31,7 +29,7 @@ def _check_local_config_valid() -> bool:
         return False
 
     local_config_version = get_config_value(InternalConfigKey.CONFIG_VERSION)
-    return local_config_version == CONFIG_VERSION
+    return local_config_version == _CONFIG_VERSION
 
 
 def open_local_config() -> configparser.ConfigParser:
@@ -67,7 +65,7 @@ def _create_initial_unconfigured_config_file() -> None:
     config = configparser.ConfigParser()
     config[InternalConfigKey.CONFIG_MAIN_KEY.value] = {}
     _update_config(config=config)
-    update_config_value(key=InternalConfigKey.CONFIG_VERSION, value=CONFIG_VERSION)
+    update_config_value(key=InternalConfigKey.CONFIG_VERSION, value=_CONFIG_VERSION)
     update_config_value(
         key=ConfigurableConfigKey.LOCAL_MACHINE_PURPOSE,
         value=json.dumps([LocalMachinePurpose.INITIAL.value]),
@@ -88,8 +86,7 @@ def _check_user_oak_folder_and_content() -> None:
     if not OAK_CLI_USER_FOLDER_PATH.is_dir():
         OAK_CLI_USER_FOLDER_PATH.mkdir(exist_ok=True)
 
-    if not OAK_CLI_SLA_FOLDER_PATH.is_dir():
-        OAK_CLI_SLA_FOLDER_PATH.mkdir(exist_ok=True)
+    check_sla_folder()
 
 
 def check_and_handle_config_file() -> None:
@@ -114,3 +111,8 @@ def _handle_missing_key_access_attempt(key: ConfigKey) -> None:
         )
     )
     sys.exit(1)
+
+
+def get_main_oak_repo_path() -> pathlib.Path:
+    config_value = get_config_value(ConfigurableConfigKey.MAIN_OAK_REPO_PATH)
+    return pathlib.Path(config_value)

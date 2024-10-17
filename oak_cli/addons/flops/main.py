@@ -4,10 +4,10 @@ import pathlib
 import typer
 
 import oak_cli.utils.api.custom_requests as custom_requests
+from oak_cli.addons.flops.auxiliary import get_flops_addon_repo_path
 from oak_cli.addons.flops.SLAs.common import FLOpsSLAs
 from oak_cli.addons.flops.SLAs.mocks.common import FLOpsMockDataProviderSLAs
 from oak_cli.addons.flops.SLAs.projects.common import FLOpsProjectSLAs
-from oak_cli.configuration.auxiliary import get_flops_addon_repo_path
 from oak_cli.configuration.common import get_config_value
 from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.utils.api.custom_http import HttpMethod

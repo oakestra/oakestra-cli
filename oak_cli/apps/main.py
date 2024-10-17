@@ -3,12 +3,13 @@ from typing import List, Optional
 
 import typer
 from icecream import ic
+from rich import print_json
 from typing_extensions import Annotated
 
 import oak_cli.utils.api.custom_requests as custom_requests
 from oak_cli.apps.auxiliary import generate_current_application_table
 from oak_cli.apps.common import delete_application, get_applications
-from oak_cli.apps.SLAs.common import AppSLAs, get_SLAs_path
+from oak_cli.apps.prepared_SLAs.main import get_sla_file_path
 from oak_cli.services.main import deploy_new_instance
 from oak_cli.utils.api.common import get_system_manager_url
 from oak_cli.utils.api.custom_http import HttpMethod
@@ -53,14 +54,13 @@ def show_current_applications(
 
 @app.command("create, c", help="Creates one or multiple apps based on a SLA")
 def create_applications(
-    sla_enum: AppSLAs,
+    sla_name: Optional[str] = "",
     deploy: Annotated[
         bool, typer.Option("-d", help="Deploys the application service(s) afterwards.")
     ] = False,
 ) -> List[Application]:
-    sla_file_name = f"{sla_enum}.SLA.json"
-    SLA = ""
-    with open(get_SLAs_path() / sla_file_name, "r") as f:
+    sla_file_path = get_sla_file_path(sla_name)
+    with open(sla_file_path, "r") as f:
         SLA = json.load(f)
     sla_apps = SLA["applications"]
     sla_app_names = [app["application_name"] for app in sla_apps]
@@ -73,7 +73,7 @@ def create_applications(
             data=SLA,
         ),
         custom_requests.RequestAuxiliaries(
-            what_should_happen=f"Create new application based on '{sla_enum}'",
+            what_should_happen=f"Create new application based on '{sla_file_path}'",
             show_msg_on_success=True,
             oak_cli_exception_type=OakCLIExceptionTypes.APP_CREATE,
         ),
@@ -99,3 +99,11 @@ def delete_applications(
 
     for app in get_applications():
         delete_application(app["applicationID"])
+
+
+@app.command("sla", help="Displays the SLA of the specified application.")
+def display_app_sla(sla_name: Optional[str] = "") -> None:
+    sla_file_path = get_sla_file_path(sla_name)
+    with open(sla_file_path) as f:
+        data = json.load(f)
+    print_json(data=data)
