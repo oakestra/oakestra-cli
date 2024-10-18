@@ -1,14 +1,11 @@
-OAK-CLI documentation
-=====================
-
 .. typer:: oak_cli.main:app
       :prog: oak
       :width: 80
 .. :show-nested:
 .. :make-sections:
 
-.. typer:: oak_cli.main:app:addon
-      :prog: oak addon
+.. typer:: oak_cli.main:app:a
+      :prog: oak a
       :width: 80
       :show-nested:
 
