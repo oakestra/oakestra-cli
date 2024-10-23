@@ -30,7 +30,7 @@ def rebuild_cluster_orchestrator_compose_service(
     compose_service: ClusterOrchestratorService,
     cache_less: Annotated[
         bool,
-        typer.Option(help="Uses cache-less rebuild."),
+        typer.Option(help="Use cache-less rebuild"),
     ] = False,
 ) -> None:
     rebuild_docker_compose_service(compose_service=compose_service, cache_less=cache_less)

@@ -9,6 +9,7 @@ import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
 import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
+import oak_cli.explanations.main as oak_explanations
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
 import oak_cli.worker.main as oak_worker
@@ -84,7 +85,7 @@ if check_if_local_machine_has_required_purposes(
 app.add_typer(
     typer_instance=oak_installer.app,
     name="installer",
-    help="Install Oakestra dependencies & components.",
+    help="Install Oakestra dependencies & components",
 )
 app.add_typer(
     typer_instance=oak_cli_configuration.app,
@@ -93,12 +94,12 @@ app.add_typer(
 )
 
 
-@app.command("version, v", help="Shows the version of the currently installed OAK-CLI.")
+@app.command("version, v", help="Show the version of the currently installed OAK-CLI")
 def show_version():
     logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
 
 
-@app.command("api-docs", help="Shows a links to the Swagger api-docs for Oakestra.")
+@app.command("api-docs", help="Show a link to the Swagger api-docs for Oakestra")
 def show_api_docs():
     check_and_handle_config_file()
     api_docs_link = (
@@ -110,26 +111,11 @@ def show_api_docs():
 if check_if_local_machine_has_required_purposes(
     required_purposes=[LocalMachinePurpose.INITIAL],
 ):
-
-    @app.command("explain", help="Explains the basics of the OAK-CLI and how to configure it.")
-    def show_explanation():
-        logger.debug(
-            "The OAK CLI includes various features.\n"
-            "Such as:\n"
-            "- Interacting with the Oakestra API\n"
-            "- Creating & Managing Oakestra Applications & Services\n"
-            "- Using Oakestra Automations (e.g. for an easier & faster Setup)\n"
-            "- Interacting with Oakestra Addons\n"
-            "- Developing & Debugging Oakestra\n\n"
-            "These features depend on the concrete usecase and environment.\n"
-            "Endusers and Developers require different commands.\n"
-            "Local machines that host Oakestra orchestrator components and those that do not,"
-            "require different sets of commands.\n\n"
-            "To support these different usecases the OAK CLI"
-            " uses the concept of local-machine-purposes.\n"
-            "They can be configured by running:\n"
-            "> oak c local-machine-purpose"
-        )
+    app.add_typer(
+        typer_instance=oak_explanations.app,
+        name="explain",
+        help="Explain the basics of the OAK-CLI and how to configure it",
+    )
 
 
 def main():
