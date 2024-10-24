@@ -108,14 +108,11 @@ def show_api_docs():
     logger.info(f"Oakestra root API docs: '{api_docs_link}'")
 
 
-if check_if_local_machine_has_required_purposes(
-    required_purposes=[LocalMachinePurpose.INITIAL],
-):
-    app.add_typer(
-        typer_instance=oak_explanations.app,
-        name="explain",
-        help="Explain the basics of the OAK-CLI and how to configure it",
-    )
+app.add_typer(
+    typer_instance=oak_explanations.app,
+    name="explain",
+    help="Explain the basics of the OAK-CLI and how to configure it",
+)
 
 
 def main():
