@@ -1,7 +1,7 @@
-import pprint
 from typing import List, Optional
 
 import typer
+from rich import print_json
 from typing_extensions import Annotated
 
 import oak_cli.configuration.keys.main
@@ -86,7 +86,7 @@ def show_config():
     check_and_handle_config_file()
     config = open_local_config()
     for section in config.sections():
-        pprint.pprint(dict(config.items(section)))
+        print_json(data=dict(config.items(section)))
 
 
 @app.command("reset-config", help="Reset the current OAK-CLI configuration to its initial state")

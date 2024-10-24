@@ -53,6 +53,7 @@ def check_if_local_machine_has_required_purposes(
     if LocalMachinePurpose.INITIAL in required_purposes and len(required_purposes) > 1:
         logger.critical(
             "Initial Purpose should not be placed into required purposes together with others."
+            " Please use the dedicated bool option for this."
         )
 
     if not local_machine_purposes:
