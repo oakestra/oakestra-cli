@@ -5,7 +5,7 @@ import typer
 
 
 def typer_help_text(subject: str) -> str:
-    return f"Command for {subject} related activities."
+    return f"Command for {subject} related activities"
 
 
 class AliasGroup(typer.core.TyperGroup):  # type: ignore

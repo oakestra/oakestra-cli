@@ -28,7 +28,7 @@ from oak_cli.utils.types import (
 app = typer.Typer(cls=AliasGroup)
 
 
-@app.command("show, s", help="Shows current applications")
+@app.command("show, s", help="Show current applications")
 def show_current_applications(
     live: LIVE_VIEW_FLAG_TYPE = False,
     verbosity: VERBOSITY_FLAG_TYPE = Verbosity.SIMPLE.value,  # type: ignore
@@ -52,14 +52,14 @@ def show_current_applications(
     )
 
 
-@app.command("create, c", help="Creates one or multiple apps based on a SLA")
+@app.command("create, c", help="Create one or multiple apps based on an SLA")
 def create_applications(
-    sla_name: Optional[str] = "",
+    sla_file_name: Optional[str] = "",
     deploy: Annotated[
-        bool, typer.Option("-d", help="Deploys the application service(s) afterwards.")
+        bool, typer.Option("-d", help="Deploy the application service(s) after creating the app")
     ] = False,
 ) -> List[Application]:
-    sla_file_path = get_sla_file_path(sla_name)
+    sla_file_path = get_sla_file_path(sla_file_name)
     with open(sla_file_path, "r") as f:
         SLA = json.load(f)
     sla_apps = SLA["applications"]
@@ -89,19 +89,38 @@ def create_applications(
     return newly_added_apps
 
 
-@app.command("delete, d", help="Deletes all applications or only the specified one")
+@app.command("delete, d", help="Delete all applications or only the specified one")
 def delete_applications(
     app_id: Optional[ApplicationId] = typer.Argument(None, help="ID of the application to delete"),
+    ask_for_confirmation: bool = True,
 ) -> None:
     if app_id:
         delete_application(app_id)
         return
 
-    for app in get_applications():
+    apps = get_applications()
+    if len(apps) == 0:
+        logger.info("No applications exist yet")
+        return
+
+    if ask_for_confirmation:
+        what_to_delete_txt = (
+            f"all '{len(apps)}' applications" if len(apps) > 1 else "the active application"
+        )
+        typer.confirm(
+            f"Are you certain to delete {what_to_delete_txt}",
+            abort=True,
+        )
+    for app in apps:
         delete_application(app["applicationID"])
 
 
-@app.command("sla", help="Displays the SLA of the specified application.")
-def display_app_sla(sla_name: Optional[str] = "") -> None:
-    sla_file_path = get_sla_file_path(sla_name)
+@app.command("sla", help="Display available SLAs")
+def display_app_sla(
+    sla_file_name: Optional[str] = typer.Option(
+        "",
+        help="If no SLA is initially provided an interactive selection of available SLAs is shown",
+    )
+) -> None:
+    sla_file_path = get_sla_file_path(sla_file_name)
     print_sla(sla_file_path)

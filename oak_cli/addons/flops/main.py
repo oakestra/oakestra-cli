@@ -31,13 +31,13 @@ def _load_sla(sla_file_path: pathlib.Path) -> dict:
         return json.load(f)
 
 
-@app.command("project, p", help="Starts a new FLOps project.")
+@app.command("project, p", help="Start a new FLOps project")
 def create_new_flops_project(
-    project_sla_name: str = "",
-    show: bool = typer.Option(False, help="Only displays the SLA."),
+    project_sla_file_name: str = "",
+    show: bool = typer.Option(False, help="Only display the SLA"),
 ) -> None:
     sla_file_path = get_sla_file_path(
-        sla_name=project_sla_name,
+        sla_file_name=project_sla_file_name,
         sla_folder=OAK_CLI_FLOPS_PROJECT_SLA_FOLDER_PATH,
     )
     if show:
@@ -59,13 +59,13 @@ def create_new_flops_project(
     ).execute()
 
 
-@app.command("mock_data, m", help="Deploys a mock-data-provider.")
+@app.command("mock_data, m", help="Deploy a mock-data-provider")
 def create_new_mock_data_service(
-    mock_sla_name: str = "",
-    show: bool = typer.Option(False, help="Only displays the SLA."),
+    mock_sla_file_name: str = "",
+    show: bool = typer.Option(False, help="Only display the SLA"),
 ) -> None:
     sla_file_path = get_sla_file_path(
-        sla_name=mock_sla_name,
+        sla_file_name=mock_sla_file_name,
         sla_folder=OAK_CLI_FLOPS_MOCKS_SLA_FOLDER_PATH,
     )
     if show:
@@ -80,7 +80,7 @@ def create_new_mock_data_service(
             data=_load_sla(sla_file_path),
         ),
         custom_requests.RequestAuxiliaries(
-            what_should_happen=f"Init new FLOps mock data service for SLA '{sla_file_path}'",
+            what_should_happen=f"Init a new FLOps mock data service for SLA '{sla_file_path}'",
             show_msg_on_success=True,
             oak_cli_exception_type=OakCLIExceptionTypes.FLOPS_PLUGIN,
         ),
@@ -90,8 +90,9 @@ def create_new_mock_data_service(
 @app.command(
     "tracking, t",
     help="""
-        Returns the URL of the tracking server of the specified customer.
-        Deployes the Tracking Server Service if it is not yet deployed.
+        Deploy the Tracking Server Service if it is not yet deployed
+
+        Returns the URL of the tracking server of the specified customer
         """,
 )
 def get_tracking_url(customer_id: str = "Admin") -> None:
@@ -113,8 +114,8 @@ def get_tracking_url(customer_id: str = "Admin") -> None:
 @app.command(
     "reset-database, redb",
     help="""
-        (Only allowed if you are an Admin)
-        Resets the FLOps Addon Database.
+        (Only allowed for Admins)
+        Reset the FLOps Addon Database
         """,
 )
 def reset_database(customer_id: str = "Admin") -> None:
