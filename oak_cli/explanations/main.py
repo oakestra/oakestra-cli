@@ -26,7 +26,7 @@ def explain_local_machine_purpose() -> None:
         " uses the concept of local-machine-purposes.\n"
         "They can be configured by running:\n"
     )
-    logger.info("> oak c local-machine-purpose")
+    logger.info("> oak configuration local-machine-purpose")
 
 
 @app.command("SLAs")
@@ -46,5 +46,5 @@ def explain_SLAs() -> None:
         " via your favorite editor or script of choice"
         f" and add them to '{OAK_CLI_SLA_FOLDER_PATH}'\n"
         "\n"
-        "Run 'oak a sla' to display the available SLAs in a more readable way."
+        "Run 'oak app sla' to display the available SLAs in a more readable way."
     )

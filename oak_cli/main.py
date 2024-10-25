@@ -4,6 +4,7 @@ from importlib.metadata import version
 import typer
 from rich.console import Console
 from rich.traceback import install
+from rich_pixels import Pixels
 
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
@@ -19,6 +20,7 @@ from oak_cli.configuration.local_machine_purpose.main import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )
+from oak_cli.utils.consts import DOCS_LINK
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
 
@@ -29,6 +31,7 @@ console = Console()
 app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     cls=AliasGroup,
+    help=f"The documentation is available here: {DOCS_LINK}",
 )
 
 if check_if_local_machine_has_required_purposes(
@@ -96,6 +99,20 @@ app.add_typer(
 
 @app.command("version, v", help="Show the version of the currently installed OAK-CLI")
 def show_version():
+
+    print("hi")
+    import pathlib
+
+    logo_path = pathlib.Path(__file__).resolve() / "utils" / "images" / "oakestra_logo.png"
+    # print(pathlib.Path(__file__).resolve())
+
+    console = Console()
+    # pixels = Pixels.from_image_path(str(logo_path))
+    pixels = Pixels.from_image_path(
+        "/home/alex/oakestra-cli/oak_cli/utils/images/oakestra_logo.svg"
+    )
+    console.print(pixels)
+
     logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
 
 
@@ -106,6 +123,13 @@ def show_api_docs():
         f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}:1000/api/docs"
     )
     logger.info(f"Oakestra root API docs: '{api_docs_link}'")
+
+
+@app.command("dashboard-link", help="Show a link to the Oakestra Dashboard GUI")
+def show_dashboard_link():
+    check_and_handle_config_file()
+    dashboard_link = f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}"
+    logger.info(f"Oakestra Dashboard URL: '{dashboard_link}'")
 
 
 app.add_typer(
