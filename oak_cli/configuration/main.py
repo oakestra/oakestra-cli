@@ -22,7 +22,7 @@ app = typer.Typer(cls=AliasGroup)
 
 
 @app.command(
-    "local-machine-purpose",
+    "local-machine-purpose, l",
     help=(
         "Configure the purpose of the local machine w.r.t. Oakestra.\n"
         "Specify one or multiple purposes at once.\n"
@@ -76,7 +76,7 @@ def configure_local_machine_purpose(
 
 app.add_typer(
     typer_instance=oak_cli.configuration.keys.main.app,
-    name="key-vars",
+    name="key-vars, k",
     help="Configure OAK-CLI Key Variables",
 )
 
