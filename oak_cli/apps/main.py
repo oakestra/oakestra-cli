@@ -95,7 +95,7 @@ def create_applications(
 @app.command("delete, d", help="Delete all applications or only the specified one")
 def delete_applications(
     app_id: Optional[ApplicationId] = typer.Argument(None, help="ID of the application to delete"),
-    skip_confirmation: bool = False,
+    skip_confirmation: bool = typer.Option(False, "-y", help="Skip confirmation prompt"),
 ) -> None:
     if app_id:
         delete_application(app_id)
