@@ -22,7 +22,7 @@ app = typer.Typer(cls=AliasGroup)
 
 
 @app.command(
-    "local-machine-purpose",
+    "local-machine-purpose, l",
     help=(
         "Configure the purpose of the local machine w.r.t. Oakestra.\n"
         "Specify one or multiple purposes at once.\n"
@@ -56,19 +56,32 @@ def configure_local_machine_purpose(
         return
 
     requested_purposes = []
-    if typer.confirm("Does your local machine host Oakestra's Root Orchestrator?"):
-        requested_purposes.append(LocalMachinePurpose.ROOT_ORCHESTRATOR)
+    is_monolith = typer.confirm(
+        "Do you intend to use Oakestra only on this single machine? (Monolith)"
+    )
 
-    if typer.confirm("Does your local machine host Oakestra's Cluster Orchestrator?"):
-        requested_purposes.append(LocalMachinePurpose.CLUSTER_ORCHESTRATOR)
+    if is_monolith:
+        requested_purposes.extend(
+            [
+                LocalMachinePurpose.ROOT_ORCHESTRATOR,
+                LocalMachinePurpose.CLUSTER_ORCHESTRATOR,
+                LocalMachinePurpose.WORKER_NODE,
+            ]
+        )
+    else:
+        if typer.confirm("Does your local machine host Oakestra's Root Orchestrator?"):
+            requested_purposes.append(LocalMachinePurpose.ROOT_ORCHESTRATOR)
 
-    if typer.confirm("Is your local machine an Oakestra's Worker Node?"):
-        requested_purposes.append(LocalMachinePurpose.WORKER_NODE)
+        if typer.confirm("Does your local machine host Oakestra's Cluster Orchestrator?"):
+            requested_purposes.append(LocalMachinePurpose.CLUSTER_ORCHESTRATOR)
+
+        if typer.confirm("Is your local machine an Oakestra's Worker Node?"):
+            requested_purposes.append(LocalMachinePurpose.WORKER_NODE)
 
     if typer.confirm("Do you want to use Oakestra Addons?"):
         requested_purposes.append(LocalMachinePurpose.ADDON_SUPPORT)
 
-    if typer.confirm("Are you an Oakestra Contributor or Developer?"):
+    if typer.confirm("Are you an Oakestra Contributor/Developer?"):
         requested_purposes.append(LocalMachinePurpose.DEVELOPMENT)
 
     set_local_machine_purposes(set(requested_purposes))
@@ -76,7 +89,7 @@ def configure_local_machine_purpose(
 
 app.add_typer(
     typer_instance=oak_cli.configuration.keys.main.app,
-    name="key-vars",
+    name="key-vars, k",
     help="Configure OAK-CLI Key Variables",
 )
 

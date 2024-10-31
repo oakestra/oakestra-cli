@@ -3,11 +3,12 @@ import typer
 from oak_cli.configuration.auxiliary import prompt_for_path
 from oak_cli.configuration.common import check_and_handle_config_file, update_config_value
 from oak_cli.configuration.keys.enums import ConfigurableConfigKey
+from oak_cli.utils.typer_augmentations import AliasGroup
 
-app = typer.Typer()
+app = typer.Typer(cls=AliasGroup)
 
 
-@app.command("configure", help="Configure a core variable.")
+@app.command("configure, c", help="Configure a core variable.")
 def configure_config_key(key: ConfigurableConfigKey, value: str = "") -> None:
     check_and_handle_config_file()
     if not value:

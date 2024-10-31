@@ -19,6 +19,9 @@ from oak_cli.configuration.local_machine_purpose.main import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )
+from oak_cli.initial import handle_init_use
+from oak_cli.utils.ascii.main import print_oakestra_logo
+from oak_cli.utils.consts import DOCS_LINK
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
 
@@ -29,6 +32,7 @@ console = Console()
 app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
     cls=AliasGroup,
+    help=f"The documentation is available here: {DOCS_LINK}",
 )
 
 if check_if_local_machine_has_required_purposes(
@@ -36,12 +40,12 @@ if check_if_local_machine_has_required_purposes(
 ):
     app.add_typer(
         typer_instance=oak_applications.app,
-        name="a",
+        name="application, app, a",
         help=typer_help_text("application"),
     )
     app.add_typer(
         typer_instance=oak_services.app,
-        name="s",
+        name="service, s",
         help=typer_help_text("service"),
     )
 
@@ -52,7 +56,7 @@ if check_if_local_machine_has_required_purposes(
 ):
     app.add_typer(
         typer_instance=oak_docker.app,
-        name="d",
+        name="docker, d",
         help=typer_help_text("docker(compose)"),
     )
 
@@ -77,25 +81,27 @@ if check_if_local_machine_has_required_purposes(
 ):
     app.add_typer(
         typer_instance=oak_worker.app,
-        name="w",
+        name="worker, w",
         help=typer_help_text("Worker"),
     )
 
 
 app.add_typer(
     typer_instance=oak_installer.app,
-    name="installer",
+    name="installer, i",
     help="Install Oakestra dependencies & components",
 )
 app.add_typer(
     typer_instance=oak_cli_configuration.app,
-    name="c",
+    name="configuration, c",
     help=typer_help_text("OAK CLI Configuration"),
 )
 
 
 @app.command("version, v", help="Show the version of the currently installed OAK-CLI")
-def show_version():
+def show_version(show_logo: bool = True):
+    if show_logo:
+        print_oakestra_logo()
     logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
 
 
@@ -108,14 +114,22 @@ def show_api_docs():
     logger.info(f"Oakestra root API docs: '{api_docs_link}'")
 
 
+@app.command("dashboard-link", help="Show a link to the Oakestra Dashboard GUI")
+def show_dashboard_link():
+    check_and_handle_config_file()
+    dashboard_link = f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}"
+    logger.info(f"Oakestra Dashboard URL: '{dashboard_link}'")
+
+
 app.add_typer(
     typer_instance=oak_explanations.app,
-    name="explain",
+    name="explain, e",
     help="Explain the basics of the OAK-CLI and how to configure it",
 )
 
 
 def main():
+    handle_init_use()
     app()
 
 

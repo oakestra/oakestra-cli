@@ -54,7 +54,10 @@ def show_current_applications(
 
 @app.command("create, c", help="Create one or multiple apps based on an SLA")
 def create_applications(
-    sla_file_name: Optional[str] = "",
+    sla_file_name: Optional[str] = typer.Option(
+        default="",
+        help="If not provided an interactive selection of available SLAs is shown",
+    ),
     deploy: Annotated[
         bool, typer.Option("-d", help="Deploy the application service(s) after creating the app")
     ] = False,
@@ -92,7 +95,7 @@ def create_applications(
 @app.command("delete, d", help="Delete all applications or only the specified one")
 def delete_applications(
     app_id: Optional[ApplicationId] = typer.Argument(None, help="ID of the application to delete"),
-    ask_for_confirmation: bool = True,
+    skip_confirmation: bool = typer.Option(False, "-y", help="Skip confirmation prompt"),
 ) -> None:
     if app_id:
         delete_application(app_id)
@@ -103,7 +106,7 @@ def delete_applications(
         logger.info("No applications exist yet")
         return
 
-    if ask_for_confirmation:
+    if not skip_confirmation:
         what_to_delete_txt = (
             f"all '{len(apps)}' applications" if len(apps) > 1 else "the active application"
         )
