@@ -4,7 +4,6 @@ from importlib.metadata import version
 import typer
 from rich.console import Console
 from rich.traceback import install
-from rich_pixels import Pixels
 
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
@@ -20,6 +19,7 @@ from oak_cli.configuration.local_machine_purpose.main import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )
+from oak_cli.utils.ascii.main import print_oakestra_logo
 from oak_cli.utils.consts import DOCS_LINK
 from oak_cli.utils.logging import logger
 from oak_cli.utils.typer_augmentations import AliasGroup, typer_help_text
@@ -98,20 +98,10 @@ app.add_typer(
 
 
 @app.command("version, v", help="Show the version of the currently installed OAK-CLI")
-def show_version():
+def show_version(show_logo: bool = True):
 
-    print("hi")
-    import pathlib
-
-    logo_path = pathlib.Path(__file__).resolve() / "utils" / "images" / "oakestra_logo.png"
-    # print(pathlib.Path(__file__).resolve())
-
-    console = Console()
-    # pixels = Pixels.from_image_path(str(logo_path))
-    pixels = Pixels.from_image_path(
-        "/home/alex/oakestra-cli/oak_cli/utils/images/oakestra_logo.svg"
-    )
-    console.print(pixels)
+    if show_logo:
+        print_oakestra_logo()
 
     logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
 
