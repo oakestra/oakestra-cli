@@ -1,3 +1,4 @@
+# flake8: noqa
 from rich.segment import Segment
 from rich.style import Style
 
