@@ -99,10 +99,8 @@ app.add_typer(
 
 @app.command("version, v", help="Show the version of the currently installed OAK-CLI")
 def show_version(show_logo: bool = True):
-
     if show_logo:
         print_oakestra_logo()
-
     logger.info(f"OAK-CLI version: '{version('oak_cli')}'")
 
 
