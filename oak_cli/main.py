@@ -19,6 +19,7 @@ from oak_cli.configuration.local_machine_purpose.main import (
     LocalMachinePurpose,
     check_if_local_machine_has_required_purposes,
 )
+from oak_cli.initial import handle_init_use
 from oak_cli.utils.ascii.main import print_oakestra_logo
 from oak_cli.utils.consts import DOCS_LINK
 from oak_cli.utils.logging import logger
@@ -128,6 +129,7 @@ app.add_typer(
 
 
 def main():
+    handle_init_use()
     app()
 
 
