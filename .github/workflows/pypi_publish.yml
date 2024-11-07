@@ -1,4 +1,4 @@
-name: pypi-release
+name: Pypi Release
 
 on:
   push:
@@ -21,6 +21,11 @@ jobs:
       run: pip3 install poetry 
     - name: Build dist
       run: poetry install && poetry build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
 
   publish-to-pypi:
     name: >-
