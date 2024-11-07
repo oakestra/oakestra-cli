@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "oak_cli_oakestra"
+name = "oak_cli"
 version = "0.4.7"
 description = "The Oakestra CLI"
 authors = ["Alexander Malyuk <malyuk.alexander1999@gmail.com>"]
