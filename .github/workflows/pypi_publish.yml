@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/oakestra-cli
+      url: https://pypi.org/p/oak-cli
     permissions:
       id-token: write
     steps:
