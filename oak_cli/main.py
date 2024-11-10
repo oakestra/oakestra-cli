@@ -109,7 +109,7 @@ def show_version(show_logo: bool = True):
 def show_api_docs():
     check_and_handle_config_file()
     api_docs_link = (
-        f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}:1000/api/docs"
+        f"http://{get_config_value(ConfigurableConfigKey.SYSTEM_MANAGER_IP)}:10000/api/docs"
     )
     logger.info(f"Oakestra root API docs: '{api_docs_link}'")
 
