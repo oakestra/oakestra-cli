@@ -12,7 +12,7 @@ app = typer.Typer()
 @app.command(
     "fundamentals",
     help="""
-    Install non-python fundamental dependencies like git, docker, docker-compose, etc.
+    Install non-python fundamental dependencies like git, docker, docker compose plugin, etc.
     on the current machine
     """,
 )

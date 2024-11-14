@@ -18,9 +18,12 @@
         update_cache: true
 
   roles: 
-    # Install & start docker (including compose)
+    # Install & start docker (including the compose plugin)
     - role: geerlingguy.docker 
       vars:
-        docker_install_compose: true
+        docker_install_compose: false
+        docker_install_compose_plugin: true
+        docker_compose_package: docker-compose-plugin
+        docker_compose_package_state: present
     # Install Go
     - role: gantsign.golang
