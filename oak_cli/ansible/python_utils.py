@@ -11,7 +11,7 @@ CLI_PLAYBOOKS_PATH = CLI_ANSIBLE_PATH / "playbooks"
 
 class CliPlaybook(enum.Enum):
     INSTALL_FUNDAMENTALS = "install_fundamentals"
-    # NOTE/TODO: These Evaluations bits need to be reviewed and refactored.
+    # NOTE/TODO(malyuka): These Evaluations bits need to be reviewed and refactored.
     # EVALUATE_RESOURCES = "evaluate_resources"
 
     def get_path(self, as_string: bool = True) -> Union[str, pathlib.Path]:

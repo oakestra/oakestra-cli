@@ -1,4 +1,4 @@
-# TODO / FUTURE WORK: 
+# FUTURE possible WORK: 
 # The idea is to add the oakestra automation repo as a submodule
 # to the oak-CLI to be able to call its playbooks via the CLI.
 

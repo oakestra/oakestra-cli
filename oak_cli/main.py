@@ -60,7 +60,7 @@ if check_if_local_machine_has_required_purposes(
         help=typer_help_text("docker(compose)"),
     )
 
-    # TODO: Need to review/discuss if this is actually something we want as part of the CLI.
+    # TODO(malyuka): Need to review/discuss if this is actually something we want as part of the CLI.
     # app.add_typer(
     #     typer_instance=oak_evaluation.app,
     #     name="evaluate",

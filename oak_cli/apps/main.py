@@ -123,7 +123,7 @@ def display_app_sla(
     sla_file_name: Optional[str] = typer.Option(
         "",
         help="If no SLA is initially provided an interactive selection of available SLAs is shown",
-    )
+    ),
 ) -> None:
     sla_file_path = get_sla_file_path(sla_file_name)
     print_sla(sla_file_path)
