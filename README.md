@@ -1,5 +1,6 @@
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/oak-cli)](https://pypi.org/project/oak-cli/)
+![PyPI - Version](https://img.shields.io/pypi/v/oak-cli)
 [![Codestyle Check](https://github.com/oakestra/oakestra-cli/actions/workflows/python_codestyle_check.yml/badge.svg)](https://github.com/oakestra/oakestra-cli/actions/workflows/python_codestyle_check.yml)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/oak-cli)](https://pypi.org/project/oak-cli/)
 
 The **Oak-CLI** is the command line interface for the [Oakestra](https://github.com/oakestra/oakestra) Edge Computing platform.
 
