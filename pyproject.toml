@@ -29,5 +29,13 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 oak = "oak_cli.main:main"
 
-[tool.black]
+[tool.ruff]
 line-length = 100
+[tool.ruff.lint]
+extend-select = [
+    "TD",  # todos
+    "I",  # isort
+]
+ignore = [
+    "TD003",  # missing-todo-link. Ignored because we don't require adding tickets to TODOs
+]
