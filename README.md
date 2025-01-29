@@ -15,10 +15,8 @@ The **Oak-CLI** is the command line interface for the [Oakestra](https://github.
 ---
 
 ## 📕 Requirements 
-
-### Minimum System Requirements
-- Linux Machine (preferably Debian/Ubuntu)
-- Python Version 3.10+
+- Linux (preferably Debian/Ubuntu)
+- Python Version **3.10+**
 
 ## ⬇️ Installation
 
