@@ -2,6 +2,7 @@ import getpass
 import sys
 from contextlib import nullcontext
 
+import ansible_runner
 import typer
 
 from oak_cli.ansible.python_utils import CliPlaybook
@@ -9,7 +10,6 @@ from oak_cli.utils.common import run_in_shell
 from oak_cli.utils.logging import logger
 from oak_cli.utils.styling import create_spinner
 
-import ansible_runner
 ANSIBLE_GALAXY_ROLES = " ".join(("geerlingguy.docker", "gantsign.golang"))
 
 app = typer.Typer()
