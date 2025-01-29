@@ -134,7 +134,7 @@ def reset_database(customer_id: str = "Admin") -> None:
     ).execute()
 
 
-# TODO split this file up into multiple ones
+# TODO(malyuka): split this file up into multiple ones
 
 
 @app.command("restart-management, restart, re")
@@ -152,7 +152,7 @@ def restart_flops_manager() -> None:
 
 @app.command("clear-registry")
 def clear_registry() -> None:
-    # TODO unify this compose path
+    # TODO(malyuka): unify this compose path
     flops_compose = get_flops_addon_repo_path() / "docker" / "flops_management.docker_compose.yml"
     cmd = " ".join(
         (

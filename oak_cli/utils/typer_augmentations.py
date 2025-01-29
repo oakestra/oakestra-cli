@@ -9,7 +9,6 @@ def typer_help_text(subject: str) -> str:
 
 
 class AliasGroup(typer.core.TyperGroup):  # type: ignore
-
     _CMD_SPLIT_P = r"[,| ?\/]"  # Adds other delimiters inside the [ ]
 
     def get_command(self, ctx, cmd_name):

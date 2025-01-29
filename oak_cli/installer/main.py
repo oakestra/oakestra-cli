@@ -1,12 +1,14 @@
+import getpass
+import sys
+from contextlib import nullcontext
+
 import ansible_runner
 import typer
-import getpass
+
 from oak_cli.ansible.python_utils import CliPlaybook
 from oak_cli.utils.common import run_in_shell
-from oak_cli.utils.styling import create_spinner
-from contextlib import nullcontext
 from oak_cli.utils.logging import logger
-import sys
+from oak_cli.utils.styling import create_spinner
 
 ANSIBLE_GALAXY_ROLES = " ".join(("geerlingguy.docker", "gantsign.golang"))
 
@@ -22,13 +24,15 @@ app = typer.Typer()
 )
 def install_fundamentals(
     show_ansible_output: bool = typer.Option(False, "--verbose"),
-    ) -> None:
+) -> None:
     # NOTE: The following playbook requires ansible-galaxy roles to be installed on the machine.
     # Installing it via a dedicated playbook does not work due to ansible-access right issues.
     run_in_shell(shell_cmd=f"ansible-galaxy install {ANSIBLE_GALAXY_ROLES}")
     become_password = getpass.getpass("[sudo] password: ")
     spinner_context = (
-        create_spinner(message="Installing Dependencies") if not show_ansible_output else nullcontext()
+        create_spinner(message="Installing Dependencies")
+        if not show_ansible_output
+        else nullcontext()
     )
     with spinner_context:
         res = ansible_runner.run(

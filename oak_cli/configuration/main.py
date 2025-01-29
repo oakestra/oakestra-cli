@@ -38,7 +38,6 @@ def configure_local_machine_purpose(
         typer.Option("--purpose", help="A local machine purposes."),
     ] = None,
 ) -> None:
-
     if local_machine_purposes:
         set_local_machine_purposes(set(local_machine_purposes))
         return
