@@ -45,3 +45,5 @@ def install_fundamentals(
             "Dependency installation failed! Are you certain that you provided the correct password?"
         )
         sys.exit(1)
+
+    logger.info("Dependencies successfully installed.")
