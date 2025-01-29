@@ -1,4 +1,4 @@
-![PyPI - Version](https://img.shields.io/pypi/v/oak-cli)
+[![PyPI - Version](https://img.shields.io/pypi/v/oak-cli)](https://pypi.org/project/oak-cli/)
 [![Codestyle Check](https://github.com/oakestra/oakestra-cli/actions/workflows/python_codestyle_check.yml/badge.svg)](https://github.com/oakestra/oakestra-cli/actions/workflows/python_codestyle_check.yml)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/oak-cli)](https://pypi.org/project/oak-cli/)
 
