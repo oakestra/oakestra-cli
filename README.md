@@ -13,8 +13,6 @@ The **Oak-CLI** is the command line interface for the [Oakestra](https://github.
 - The CLI commands can be chained together and used in custom scripts
 - Automates tedious tasks away (e.g. acquiring login token, installing dependencies, and much more!)
 
----
-
 ## 📕 Requirements 
 - Linux (preferably Debian/Ubuntu)
 - Python Version **3.10+**
