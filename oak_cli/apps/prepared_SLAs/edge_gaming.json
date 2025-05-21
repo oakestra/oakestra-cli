@@ -1,0 +1,80 @@
+{
+    "sla_version": "v2.0",
+    "customerID": "Admin",
+    "applications": [
+        {
+            "applicationID": "",
+            "application_name": "gaming",
+            "application_namespace": "games",
+            "application_desc": "Edge Gaming (minecraft) example",
+            "microservices": [
+                {
+                "microserviceID": "",
+                "microservice_name": "client",
+                "microservice_namespace": "deploy",
+                "virtualization": "container",
+                "cmd": [],
+                "memory": 100,
+                "vcpus": 1,
+                "vgpus": 0,
+                "vtpus": 0,
+                "bandwidth_in": 0,
+                "bandwidth_out": 0,
+                "storage": 0,
+                "code": "ghcr.io/giobart/minecraft-web-client:v0.1",
+                "state": "",
+                "port": "8080:8080",
+                "connectivity": [],
+                "constraints": [],
+                "added_files": []
+                },
+                {
+                "microserviceID": "",
+                "microservice_name": "proxy",
+                "microservice_namespace": "deploy",
+                "virtualization": "container",
+                "cmd": ["npm","run","proxy"],
+                "memory": 100,
+                "vcpus": 1,
+                "vgpus": 0,
+                "vtpus": 0,
+                "bandwidth_in": 0,
+                "bandwidth_out": 0,
+                "storage": 0,
+                "code": "docker.io/giobart/minecraft-client:v0.0.4",
+                "state": "",
+                "port": "9090:8080",
+                "addresses": {
+                        "rr_ip": "10.30.200.200"
+                    },
+                "connectivity": [],
+                "constraints": [],
+                "added_files": []
+                },
+                {
+                "microserviceID": "",
+                "microservice_name": "server",
+                "microservice_namespace": "deploy",
+                "virtualization": "container",
+                "environment": ["EULA=TRUE","CONSOLE=TRUE","OPS=Admin"],
+                "cmd": ["/start"],
+                "memory": 100,
+                "vcpus": 1,
+                "vgpus": 0,
+                "vtpus": 0,
+                "bandwidth_in": 0,
+                "bandwidth_out": 0,
+                "storage": 0,
+                "code": "docker.io/giobart/minecraft-server:v0.0.5",
+                "state": "",
+                "addresses": {
+                        "rr_ip": "10.30.100.100"
+                    },
+                "connectivity": [],
+                "constraints": [],
+                "added_files": []
+                }
+            ]
+        }
+    ]
+}
