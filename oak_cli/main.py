@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 from importlib.metadata import version
 
 import typer
@@ -130,7 +131,10 @@ app.add_typer(
 
 def main():
     handle_init_use()
-    app()
+    if len(sys.argv) == 1:
+        app(["--help"])
+    else:
+        app()
 
 
 if __name__ == "__main__":
