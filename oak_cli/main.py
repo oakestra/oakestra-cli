@@ -13,11 +13,12 @@ import oak_cli.explanations.main as oak_explanations
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
 import oak_cli.worker.main as oak_worker
-from oak_cli.configuration.common import (check_and_handle_config_file,
-                                          get_config_value)
+from oak_cli.configuration.common import check_and_handle_config_file, get_config_value
 from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.configuration.local_machine_purpose.main import (
-    LocalMachinePurpose, check_if_local_machine_has_required_purposes)
+    LocalMachinePurpose,
+    check_if_local_machine_has_required_purposes,
+)
 from oak_cli.initial import handle_init_use
 from oak_cli.utils.ascii.main import print_oakestra_logo
 from oak_cli.utils.consts import DOCS_LINK
