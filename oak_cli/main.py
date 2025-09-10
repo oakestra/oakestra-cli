@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
 import sys
 from importlib.metadata import version
-
 import typer
 from rich.console import Console
 from rich.traceback import install
-
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
+import oak_cli.clusters.main as oak_cluster
 import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
 import oak_cli.explanations.main as oak_explanations
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
 import oak_cli.worker.main as oak_worker
-import oak_cli.clusters.main as oak_cluster
-from oak_cli.configuration.common import check_and_handle_config_file, get_config_value
+from oak_cli.configuration.common import (check_and_handle_config_file,
+                                          get_config_value)
 from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.configuration.local_machine_purpose.main import (
-    LocalMachinePurpose,
-    check_if_local_machine_has_required_purposes,
-)
+    LocalMachinePurpose, check_if_local_machine_has_required_purposes)
 from oak_cli.initial import handle_init_use
 from oak_cli.utils.ascii.main import print_oakestra_logo
 from oak_cli.utils.consts import DOCS_LINK

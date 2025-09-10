@@ -1,16 +1,11 @@
-import json
-from typing import List, Optional, TextIO
-
+from typing import List
 import typer
-from icecream import ic
 from typing_extensions import Annotated
-
-from oak_cli.clusters.auxiliary import generate_current_cluster_table, generate_cluster_detail_table
-from oak_cli.utils.logging import logger
+from oak_cli.clusters.auxiliary import (generate_cluster_detail_table,
+                                        generate_current_cluster_table)
 from oak_cli.utils.styling import display_table
 from oak_cli.utils.typer_augmentations import AliasGroup
-from oak_cli.utils.types import LIVE_VIEW_FLAG_TYPE, VERBOSITY_FLAG_TYPE, ClusterName, Cluster
-
+from oak_cli.utils.types import LIVE_VIEW_FLAG_TYPE, Cluster, ClusterName
 
 app = typer.Typer(cls=AliasGroup)
 

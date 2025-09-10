@@ -1,15 +1,8 @@
 import string
 from rich.table import Table
-
 from oak_cli.clusters.common import get_clusters
-from oak_cli.utils.styling import (
-    OAK_GREEN,
-    add_column,
-    add_plain_columns,
-    add_row_to_table,
-    create_table,
-)
-from oak_cli.utils.types import Verbosity
+from oak_cli.utils.styling import (OAK_GREEN, add_column, add_plain_columns,
+                                   add_row_to_table, create_table)
 
 cluster_info_to_column_name_map = {
     "Location": "cluster_location",
@@ -32,9 +25,15 @@ def generate_current_cluster_table(live: bool, all: bool) -> Table:
         live=live,
     )
     add_column(table, column_name="Name", style=OAK_GREEN)
-    add_plain_columns(table=table, column_names=["Location", "Active Nodes", "Virtualizations"])
+    add_plain_columns(
+        table=table,
+        column_names=["Location", "Active Nodes", "Virtualizations"]
+    )
     if all:
-        add_plain_columns(table=table, column_names=["Status"])
+        add_plain_columns(
+            table=table,
+            column_names=["Status"]
+        )
 
     current_clusters = get_clusters(all=all)
     if not current_clusters:
@@ -76,11 +75,15 @@ def generate_cluster_detail_table(live: bool, name: string) -> Table:
             continue
 
         for key, column_name in cluster_info_to_column_name_map.items():
-            add_row_to_table(table=table, row_items=[key, str(cluster[column_name])])
+            add_row_to_table(table=table,
+                             row_items=[key, str(cluster[column_name])]
+                             )
 
         if cluster["active"]:
-            add_row_to_table(table=table, row_items=["Status", "Connected 🟢"])
+            add_row_to_table(table=table,
+                             row_items=["Status", "Connected 🟢"])
         else:
-            add_row_to_table(table=table, row_items=["Status", "Disconnected 🔴"])
+            add_row_to_table(table=table,
+                             row_items=["Status", "Disconnected 🔴"])
 
     return table
