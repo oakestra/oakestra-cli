@@ -14,6 +14,7 @@ import oak_cli.explanations.main as oak_explanations
 import oak_cli.installer.main as oak_installer
 import oak_cli.services.main as oak_services
 import oak_cli.worker.main as oak_worker
+import oak_cli.clusters.main as oak_cluster
 from oak_cli.configuration.common import check_and_handle_config_file, get_config_value
 from oak_cli.configuration.keys.enums import ConfigurableConfigKey
 from oak_cli.configuration.local_machine_purpose.main import (
@@ -96,6 +97,12 @@ app.add_typer(
     typer_instance=oak_cli_configuration.app,
     name="configuration, c",
     help=typer_help_text("OAK CLI Configuration"),
+)
+
+app.add_typer(
+    typer_instance=oak_cluster.app,
+    name="cluster, cl",
+    help="Check Oakestra clusters",
 )
 
 

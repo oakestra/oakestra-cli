@@ -90,6 +90,9 @@ def add_plain_columns(
 
 
 def print_table(table: Table) -> None:
+    if not table.rows:
+        rich.console.Console().print("Empty List")
+        return
     rich.console.Console().print(table)
 
 
