@@ -1,5 +1,7 @@
 import string
+
 from rich.table import Table
+
 from oak_cli.clusters.common import get_clusters
 from oak_cli.utils.styling import (
     OAK_GREEN,

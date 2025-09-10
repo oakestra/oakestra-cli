@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import sys
 from importlib.metadata import version
+
 import typer
 from rich.console import Console
 from rich.traceback import install
+
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
 import oak_cli.clusters.main as oak_cluster
