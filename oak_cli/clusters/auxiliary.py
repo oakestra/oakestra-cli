@@ -64,10 +64,10 @@ def generate_cluster_detail_table(live: bool, name: string) -> Table:
         caption=f"Cluster [{name}] Details",
         live=live,
     )
-    add_column(table, column_name=f"Cluster Name", style=OAK_GREEN)
+    add_column(table, column_name="Cluster Name", style=OAK_GREEN)
     add_plain_columns(table=table, column_names=[f"{name}"])
 
-    current_clusters = get_clusters(all=all)
+    current_clusters = get_clusters(all=True)
     if not current_clusters:
         return table
 
