@@ -8,6 +8,7 @@ from rich.traceback import install
 
 import oak_cli.addons.main as oak_addons
 import oak_cli.apps.main as oak_applications
+import oak_cli.clusters.main as oak_cluster
 import oak_cli.configuration.main as oak_cli_configuration
 import oak_cli.docker.main as oak_docker
 import oak_cli.explanations.main as oak_explanations
@@ -96,6 +97,12 @@ app.add_typer(
     typer_instance=oak_cli_configuration.app,
     name="configuration, c",
     help=typer_help_text("OAK CLI Configuration"),
+)
+
+app.add_typer(
+    typer_instance=oak_cluster.app,
+    name="cluster, cl",
+    help="Check Oakestra clusters",
 )
 
 

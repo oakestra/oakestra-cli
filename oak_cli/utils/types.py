@@ -30,6 +30,8 @@ ApplicationId = Id
 
 Service = dict
 Application = dict
+Cluster = dict
+ClusterName = str
 
 SLA = dict
 DbObject = dict
