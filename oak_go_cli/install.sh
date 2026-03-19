@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # This script installs the oak CLI tool.
@@ -34,12 +34,10 @@ case "$ARCH" in
 esac
 
 # Get the latest release tag from the GitHub API.
-#check if LATEST_TAG is already set in the environment, if not fetch it from GitHub
+#check if
+LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
 if [ -z "$LATEST_TAG" ]; then
-    LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
-    if [ -z "$LATEST_TAG" ]; then
-    fail "Could not determine the latest release version."
-    fi
+  fail "Could not determine the latest release version."
 fi
 
 # Construct the download URL.
