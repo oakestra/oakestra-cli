@@ -1,15 +1,15 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # This script installs the oak CLI tool.
 # It is intended to be run from a one-liner command:
-#   curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/main/oak_go_cli/install.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/main/oak_go_cli/install.sh | sh
 
 REPO="oakestra/oakestra-cli"
 BASE_URL="https://github.com/$REPO/releases/download"
 
 fail() {
-  echo -e "Error: $1" >&2
+  echo "Error: $1" >&2
   exit 1
 }
 
@@ -18,24 +18,23 @@ command_exists() {
 }
 
 # Determine the operating system.
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  OS="linux"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  OS="darwin"
-else
-  fail "Unsupported operating system: $OSTYPE. On Windows use install.ps1 instead."
-fi
+OS_RAW=$(uname -s)
+case "$OS_RAW" in
+  Linux)  OS="linux" ;;
+  Darwin) OS="darwin" ;;
+  *) fail "Unsupported operating system: $OS_RAW. On Windows use install.ps1 instead." ;;
+esac
 
 # Determine the architecture.
 ARCH=$(uname -m)
-case $ARCH in
-  x86_64)  ARCH="amd64" ;;
+case "$ARCH" in
+  x86_64)          ARCH="amd64" ;;
   arm64 | aarch64) ARCH="arm64" ;;
   *) fail "Unsupported architecture: $ARCH" ;;
 esac
 
 # Get the latest release tag from the GitHub API.
-LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+LATEST_TAG=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
 if [ -z "$LATEST_TAG" ]; then
   fail "Could not determine the latest release version."
 fi
@@ -49,7 +48,7 @@ TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 # Download and extract the tarball.
-echo "Downloading oak CLI $LATEST_TAG for ${OS}/${ARCH} …"
+echo "Downloading oak CLI $LATEST_TAG for ${OS}/${ARCH} ..."
 curl -fL "$DOWNLOAD_URL" | tar -xz -C "$TMP_DIR"
 
 # Install the binary.
@@ -78,7 +77,7 @@ fi
 if command_exists bash; then
   if [ -d "/etc/bash_completion.d" ]; then
     oak completion bash > /etc/bash_completion.d/oak 2>/dev/null || \
-    sudo bash -c 'oak completion bash > /etc/bash_completion.d/oak' 2>/dev/null || true
+    sudo sh -c 'oak completion bash > /etc/bash_completion.d/oak' 2>/dev/null || true
     echo "bash completions written to /etc/bash_completion.d/oak"
   fi
 fi
