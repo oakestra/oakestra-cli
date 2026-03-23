@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/oakestra/oak-go-cli/internal/api"
+	"github.com/oakestra/oak-go-cli/internal/config"
 )
 
 // ─── top-level install command ────────────────────────────────────────────────
@@ -72,7 +74,20 @@ func doInstallRoot(version string, yes, sudo bool) error {
 	}
 	setVersion(version)
 	fmt.Println("Installing root orchestrator…")
-	return shellRun(sudo, "curl -sfL oakestra.io/install-root.sh | sh")
+	if err := shellRun(sudo, "curl -sfL oakestra.io/install-root.sh | sh"); err != nil {
+		return err
+	}
+
+	// Detect and save this machine's IP so the CLI points at the local root orchestrator.
+	if ip, err := getLocalIP(); err == nil && ip != "" {
+		if err := config.Set("system_manager_ip", ip); err == nil {
+			fmt.Printf("%s CLI configured: system_manager_ip = %s\n", green("✓"), bold(ip))
+		}
+	} else {
+		fmt.Printf("%s Could not detect local IP — run: %s\n",
+			yellow("Warning:"), bold("oak config set system_manager_ip <IP>"))
+	}
+	return nil
 }
 
 // ─── install cluster ──────────────────────────────────────────────────────────
@@ -99,8 +114,33 @@ func doInstallCluster(version string, yes, sudo bool) error {
 		return err
 	}
 	setVersion(version)
+
+	// Export SYSTEM_MANAGER_URL if the CLI already knows the root orchestrator IP.
+	if cfg, err := config.Load(); err == nil && cfg.SystemManagerIP != "" {
+		os.Setenv("SYSTEM_MANAGER_URL", cfg.SystemManagerIP) //nolint:errcheck
+		fmt.Printf("Using SYSTEM_MANAGER_URL=%s\n", cfg.SystemManagerIP)
+	}
+
 	fmt.Println("Installing cluster orchestrator…")
 	return shellRun(sudo, "curl -sfL oakestra.io/install-cluster.sh | sh")
+}
+
+// getLocalIP returns the machine's outbound IP address.
+// On macOS it reads the primary Wi-Fi/Ethernet interface; on Linux it uses
+// the source address that would be used to reach 1.1.1.1.
+func getLocalIP() (string, error) {
+	var out []byte
+	var err error
+	if runtime.GOOS == "darwin" {
+		out, err = exec.Command("ipconfig", "getifaddr", "en0").Output()
+	} else {
+		out, err = exec.Command("sh", "-c",
+			`ip route get 1.1.1.1 | grep -oP 'src \K\S+'`).Output()
+	}
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
 }
 
 // ─── install worker ───────────────────────────────────────────────────────────

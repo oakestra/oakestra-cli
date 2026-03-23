@@ -2,9 +2,18 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
+
+// oakestraYML returns the absolute path to an Oakestra compose file,
+// rooted in the invoking user's home directory (not /root).
+func oakestraYML(component, filename string) string {
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".oakestra", component, filename)
+}
 
 var uninstallSudo bool
 
@@ -32,9 +41,9 @@ var uninstallRootCmd = &cobra.Command{
 	Use:   "root",
 	Short: "Stop and remove the root orchestrator",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		yml := oakestraYML("root_orchestrator", "root-orchestrator.yml")
 		fmt.Println("Stopping root orchestrator…")
-		return shellRun(uninstallSudo,
-			"docker compose -f ~/.oakestra/root_orchestrator/root-orchestrator.yml down")
+		return shellRun(uninstallSudo, "docker compose -f "+yml+" down")
 	},
 }
 
@@ -44,9 +53,9 @@ var uninstallClusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Stop and remove the cluster orchestrator",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		yml := oakestraYML("cluster_orchestrator", "cluster-orchestrator.yml")
 		fmt.Println("Stopping cluster orchestrator…")
-		return shellRun(uninstallSudo,
-			"docker compose -f ~/.oakestra/cluster_orchestrator/cluster-orchestrator.yml down")
+		return shellRun(uninstallSudo, "docker compose -f "+yml+" down")
 	},
 }
 
