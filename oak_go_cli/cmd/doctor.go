@@ -146,16 +146,28 @@ func findDoctorComposeYML(component string) (string, error) {
 			"Install with: oak install %s", primary, fallback, component)
 }
 
+// dockerCompose runs a docker compose command, trying without sudo first,
+// then with sudo if the first attempt fails. Returns combined output.
+func dockerCompose(ymlPath string, args ...string) ([]byte, error) {
+	base := append([]string{"compose", "-f", ymlPath}, args...)
+	if out, err := exec.Command("docker", base...).CombinedOutput(); err == nil {
+		return out, nil
+	}
+	// Retry with sudo.
+	return exec.Command("sudo", append([]string{"docker", "compose", "-f", ymlPath}, args...)...).CombinedOutput()
+}
+
 // composeServices returns the service names declared in a compose file.
-// It tries `docker compose config --services` (v2), then `docker-compose` (v1).
+// Tries docker compose v2 (with/without sudo), then docker-compose v1.
 func composeServices(ymlPath string) []string {
-	for _, bin := range [][]string{
-		{"docker", "compose"},
-		{"docker-compose"},
-	} {
-		args := append(bin, "-f", ymlPath, "config", "--services")
-		out, err := exec.Command(args[0], args[1:]...).Output()
-		if err == nil {
+	candidates := [][]string{
+		{"docker", "compose", "-f", ymlPath, "config", "--services"},
+		{"sudo", "docker", "compose", "-f", ymlPath, "config", "--services"},
+		{"docker-compose", "-f", ymlPath, "config", "--services"},
+		{"sudo", "docker-compose", "-f", ymlPath, "config", "--services"},
+	}
+	for _, cmd := range candidates {
+		if out, err := exec.Command(cmd[0], cmd[1:]...).Output(); err == nil {
 			return splitLines(out)
 		}
 	}
@@ -167,7 +179,7 @@ func checkContainerStatus(ymlPath string, services []string) {
 	fmt.Printf("%s\n", bold("Container Status:"))
 	allOK := true
 	for _, svc := range services {
-		out, err := exec.Command("docker", "compose", "-f", ymlPath, "ps", svc).CombinedOutput()
+		out, err := dockerCompose(ymlPath, "ps", svc)
 		text := string(out)
 		if err != nil {
 			fmt.Printf("  %s %s  (could not query: %v)\n", red("✗"), colorName(svc), err)
@@ -193,9 +205,7 @@ var logErrorRe = regexp.MustCompile(`(?i)\b(error|timeout|fatal|panic|exception)
 func checkContainerLogs(ymlPath string, services []string) {
 	fmt.Printf("%s\n", bold("Log Analysis (last 1000 lines per service):"))
 	for _, svc := range services {
-		out, err := exec.Command(
-			"docker", "compose", "-f", ymlPath, "logs", "--tail", "1000", svc,
-		).CombinedOutput()
+		out, err := dockerCompose(ymlPath, "logs", "--tail", "1000", svc)
 		if err != nil {
 			fmt.Printf("  %s %s  (could not read logs: %v)\n", yellow("!"), colorName(svc), err)
 			continue
@@ -231,7 +241,7 @@ func checkContainerLogs(ymlPath string, services []string) {
 
 // printComposePS is the fallback when no service list is available.
 func printComposePS(ymlPath string) {
-	out, err := exec.Command("docker", "compose", "-f", ymlPath, "ps").CombinedOutput()
+	out, err := dockerCompose(ymlPath, "ps")
 	if err != nil {
 		fmt.Printf("  %s docker compose ps failed: %v\n", red("✗"), err)
 		return
