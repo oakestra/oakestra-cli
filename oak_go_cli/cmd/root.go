@@ -49,6 +49,7 @@ func init() {
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)
+	rootCmd.AddCommand(doctorCmd)
 
 	// Only expose `oak worker` when NodeEngine is installed on this machine.
 	if nodeEngineInstalled() {

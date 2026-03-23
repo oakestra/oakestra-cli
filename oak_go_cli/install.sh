@@ -89,8 +89,11 @@ fi
 
 if command_exists bash; then
   if [ -d "/etc/bash_completion.d" ]; then
-    oak completion bash > /etc/bash_completion.d/oak 2>/dev/null || \
-    sudo sh -c 'oak completion bash > /etc/bash_completion.d/oak' 2>/dev/null || true
+    if [ -w "/etc/bash_completion.d" ]; then
+      oak completion bash > /etc/bash_completion.d/oak 2>/dev/null || true
+    else
+      sudo sh -c 'oak completion bash > /etc/bash_completion.d/oak' 2>/dev/null || true
+    fi
     echo "bash completions written to /etc/bash_completion.d/oak"
   fi
 fi
