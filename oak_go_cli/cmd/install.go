@@ -337,7 +337,7 @@ func setVersion(version string) {
 // shellRun runs a shell command, optionally prefixed with sudo.
 func shellRun(sudo bool, command string) error {
 	if sudo {
-		return runInteractive("sudo", "sh", "-c", command)
+		return runInteractive("sudo", "-E", "sh", "-c", command)
 	}
 	return runInteractive("sh", "-c", command)
 }
