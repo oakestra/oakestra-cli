@@ -71,10 +71,20 @@ if [ -d "$TMP_DIR/SLAs" ]; then
 fi
 
 # Shell completions — best-effort, never fatal.
+COMP_DIR="$HOME/.zsh/completions"
+
 if command_exists zsh; then
-  mkdir -p ~/.zsh/completions
-  oak completion zsh > ~/.zsh/completions/_oak 2>/dev/null || true
-  echo "zsh completions written to ~/.zsh/completions/_oak"
+  mkdir -p "$COMP_DIR"
+  oak completion zsh > "$COMP_DIR/_oak" 2>/dev/null || true
+
+  # Add fpath + compinit to .zshrc only if not already configured.
+  ZSHRC="$HOME/.zshrc"
+  if [ ! -f "$ZSHRC" ] || ! grep -qF '.zsh/completions' "$ZSHRC"; then
+    printf '\n# oak CLI tab completions\nfpath=(%s $fpath)\nautoload -Uz compinit && compinit\n' "$COMP_DIR" >> "$ZSHRC"
+    echo "zsh completions installed. Run: source ~/.zshrc"
+  else
+    echo "zsh completions written to $COMP_DIR/_oak (run: source ~/.zshrc)"
+  fi
 fi
 
 if command_exists bash; then

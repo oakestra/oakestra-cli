@@ -14,11 +14,11 @@ import (
 func completeApplications(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	client, err := api.New()
 	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 	apps, err := client.GetApplications()
 	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 	var out []string
 	for _, a := range apps {
@@ -34,11 +34,11 @@ func completeApplications(_ *cobra.Command, _ []string, _ string) ([]string, cob
 func completeServices(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	client, err := api.New()
 	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 	svcs, err := client.GetAllServices("")
 	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 	var out []string
 	for _, s := range svcs {
@@ -67,11 +67,11 @@ func completeServiceThenInstances(_ *cobra.Command, args []string, _ string) ([]
 func instanceCompletions(serviceArg string) ([]string, cobra.ShellCompDirective) {
 	client, err := api.New()
 	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 	svc, err := client.ResolveServiceID(serviceArg)
 	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 	var out []string
 	for _, inst := range svc.InstanceList {

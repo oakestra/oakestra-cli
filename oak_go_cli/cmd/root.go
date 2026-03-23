@@ -47,6 +47,13 @@ func init() {
 	rootCmd.AddCommand(serviceCmd)
 	rootCmd.AddCommand(clusterCmd)
 	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(installCmd)
+	rootCmd.AddCommand(uninstallCmd)
+
+	// Only expose `oak worker` when NodeEngine is installed on this machine.
+	if nodeEngineInstalled() {
+		rootCmd.AddCommand(workerCmd)
+	}
 
 	// Register the template helper that shows "name (alias1, alias2)" in the
 	// "Available Commands" section.
