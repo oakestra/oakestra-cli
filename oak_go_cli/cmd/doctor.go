@@ -122,7 +122,7 @@ func doctorCompose(component string) error {
 }
 
 // findDoctorComposeYML returns the compose file path for a component,
-// falling back to ~/.oakestra/1-DOC.yml if the canonical path is absent.
+// falling back to ~/.oakestra/1-DOC.yaml if the canonical path is absent.
 func findDoctorComposeYML(component string) (string, error) {
 	home, _ := os.UserHomeDir()
 	var primary string
@@ -135,7 +135,7 @@ func findDoctorComposeYML(component string) (string, error) {
 	if fileExists(primary) {
 		return primary, nil
 	}
-	fallback := filepath.Join(home, ".oakestra", "1-DOC.yml")
+	fallback := filepath.Join(home, ".oakestra", "1-DOC.yaml")
 	if fileExists(fallback) {
 		fmt.Printf("  %s Primary compose file not found, using fallback: %s\n",
 			yellow("Note:"), fallback)
