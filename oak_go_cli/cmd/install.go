@@ -28,6 +28,7 @@ var (
 	installClusterYes bool
 	installWorkerYes  bool
 	installFullYes    bool
+	installSudo       bool
 )
 
 func init() {
@@ -35,6 +36,10 @@ func init() {
 	installCmd.AddCommand(installClusterCmd)
 	installCmd.AddCommand(installWorkerCmd)
 	installCmd.AddCommand(installFullCmd)
+
+	// --root is inherited by all install subcommands.
+	installCmd.PersistentFlags().BoolVar(&installSudo, "root", false,
+		"Run install scripts with sudo")
 
 	installRootCmd.Flags().BoolVarP(&installRootYes, "yes", "y", false, "Skip confirmation prompt")
 	installClusterCmd.Flags().BoolVarP(&installClusterYes, "yes", "y", false, "Skip confirmation prompt")
@@ -53,11 +58,11 @@ Requires Docker with Compose support.
 Optionally specify a version tag (e.g. v0.4.400).`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return doInstallRoot(firstArg(args), installRootYes)
+		return doInstallRoot(firstArg(args), installRootYes, installSudo)
 	},
 }
 
-func doInstallRoot(version string, yes bool) error {
+func doInstallRoot(version string, yes, sudo bool) error {
 	if !confirmInstall("Oakestra root orchestrator", yes) {
 		fmt.Println("Aborted.")
 		return nil
@@ -67,7 +72,7 @@ func doInstallRoot(version string, yes bool) error {
 	}
 	setVersion(version)
 	fmt.Println("Installing root orchestrator…")
-	return runInteractive("sh", "-c", "curl -sfL oakestra.io/install-root.sh | sh")
+	return shellRun(sudo, "curl -sfL oakestra.io/install-root.sh | sh")
 }
 
 // ─── install cluster ──────────────────────────────────────────────────────────
@@ -81,11 +86,11 @@ Requires Docker with Compose support.
 Optionally specify a version tag (e.g. v0.4.400).`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return doInstallCluster(firstArg(args), installClusterYes)
+		return doInstallCluster(firstArg(args), installClusterYes, installSudo)
 	},
 }
 
-func doInstallCluster(version string, yes bool) error {
+func doInstallCluster(version string, yes, sudo bool) error {
 	if !confirmInstall("Oakestra cluster orchestrator", yes) {
 		fmt.Println("Aborted.")
 		return nil
@@ -95,7 +100,7 @@ func doInstallCluster(version string, yes bool) error {
 	}
 	setVersion(version)
 	fmt.Println("Installing cluster orchestrator…")
-	return runInteractive("sh", "-c", "curl -sfL oakestra.io/install-cluster.sh | sh")
+	return shellRun(sudo, "curl -sfL oakestra.io/install-cluster.sh | sh")
 }
 
 // ─── install worker ───────────────────────────────────────────────────────────
@@ -113,11 +118,11 @@ After installation the CLI will let you pick which cluster this
 worker should join and will configure NodeEngine automatically.`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return doInstallWorker(firstArg(args), installWorkerYes)
+		return doInstallWorker(firstArg(args), installWorkerYes, installSudo)
 	},
 }
 
-func doInstallWorker(version string, yes bool) error {
+func doInstallWorker(version string, yes, sudo bool) error {
 	// Step 0: best-effort cluster presence check.
 	client, clientErr := api.New()
 	if clientErr == nil {
@@ -140,7 +145,7 @@ func doInstallWorker(version string, yes bool) error {
 
 	// Step 3: Run install script.
 	fmt.Println("Installing NodeEngine worker node…")
-	if err := runInteractive("sh", "-c", "curl -sfL oakestra.io/install-worker.sh | sh -"); err != nil {
+	if err := shellRun(sudo, "curl -sfL oakestra.io/install-worker.sh | sh -"); err != nil {
 		return fmt.Errorf("worker installation failed: %w", err)
 	}
 
@@ -229,14 +234,14 @@ Requires Docker with Compose support.`,
 			return nil
 		}
 		// Individual confirmations are skipped — user already confirmed above.
-		if err := doInstallRoot(version, true); err != nil {
+		if err := doInstallRoot(version, true, installSudo); err != nil {
 			return fmt.Errorf("root install: %w", err)
 		}
-		if err := doInstallCluster(version, true); err != nil {
+		if err := doInstallCluster(version, true, installSudo); err != nil {
 			return fmt.Errorf("cluster install: %w", err)
 		}
 		// Worker start prompt still respects the yes flag.
-		if err := doInstallWorker(version, yes); err != nil {
+		if err := doInstallWorker(version, yes, installSudo); err != nil {
 			return fmt.Errorf("worker install: %w", err)
 		}
 		return nil
@@ -287,6 +292,14 @@ func setVersion(version string) {
 		os.Setenv("OAKESTRA_VERSION", version) //nolint:errcheck
 		fmt.Printf("Using OAKESTRA_VERSION=%s\n", version)
 	}
+}
+
+// shellRun runs a shell command, optionally prefixed with sudo.
+func shellRun(sudo bool, command string) error {
+	if sudo {
+		return runInteractive("sudo", "sh", "-c", command)
+	}
+	return runInteractive("sh", "-c", command)
 }
 
 // runInteractive runs a command with stdin/stdout/stderr attached to the terminal.

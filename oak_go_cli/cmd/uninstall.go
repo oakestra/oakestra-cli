@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var uninstallSudo bool
+
 // ─── top-level uninstall command ──────────────────────────────────────────────
 
 var uninstallCmd = &cobra.Command{
@@ -18,6 +20,10 @@ func init() {
 	uninstallCmd.AddCommand(uninstallRootCmd)
 	uninstallCmd.AddCommand(uninstallClusterCmd)
 	uninstallCmd.AddCommand(uninstallWorkerCmd)
+
+	// --root is inherited by all uninstall subcommands.
+	uninstallCmd.PersistentFlags().BoolVar(&uninstallSudo, "root", false,
+		"Run docker compose commands with sudo")
 }
 
 // ─── uninstall root ───────────────────────────────────────────────────────────
@@ -27,7 +33,7 @@ var uninstallRootCmd = &cobra.Command{
 	Short: "Stop and remove the root orchestrator",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Stopping root orchestrator…")
-		return runInteractive("sh", "-c",
+		return shellRun(uninstallSudo,
 			"docker compose -f ~/.oakestra/root_orchestrator/root-orchestrator.yml down")
 	},
 }
@@ -39,7 +45,7 @@ var uninstallClusterCmd = &cobra.Command{
 	Short: "Stop and remove the cluster orchestrator",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("Stopping cluster orchestrator…")
-		return runInteractive("sh", "-c",
+		return shellRun(uninstallSudo,
 			"docker compose -f ~/.oakestra/cluster_orchestrator/cluster-orchestrator.yml down")
 	},
 }
