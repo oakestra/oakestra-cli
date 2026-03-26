@@ -10,21 +10,59 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const banner = `
-   ____        _     _____ _      _____
-  / __ \      | |   / ____| |    |_   _|
- | |  | | __ _| | _| |    | |      | |
- | |  | |/ _` + "`" + ` | |/ / |    | |      | |
- | |__| | (_| |   <| |____| |____ _| |_
-  \____/ \__,_|_|\_\\_____|______|_____|
+const rawBanner = `
+                                         ░░░░░░░
+                                   ░░░░░░░░░░░░░░░░░
+                               ░░░░░░░░░░░░░░░░░░░░░░
+                            ░░░░░░░░░░░░░░░░░░▒░░░░░░░
+██╗    ██╗███████╗██╗  ░░░░██████╗░██████╗░███╗░░░███╗███████╗    ████████╗ ██████╗
+██║    ██║██╔════╝██║░░░░░██╔════╝██╔═══██╗████╗░████║██╔════╝    ╚══██╔══╝██╔═══██╗
+██║ █╗ ██║█████╗  ██║░░░░░██║░▒░░░██║░░░██║██╔████╔██║█████╗░░       ██║   ██║   ██║
+██║███╗██║██╔══╝ ░██║░░░▒░██║░░▒░░██║░▒░██║██║╚██╔╝██║██╔══╝░░░░     ██║   ██║   ██║
+╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║░╚═╝░██║███████╗░░░    ██║   ╚██████╔╝
+ ╚══╝╚══╝ ╚══════╝╚══════╝░╚═════╝░╚═════╝░╚═╝░▒░▒░╚═╝╚══════╝░░░    ╚═╝    ╚═════╝
+                ░░░░░░░░░░▒▓▓░░░░▓▓▒▓▓▓▒▓▓▓▓▒▓▓▓░░░░░▒░░░▓▒░░░░░
+                 ░░░░░░▒░░░░▒▓▓░░░▒▓▓▓▓▓▓▓▓░░▓▓▓▓░░▓▓▓▓▒░░░░░░
+                   ░░▒▓░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░░
+                       ░░░░░░░░░░░▒▓▒▓▓▓▓▓▓▓▒░░░░░░░░░░░
+                                  ▒▓▒▓▓▒▓▓▓▓▒
+         ██████╗  █████╗ ██╗  ██╗███████╗███████╗████████╗██████╗  █████╗
+        ██╔═══██╗██╔══██╗██║ ██╔╝██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗
+        ██║   ██║███████║█████╔╝ █████╗░░███████╗   ██║   ██████╔╝███████║
+        ██║   ██║██╔══██║██╔═██╗ ██╔══╝░░╚════██║   ██║   ██╔══██╗██╔══██║
+        ╚██████╔╝██║  ██║██║  ██╗███████╗███████║   ██║   ██║  ██║██║  ██║
+         ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
+                               ▒▓▓▓▓▓▒▓▓▓▓▓▓▒▒
+                             ▒▒▓▒▓ ▓▓  ▒▒▓▓▓▓▓▒▒▒▒ ▒
+                        ▒▒ ▒▒▒▓▒▒▒▒▓▒▒   ▒▒▒▓▒▓ ▒▒▒▒ ▒
+                       ▒    ▒ ▒▒▒▒   ▒▒ ▒▒  ▒ ▒▒▒▒ ▒▒▒▒
+                               ▒  ▒▒             ▒ ▒   ▒
 
 `
+
+// colorBanner applies ANSI colors to the raw banner string.
+func colorBanner() string {
+	var sb strings.Builder
+	for _, r := range rawBanner {
+		switch r {
+		case '║', '═', '╗', '╝', '╔', '╚':
+			sb.WriteString(blue(string(r)))
+		case '░':
+			sb.WriteString(green(string(r)))
+		case '█':
+			sb.WriteString(ansi("97", string(r)))
+		default:
+			sb.WriteRune(r)
+		}
+	}
+	return sb.String()
+}
 
 // rootCmd is the top-level command. All sub-commands are added in Execute().
 var rootCmd = &cobra.Command{
 	Use:   "oak",
 	Short: "oak — Oakestra CLI (Go edition)",
-	Long:  banner + "A fast, portable CLI for managing Oakestra deployments.",
+	Long:  colorBanner() + "A fast, portable CLI for managing Oakestra deployments.",
 	// Show help when called with no arguments.
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return cmd.Help()
@@ -50,6 +88,7 @@ func init() {
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(doctorCmd)
+	rootCmd.AddCommand(addonCmd)
 
 	// Only expose `oak worker` when NodeEngine is installed on this machine.
 	if nodeEngineInstalled() {

@@ -17,6 +17,21 @@ type Config struct {
 	// Login credentials for the Oakestra API (defaults to "Admin"/"Admin").
 	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
+	// URL to the Oakestra troubleshoot skill for Claude CLI.
+	TroubleshootSkillURL string `json:"troubleshoot_skill_url,omitempty"`
+	// Path to the FLOps addon repository (used by oak addon flops).
+	FlopsRepoPath string `json:"flops_repo_path,omitempty"`
+}
+
+// DefaultTroubleshootSkillURL is the default URL for the Oakestra troubleshoot skill.
+const DefaultTroubleshootSkillURL = "https://raw.githubusercontent.com/oakestra/oakestra/refs/heads/develop/SKILLS/troubleshoot-oakestra.md"
+
+// GetTroubleshootSkillURL returns the configured skill URL or the default.
+func (c *Config) GetTroubleshootSkillURL() string {
+	if c.TroubleshootSkillURL == "" {
+		return DefaultTroubleshootSkillURL
+	}
+	return c.TroubleshootSkillURL
 }
 
 // GetUsername returns the configured username or the default "Admin".
@@ -98,9 +113,13 @@ func Set(key, value string) error {
 		cfg.ClusterLocation = value
 	case "main_oak_repo_path":
 		cfg.MainOakRepoPath = value
+	case "troubleshoot_skill_url":
+		cfg.TroubleshootSkillURL = value
+	case "flops_repo_path":
+		cfg.FlopsRepoPath = value
 	default:
 		return fmt.Errorf(
-			"unknown config key %q.\nValid keys: system_manager_ip, cluster_manager_ip, cluster_name, cluster_location, main_oak_repo_path\n"+
+			"unknown config key %q.\nValid keys: system_manager_ip, cluster_manager_ip, cluster_name, cluster_location, main_oak_repo_path, troubleshoot_skill_url, flops_repo_path\n"+
 				"For login credentials use: oak config credentials <username> [password]", key)
 	}
 	return Save(cfg)
@@ -139,5 +158,7 @@ func Keys() []string {
 		"cluster_name",
 		"cluster_location",
 		"main_oak_repo_path",
+		"troubleshoot_skill_url",
+		"flops_repo_path",
 	}
 }

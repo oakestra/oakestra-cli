@@ -1,9 +1,14 @@
 package cmd
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -28,6 +33,7 @@ func init() {
 	configCmd.AddCommand(configShowCmd)
 	configCmd.AddCommand(configResetCmd)
 	configCmd.AddCommand(configCredentialsCmd)
+	configCmd.AddCommand(configClaudeCmd)
 }
 
 // ─── config set ──────────────────────────────────────────────────────────────
@@ -43,6 +49,7 @@ Available keys:
   cluster_name        Name of the local cluster
   cluster_location    Location of the local cluster
   main_oak_repo_path  Path to the main Oakestra repository
+  flops_repo_path     Path to the FLOps addon repository
 
 For login credentials use: oak config credentials`,
 	Example: `  oak config set system_manager_ip 192.168.1.10
@@ -194,4 +201,108 @@ func maskPassword(p string) string {
 		return "(default)"
 	}
 	return strings.Repeat("*", len(p))
+}
+
+// ─── config claude ────────────────────────────────────────────────────────────
+
+var configClaudeCmd = &cobra.Command{
+	Use:   "claude",
+	Short: "Configure Claude CLI for Oakestra AI troubleshooting",
+	Long: `Check Claude CLI installation and set up the Oakestra troubleshooting skill.
+
+This command:
+  1. Verifies the Claude CLI (claude) is installed
+  2. Checks if the Oakestra troubleshooting skill is present
+  3. Optionally downloads and installs the skill
+
+The skill URL can be customised:
+  oak config set troubleshoot_skill_url <url>`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runConfigClaude()
+	},
+}
+
+func runConfigClaude() error {
+	// Step 1: verify claude is installed.
+	if !isClaudeInstalled() {
+		fmt.Printf("%s Claude CLI is not installed.\n\n", red("✗"))
+		fmt.Println("Install it with:")
+		fmt.Printf("  %s\n\n", bold("npm install -g @anthropic-ai/claude-code"))
+		fmt.Println("Or visit https://claude.ai/code for alternative installation methods.")
+		return nil
+	}
+	fmt.Printf("%s Claude CLI is installed.\n", green("✓"))
+
+	// Step 2: check whether the skill is already present.
+	skillPath := claudeSkillPath()
+	if fileExists(skillPath) {
+		fmt.Printf("%s Oakestra troubleshooting skill is already installed.\n", green("✓"))
+		fmt.Printf("  %s\n", dim(skillPath))
+		return nil
+	}
+	fmt.Printf("%s Oakestra troubleshooting skill is not installed.\n", yellow("!"))
+	fmt.Printf("  Expected at: %s\n\n", dim(skillPath))
+
+	// Step 3: ask permission to install.
+	fmt.Print("Install the Oakestra troubleshooting skill now? [y/N] ")
+	scanner := newStdinScanner()
+	scanner.Scan()
+	answer := strings.ToLower(strings.TrimSpace(scanner.Text()))
+	if answer != "y" && answer != "yes" {
+		fmt.Println("Skipped. Run 'oak config claude' again whenever you want to install it.")
+		return nil
+	}
+
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	return installClaudeSkill(cfg.GetTroubleshootSkillURL(), skillPath)
+}
+
+// isClaudeInstalled reports whether the claude binary is on PATH.
+func isClaudeInstalled() bool {
+	_, err := exec.LookPath("claude")
+	return err == nil
+}
+
+// claudeSkillPath returns where the Oakestra troubleshoot skill should live.
+func claudeSkillPath() string {
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, ".claude", "commands", "troubleshoot-oakestra.md")
+}
+
+// installClaudeSkill downloads the skill from url and writes it to destPath.
+func installClaudeSkill(url, destPath string) error {
+	fmt.Printf("Downloading skill from %s…\n", dim(url))
+
+	resp, err := http.Get(url) //nolint:noctx
+	if err != nil {
+		return fmt.Errorf("downloading skill: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("downloading skill: HTTP %d", resp.StatusCode)
+	}
+
+	if err := os.MkdirAll(filepath.Dir(destPath), 0o755); err != nil {
+		return fmt.Errorf("creating commands directory: %w", err)
+	}
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("reading skill content: %w", err)
+	}
+	if err := os.WriteFile(destPath, data, 0o644); err != nil {
+		return fmt.Errorf("writing skill file: %w", err)
+	}
+
+	fmt.Printf("%s Oakestra troubleshooting skill installed.\n", green("✓"))
+	fmt.Printf("  %s\n\n", dim(destPath))
+	fmt.Printf("Use %s for AI-powered diagnostics.\n", bold("oak doctor <component> --ai-troubleshoot"))
+	return nil
+}
+
+// newStdinScanner returns a bufio.Scanner reading from stdin.
+func newStdinScanner() *bufio.Scanner {
+	return bufio.NewScanner(os.Stdin)
 }

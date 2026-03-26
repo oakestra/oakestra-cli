@@ -10,9 +10,13 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+
+	"github.com/oakestra/oak-go-cli/internal/config"
 )
 
 // ─── top-level doctor command ─────────────────────────────────────────────────
+
+var aiTroubleshoot bool
 
 var doctorCmd = &cobra.Command{
 	Use:   "doctor",
@@ -24,13 +28,21 @@ Run without arguments for an interactive menu, or specify a component directly:
   oak doctor root     — root orchestrator containers
   oak doctor cluster  — cluster orchestrator containers
   oak doctor worker   — NodeEngine / NetManager services
-  oak doctor all      — all of the above`,
+  oak doctor all      — all of the above
+
+Add --ai-troubleshoot to any subcommand to get AI-powered diagnostics via Claude.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return runDoctor(promptDoctorTarget())
+		target := promptDoctorTarget()
+		if aiTroubleshoot {
+			return runAITroubleshoot(target)
+		}
+		return runDoctor(target)
 	},
 }
 
 func init() {
+	doctorCmd.PersistentFlags().BoolVar(&aiTroubleshoot, "ai-troubleshoot", false,
+		"Use Claude AI for intelligent troubleshooting")
 	doctorCmd.AddCommand(doctorRootCmd)
 	doctorCmd.AddCommand(doctorClusterCmd)
 	doctorCmd.AddCommand(doctorWorkerCmd)
@@ -40,25 +52,45 @@ func init() {
 var doctorRootCmd = &cobra.Command{
 	Use:   "root",
 	Short: "Check root orchestrator containers",
-	RunE:  func(cmd *cobra.Command, args []string) error { return doctorCompose("root") },
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if aiTroubleshoot {
+			return runAITroubleshoot("root")
+		}
+		return doctorCompose("root")
+	},
 }
 
 var doctorClusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Check cluster orchestrator containers",
-	RunE:  func(cmd *cobra.Command, args []string) error { return doctorCompose("cluster") },
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if aiTroubleshoot {
+			return runAITroubleshoot("cluster")
+		}
+		return doctorCompose("cluster")
+	},
 }
 
 var doctorWorkerCmd = &cobra.Command{
 	Use:   "worker",
 	Short: "Check NodeEngine worker status",
-	RunE:  func(cmd *cobra.Command, args []string) error { return doctorWorker() },
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if aiTroubleshoot {
+			return runAITroubleshoot("worker")
+		}
+		return doctorWorker()
+	},
 }
 
 var doctorAllCmd = &cobra.Command{
 	Use:   "all",
 	Short: "Check all Oakestra components",
-	RunE:  func(cmd *cobra.Command, args []string) error { return doctorAll() },
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if aiTroubleshoot {
+			return runAITroubleshoot("all")
+		}
+		return doctorAll()
+	},
 }
 
 // ─── interactive prompt ───────────────────────────────────────────────────────
@@ -301,6 +333,87 @@ func doctorAll() error {
 	}
 	fmt.Println(sep)
 	return doctorWorker()
+}
+
+// ─── AI troubleshooting ───────────────────────────────────────────────────────
+
+func runAITroubleshoot(component string) error {
+	// Verify claude is installed.
+	if !isClaudeInstalled() {
+		fmt.Printf("%s Claude CLI is not installed.\n", red("✗"))
+		fmt.Printf("Run %s to set up Claude for AI troubleshooting.\n", bold("oak config claude"))
+		return nil
+	}
+
+	// Verify the skill is installed.
+	skillPath := claudeSkillPath()
+	if !fileExists(skillPath) {
+		fmt.Printf("%s Oakestra troubleshooting skill is not installed.\n", yellow("!"))
+		fmt.Printf("Run %s to install it.\n", bold("oak config claude"))
+		return nil
+	}
+
+	fmt.Printf("%s AI Troubleshooting — %s\n\n", bold("→"), bold(component))
+	fmt.Println("  [1] General healthcheck  (check if components are installed and running)")
+	fmt.Println("  [2] Specific issue       (describe your problem)")
+	fmt.Print("Selection [1-2]: ")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	choice := strings.TrimSpace(scanner.Text())
+
+	var prompt string
+	if choice == "2" {
+		fmt.Println()
+		fmt.Print("Describe the issue: ")
+		scanner.Scan()
+		issue := strings.TrimSpace(scanner.Text())
+		if issue == "" {
+			issue = "general troubleshooting"
+		}
+		prompt = aiSpecificPrompt(component, issue)
+	} else {
+		prompt = aiHealthcheckPrompt(component)
+	}
+
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	skillName := strings.TrimSuffix(filepath.Base(cfg.GetTroubleshootSkillURL()), ".md")
+
+	fmt.Println()
+	fmt.Println(dim("Starting Claude AI session…"))
+	fmt.Println()
+	return runInteractive("claude", fmt.Sprintf("/%s %s", skillName, prompt))
+}
+
+func aiHealthcheckPrompt(component string) string {
+	descriptions := map[string]string{
+		"root":    "root orchestrator — check if the root orchestrator containers are installed, running, and report any problems",
+		"cluster": "cluster orchestrator — check if the cluster orchestrator containers are installed, running, and report any problems",
+		"worker":  "worker node — check if NodeEngine and NetManager are installed, running, and report any problems",
+		"all":     "full Oakestra stack (root orchestrator, cluster orchestrator, and worker node) — check if all components are installed, running, and report any problems",
+	}
+	desc, ok := descriptions[component]
+	if !ok {
+		desc = component + " — perform a general healthcheck"
+	}
+	return fmt.Sprintf("Please perform a general healthcheck of the Oakestra %s.", desc)
+}
+
+func aiSpecificPrompt(component string, issue string) string {
+	labels := map[string]string{
+		"root":    "root orchestrator",
+		"cluster": "cluster orchestrator",
+		"worker":  "worker node (NodeEngine / NetManager)",
+		"all":     "Oakestra stack",
+	}
+	label, ok := labels[component]
+	if !ok {
+		label = component
+	}
+	return fmt.Sprintf("I have an issue with my Oakestra %s: %s. Please help me troubleshoot this.", label, issue)
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
