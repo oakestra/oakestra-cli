@@ -4,6 +4,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"text/template"
 
@@ -85,13 +86,16 @@ func init() {
 	rootCmd.AddCommand(serviceCmd)
 	rootCmd.AddCommand(clusterCmd)
 	rootCmd.AddCommand(configCmd)
-	rootCmd.AddCommand(installCmd)
-	rootCmd.AddCommand(uninstallCmd)
-	rootCmd.AddCommand(doctorCmd)
+	// install / uninstall / doctor require a Linux host — hide them on Windows.
+	if runtime.GOOS != "windows" {
+		rootCmd.AddCommand(installCmd)
+		rootCmd.AddCommand(uninstallCmd)
+		rootCmd.AddCommand(doctorCmd)
+	}
 	rootCmd.AddCommand(addonCmd)
 
 	// Only expose `oak worker` when NodeEngine is installed on this machine.
-	if nodeEngineInstalled() {
+	if runtime.GOOS != "windows" && nodeEngineInstalled() {
 		rootCmd.AddCommand(workerCmd)
 	}
 
