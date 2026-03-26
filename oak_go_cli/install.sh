@@ -42,6 +42,14 @@ if [ -z "$LATEST_TAG" ]; then
     fi
 fi
 
+# check using which oak and if so remove it before installing the new version
+if command_exists oak; then
+  echo "Existing oak CLI found at $(which oak). Removing it before installing the new version."
+  if [ -w "$(which oak)" ]; then
+    rm "$(which oak)"
+  fi
+fi
+
 # Construct the download URL.
 TARBALL="oak_cli_${OS}_${ARCH}.tar.gz"
 DOWNLOAD_URL="$BASE_URL/$LATEST_TAG/$TARBALL"

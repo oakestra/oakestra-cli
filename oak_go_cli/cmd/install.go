@@ -69,12 +69,38 @@ func doInstallRoot(version string, yes, sudo bool) error {
 		fmt.Println("Aborted.")
 		return nil
 	}
-	if err := checkDockerCompose(); err != nil {
+	if err := checkFundamentals(); err != nil {
 		return err
 	}
 	setVersion(version)
 	fmt.Println("Installing root orchestrator…")
 	if err := shellRun(sudo, "curl -sfL oakestra.io/install-root.sh | sh"); err != nil {
+		return err
+	}
+
+	// Detect and save this machine's IP so the CLI points at the local root orchestrator.
+	if ip, err := getLocalIP(); err == nil && ip != "" {
+		if err := config.Set("system_manager_ip", ip); err == nil {
+			fmt.Printf("%s CLI configured: system_manager_ip = %s\n", green("✓"), bold(ip))
+		}
+	} else {
+		fmt.Printf("%s Could not detect local IP — run: %s\n",
+			yellow("Warning:"), bold("oak config set system_manager_ip <IP>"))
+	}
+	return nil
+}
+
+func doInstall1DOC(version string, yes, sudo bool) error {
+	if !confirmInstall("Oakestra root and cluster orchestrator", yes) {
+		fmt.Println("Aborted.")
+		return nil
+	}
+	if err := checkFundamentals(); err != nil {
+		return err
+	}
+	setVersion(version)
+	fmt.Println("Installing root and cluster orchestrator…")
+	if err := shellRun(sudo, "curl -sfL oakestra.io/getstarted.sh | sh"); err != nil {
 		return err
 	}
 
@@ -110,7 +136,7 @@ func doInstallCluster(version string, yes, sudo bool) error {
 		fmt.Println("Aborted.")
 		return nil
 	}
-	if err := checkDockerCompose(); err != nil {
+	if err := checkFundamentals(); err != nil {
 		return err
 	}
 	setVersion(version)
@@ -174,22 +200,27 @@ func doInstallWorker(version string, yes, sudo bool) error {
 		fmt.Println(dim("(Cluster pre-check skipped — root orchestrator address not configured)"))
 	}
 
-	// Step 1: Confirm.
+	// Step 1: Check prerequisites.
+	if err := checkFundamentals(); err != nil {
+		return err
+	}
+
+	// Step 2: Confirm.
 	if !confirmInstall("NodeEngine worker node", yes) {
 		fmt.Println("Aborted.")
 		return nil
 	}
 
-	// Step 2: Export version.
+	// Step 3: Export version.
 	setVersion(version)
 
-	// Step 3: Run install script.
+	// Step 4: Run install script.
 	fmt.Println("Installing NodeEngine worker node…")
 	if err := shellRun(sudo, "curl -sfL oakestra.io/install-worker.sh | sh -"); err != nil {
 		return fmt.Errorf("worker installation failed: %w", err)
 	}
 
-	// Step 4: Cluster selection and NodeEngine config.
+	// Step 5: Cluster selection and NodeEngine config.
 	if clientErr == nil {
 		if err := configureWorkerCluster(client); err != nil {
 			fmt.Fprintf(os.Stderr, "%s could not configure cluster automatically: %v\n", yellow("Warning:"), err)
@@ -197,7 +228,7 @@ func doInstallWorker(version string, yes, sudo bool) error {
 		}
 	}
 
-	// Steps 5-6: Optionally start the worker now.
+	// Step 6: Optionally start the worker now.
 	fmt.Println()
 	if confirmPromptYN("Start the worker node now?", yes) {
 		fmt.Println("Starting NodeEngine…")
@@ -274,11 +305,8 @@ Requires Docker with Compose support.`,
 			return nil
 		}
 		// Individual confirmations are skipped — user already confirmed above.
-		if err := doInstallRoot(version, true, installSudo); err != nil {
+		if err := doInstall1DOC(version, true, installSudo); err != nil {
 			return fmt.Errorf("root install: %w", err)
-		}
-		if err := doInstallCluster(version, true, installSudo); err != nil {
-			return fmt.Errorf("cluster install: %w", err)
 		}
 		// Worker start prompt still respects the yes flag.
 		if err := doInstallWorker(version, yes, installSudo); err != nil {
@@ -314,16 +342,52 @@ func confirmPromptYN(prompt string, yes bool) bool {
 	return ans == "y" || ans == "yes"
 }
 
-// checkDockerCompose verifies that docker compose (v2) or docker-compose (v1) is available.
-func checkDockerCompose() error {
-	if exec.Command("docker", "compose", "version").Run() == nil {
-		return nil
+// checkFundamentals verifies that the prerequisite tools (git, docker, docker compose) are present.
+// It prints a status line for each dependency and returns an error listing anything missing.
+func checkFundamentals() error {
+	type dep struct {
+		name    string
+		test    func() bool
+		install string
 	}
-	if exec.Command("docker-compose", "version").Run() == nil {
-		return nil
+	deps := []dep{
+		{
+			name:    "git",
+			test:    func() bool { return exec.Command("git", "--version").Run() == nil },
+			install: "https://git-scm.com/downloads",
+		},
+		{
+			name:    "docker",
+			test:    func() bool { return exec.Command("docker", "info").Run() == nil },
+			install: "https://docs.docker.com/engine/install/",
+		},
+		{
+			name: "docker compose",
+			test: func() bool {
+				return exec.Command("docker", "compose", "version").Run() == nil ||
+					exec.Command("docker-compose", "version").Run() == nil
+			},
+			install: "https://docs.docker.com/compose/install/",
+		},
 	}
-	return fmt.Errorf("docker compose is not installed\n" +
-		"Install Docker Engine with Compose support: https://docs.docker.com/compose/install/")
+
+	fmt.Println(bold("Checking prerequisites…"))
+	var missing []string
+	for _, d := range deps {
+		if d.test() {
+			fmt.Printf("  %s %s\n", green("✓"), d.name)
+		} else {
+			fmt.Printf("  %s %s  — install: %s\n", red("✗"), d.name, dim(d.install))
+			missing = append(missing, d.name)
+		}
+	}
+	fmt.Println()
+
+	if len(missing) > 0 {
+		return fmt.Errorf("missing prerequisites: %s\nInstall them and try again.",
+			strings.Join(missing, ", "))
+	}
+	return nil
 }
 
 // setVersion exports OAKESTRA_VERSION if a non-empty version is given.
