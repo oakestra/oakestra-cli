@@ -32,6 +32,9 @@ Examples:
 	// to NodeEngine without Cobra intercepting them.
 	DisableFlagParsing: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return cmd.Help()
+		}
 		c := exec.Command("sudo", append([]string{"NodeEngine"}, args...)...)
 		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout

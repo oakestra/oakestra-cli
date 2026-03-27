@@ -84,9 +84,10 @@ func printApplicationsTable(apps []api.Application) {
 // ─── app create ───────────────────────────────────────────────────────────────
 
 var appCreateCmd = &cobra.Command{
-	Use:     "create [sla-name]",
-	Aliases: []string{"c"},
-	Short:   "Create one or multiple applications from an SLA file",
+	Use:               "create [sla-name]",
+	Aliases:           []string{"c"},
+	Short:             "Create one or multiple applications from an SLA file",
+	ValidArgsFunction: completeSLAFiles,
 	Long: `Create applications defined in an SLA JSON file.
 
 SLA file resolution order:
@@ -229,8 +230,9 @@ var appDeleteCmd = &cobra.Command{
 // ─── app sla ──────────────────────────────────────────────────────────────────
 
 var appSlaCmd = &cobra.Command{
-	Use:   "sla [sla-name]",
-	Short: "Display an available SLA file as formatted JSON",
+	Use:               "sla [sla-name]",
+	Short:             "Display an available SLA file as formatted JSON",
+	ValidArgsFunction: completeSLAFiles,
 	Long: `Display the contents of an SLA file.
 
 SLA file resolution follows the same order as 'app create'.`,

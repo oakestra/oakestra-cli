@@ -2,11 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/oakestra/oak-go-cli/internal/api"
+	"github.com/oakestra/oak-go-cli/internal/config"
 )
 
 // completeApplications returns shell completions for application names and IDs.
@@ -98,4 +101,59 @@ func completeScale(_ *cobra.Command, args []string, _ string) ([]string, cobra.S
 	default:
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
+}
+
+// completeSLAFiles returns SLA file names (without .json) from ~/oak_cli/SLAs/,
+// and also enables file-completion so local .json files in the CWD are offered too.
+func completeSLAFiles(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+	slaDir := config.SLAFolder()
+	entries, err := os.ReadDir(slaDir)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveDefault
+	}
+	var out []string
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".json") {
+			name := strings.TrimSuffix(e.Name(), ".json")
+			out = append(out, fmt.Sprintf("%s\t%s", name, slaDir))
+		}
+	}
+	// ShellCompDirectiveDefault keeps file completion active for local paths.
+	return out, cobra.ShellCompDirectiveDefault
+}
+
+// completeClusters returns shell completions for cluster names and IDs.
+func completeClusters(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+	client, err := api.New()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	clusters, err := client.GetClusters(true)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	var out []string
+	for _, c := range clusters {
+		out = append(out,
+			fmt.Sprintf("%s\t%s", c.ClusterName, c.ClusterID),
+			fmt.Sprintf("%s\t%s", c.ClusterID, c.ClusterName),
+		)
+	}
+	return out, cobra.ShellCompDirectiveNoFileComp
+}
+
+// completeConfigKeys completes the first arg of `oak config set` with known key names.
+func completeConfigKeys(_ *cobra.Command, args []string, _ string) ([]string, cobra.ShellCompDirective) {
+	if len(args) == 0 {
+		return []string{
+			"system_manager_ip\tIP of the Oakestra root orchestrator",
+			"root_orchestrator_address\tAlias for system_manager_ip",
+			"cluster_manager_ip\tIP of the Cluster Orchestrator",
+			"cluster_name\tName of the local cluster",
+			"cluster_location\tLocation of the local cluster",
+			"main_oak_repo_path\tPath to the main Oakestra repository",
+			"flops_repo_path\tPath to the FLOps addon repository",
+		}, cobra.ShellCompDirectiveNoFileComp
+	}
+	return nil, cobra.ShellCompDirectiveNoFileComp
 }

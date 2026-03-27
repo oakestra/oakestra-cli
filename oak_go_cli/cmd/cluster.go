@@ -60,10 +60,11 @@ var clusterListCmd = &cobra.Command{
 // ─── cluster info ─────────────────────────────────────────────────────────────
 
 var clusterInfoCmd = &cobra.Command{
-	Use:     "info <cluster-name-or-id>",
-	Aliases: []string{"i"},
-	Short:   "Show detailed information about a specific cluster",
-	Args:    cobra.ExactArgs(1),
+	Use:               "info <cluster-name-or-id>",
+	Aliases:           []string{"i"},
+	Short:             "Show detailed information about a specific cluster",
+	Args:              cobra.ExactArgs(1),
+	ValidArgsFunction: completeClusters,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := api.New()
 		if err != nil {

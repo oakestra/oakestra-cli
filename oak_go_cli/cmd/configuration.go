@@ -55,8 +55,9 @@ Available keys:
 For login credentials use: oak config credentials`,
 	Example: `  oak config set root_orchestrator_address 192.168.1.10
   oak config set cluster_name my-cluster`,
-	Aliases: []string{"k", "key-vars"},
-	Args:    cobra.ExactArgs(2),
+	Aliases:           []string{"k", "key-vars"},
+	Args:              cobra.ExactArgs(2),
+	ValidArgsFunction: completeConfigKeys,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		key, value := strings.ToLower(args[0]), args[1]
 		if err := config.Set(key, value); err != nil {
