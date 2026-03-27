@@ -2,12 +2,16 @@ package cmd
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -147,6 +151,12 @@ func doInstallCluster(version string, yes, sudo bool) error {
 		fmt.Printf("Using SYSTEM_MANAGER_URL=%s\n", cfg.SystemManagerIP)
 	}
 
+	// Export CLUSTERN_NAME if configured, so the install script can auto-register the cluster.
+	if cfg, err := config.Load(); err == nil && cfg.ClusterName != "" {
+		os.Setenv("CLUSTER_NAME", cfg.ClusterName) //nolint:errcheck
+		fmt.Printf("Using CLUSTER_NAME=%s\n", cfg.ClusterName)
+	}
+
 	fmt.Println("Installing cluster orchestrator…")
 	return shellRun(sudo, "curl -sfL oakestra.io/install-cluster.sh | sh")
 }
@@ -243,7 +253,57 @@ func doInstallWorker(version string, yes, sudo bool) error {
 	return nil
 }
 
-// configureWorkerCluster shows registered clusters and runs
+// clusterProbe holds the reachability result for a single cluster.
+type clusterProbe struct {
+	cluster     api.Cluster
+	reachable   bool
+	reachableIP string
+}
+
+// probeCluster GETs <ip>:10100/status with a 3 s timeout and returns true
+// only if the response parses and cluster_id matches the expected value.
+func probeCluster(cluster api.Cluster, ip string) bool {
+	type statusResp struct {
+		ClusterID string `json:"cluster_id"`
+	}
+	c := &http.Client{Timeout: 3 * time.Second}
+	resp, err := c.Get(fmt.Sprintf("http://%s:10100/status", ip))
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	var s statusResp
+	if err := json.NewDecoder(resp.Body).Decode(&s); err != nil {
+		return false
+	}
+	return s.ClusterID == cluster.ClusterID
+}
+
+// probeAllClusters probes every cluster in parallel.
+// For each one it tries CLUSTER_IP first, then ROOT_IP as a fallback.
+func probeAllClusters(clusters []api.Cluster, rootIP string) []clusterProbe {
+	results := make([]clusterProbe, len(clusters))
+	var wg sync.WaitGroup
+	wg.Add(len(clusters))
+	for i, c := range clusters {
+		go func() {
+			defer wg.Done()
+			pr := clusterProbe{cluster: c}
+			if probeCluster(c, c.ClusterIP) {
+				pr.reachable = true
+				pr.reachableIP = c.ClusterIP
+			} else if rootIP != "" && rootIP != c.ClusterIP && probeCluster(c, rootIP) {
+				pr.reachable = true
+				pr.reachableIP = rootIP
+			}
+			results[i] = pr
+		}()
+	}
+	wg.Wait()
+	return results
+}
+
+// configureWorkerCluster shows registered clusters with reachability status and runs
 // `sudo NodeEngine config cluster <IP>` for the selected one.
 func configureWorkerCluster(client *api.Client) error {
 	clusters, err := client.GetClusters(false)
@@ -254,34 +314,53 @@ func configureWorkerCluster(client *api.Client) error {
 		return fmt.Errorf("no active clusters available")
 	}
 
-	fmt.Println("\nAvailable clusters:")
-	for i, c := range clusters {
-		fmt.Printf("  [%d] %s  %s  (%s)\n",
-			i+1,
-			colorName(c.ClusterName),
-			green(c.ClusterIP),
-			c.ActiveStatus(),
-		)
+	var rootIP string
+	if cfg, err := config.Load(); err == nil {
+		rootIP = cfg.SystemManagerIP
 	}
 
-	var clusterIP string
-	if len(clusters) == 1 {
-		clusterIP = clusters[0].ClusterIP
-		fmt.Printf("Using the only available cluster: %s (%s)\n",
-			colorName(clusters[0].ClusterName), clusterIP)
+	fmt.Println("\nProbing cluster reachability…")
+	probes := probeAllClusters(clusters, rootIP)
+
+	fmt.Println("\nAvailable clusters:")
+	for i, pr := range probes {
+		var statusLabel, ipDisplay string
+		if pr.reachable {
+			statusLabel = green("✓ reachable")
+			ipDisplay = green(pr.reachableIP)
+		} else {
+			statusLabel = red("✗ unreachable")
+			ipDisplay = dim(pr.cluster.ClusterIP)
+		}
+		fmt.Printf("  [%d] %s  %s  %s\n", i+1, colorName(pr.cluster.ClusterName), ipDisplay, statusLabel)
+	}
+
+	var selected *clusterProbe
+	if len(probes) == 1 {
+		selected = &probes[0]
+		ip := selected.cluster.ClusterIP
+		if selected.reachable {
+			ip = selected.reachableIP
+		}
+		fmt.Printf("Using the only available cluster: %s (%s)\n", colorName(selected.cluster.ClusterName), ip)
 	} else {
-		fmt.Print("Select a cluster (number): ")
+		fmt.Print("\nSelect a cluster (number): ")
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
 		n, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
-		if err != nil || n < 1 || n > len(clusters) {
+		if err != nil || n < 1 || n > len(probes) {
 			return fmt.Errorf("invalid selection")
 		}
-		clusterIP = clusters[n-1].ClusterIP
+		selected = &probes[n-1]
 	}
 
-	fmt.Printf("Configuring NodeEngine → cluster %s…\n", green(clusterIP))
-	return runInteractive("sudo", "NodeEngine", "config", "cluster", clusterIP)
+	ip := selected.cluster.ClusterIP
+	if selected.reachable {
+		ip = selected.reachableIP
+	}
+
+	fmt.Printf("Configuring NodeEngine → cluster %s…\n", green(ip))
+	return runInteractive("sudo", "NodeEngine", "config", "cluster", ip)
 }
 
 // ─── install full ─────────────────────────────────────────────────────────────

@@ -45,14 +45,15 @@ var configSetCmd = &cobra.Command{
 
 Available keys:
   system_manager_ip   IP of the Oakestra System Manager (root orchestrator)
-  cluster_manager_ip  IP of the Cluster Manager
+  root_orchestrator_address  Alias for system_manager_ip
+  cluster_manager_ip  IP of the Cluster Orchestrator
   cluster_name        Name of the local cluster
   cluster_location    Location of the local cluster
   main_oak_repo_path  Path to the main Oakestra repository
   flops_repo_path     Path to the FLOps addon repository
 
 For login credentials use: oak config credentials`,
-	Example: `  oak config set system_manager_ip 192.168.1.10
+	Example: `  oak config set root_orchestrator_address 192.168.1.10
   oak config set cluster_name my-cluster`,
 	Aliases: []string{"k", "key-vars"},
 	Args:    cobra.ExactArgs(2),
