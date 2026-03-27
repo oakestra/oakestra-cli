@@ -267,7 +267,7 @@ func probeCluster(cluster api.Cluster, ip string) bool {
 		ClusterID string `json:"cluster_id"`
 	}
 	c := &http.Client{Timeout: 3 * time.Second}
-	resp, err := c.Get(fmt.Sprintf("http://%s:10100/status", ip))
+	resp, err := c.Get(fmt.Sprintf("http://%s:10100/api/cluster/status", ip))
 	if err != nil {
 		return false
 	}
