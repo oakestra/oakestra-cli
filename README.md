@@ -36,13 +36,10 @@ Completions are set up automatically by the install script. To enable them manua
 
 ```bash
 # zsh — add to ~/.zshrc if not already present
-mkdir -p ~/.zsh/completions
-oak completion zsh > ~/.zsh/completions/_oak
-echo 'fpath=(~/.zsh/completions $fpath)' >> ~/.zshrc
-echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+echo 'eval "$(oak completion zsh)"' >> ~/.zshrc && source ~/.zshrc
 
 # bash
-oak completion bash > /etc/bash_completion.d/oak
+echo 'eval "$(oak completion bash)"' >> ~/.bashrc && source ~/.bashrc
 
 # fish
 oak completion fish > ~/.config/fish/completions/oak.fish
