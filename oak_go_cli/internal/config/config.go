@@ -105,6 +105,8 @@ func Set(key, value string) error {
 	switch key {
 	case "system_manager_ip":
 		cfg.SystemManagerIP = value
+	case "root_orchestrator_address": // alias supported to make it more user friendly
+		cfg.SystemManagerIP = value
 	case "cluster_manager_ip":
 		cfg.ClusterManagerIP = value
 	case "cluster_name":
@@ -119,7 +121,7 @@ func Set(key, value string) error {
 		cfg.FlopsRepoPath = value
 	default:
 		return fmt.Errorf(
-			"unknown config key %q.\nValid keys: system_manager_ip, cluster_manager_ip, cluster_name, cluster_location, main_oak_repo_path, troubleshoot_skill_url, flops_repo_path\n"+
+			"unknown config key %q.\nValid keys: system_manager_ip, root_orchestrator_address, cluster_manager_ip, cluster_name, cluster_location, main_oak_repo_path, troubleshoot_skill_url, flops_repo_path\n"+
 				"For login credentials use: oak config credentials <username> [password]", key)
 	}
 	return Save(cfg)
