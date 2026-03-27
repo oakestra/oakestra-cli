@@ -2,25 +2,16 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
-
-// oakestraYML returns the absolute path to an Oakestra compose file,
-// rooted in the invoking user's home directory (not /root).
-func oakestraYML(component, filename string) string {
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".oakestra", component, filename)
-}
 
 var uninstallSudo bool
 
 // ─── top-level uninstall command ──────────────────────────────────────────────
 
 var uninstallCmd = &cobra.Command{
-	Use:   "uninstall <root|cluster|worker>",
+	Use:   "uninstall <root|cluster|worker|cleanup>",
 	Short: "Uninstall Oakestra components from this machine",
 	RunE:  func(cmd *cobra.Command, args []string) error { return cmd.Help() },
 }
@@ -29,6 +20,7 @@ func init() {
 	uninstallCmd.AddCommand(uninstallRootCmd)
 	uninstallCmd.AddCommand(uninstallClusterCmd)
 	uninstallCmd.AddCommand(uninstallWorkerCmd)
+	uninstallCmd.AddCommand(uninstallCleanupCmd)
 
 	// --root is inherited by all uninstall subcommands.
 	uninstallCmd.PersistentFlags().BoolVar(&uninstallSudo, "root", false,
@@ -41,7 +33,10 @@ var uninstallRootCmd = &cobra.Command{
 	Use:   "root",
 	Short: "Stop and remove the root orchestrator",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		yml := oakestraYML("root_orchestrator", "root-orchestrator.yml")
+		yml, err := findDoctorComposeYML("root")
+		if err != nil {
+			return err
+		}
 		fmt.Println("Stopping root orchestrator…")
 		return shellRun(uninstallSudo, "docker compose -f "+yml+" down")
 	},
@@ -53,7 +48,10 @@ var uninstallClusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Stop and remove the cluster orchestrator",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		yml := oakestraYML("cluster_orchestrator", "cluster-orchestrator.yml")
+		yml, err := findDoctorComposeYML("cluster")
+		if err != nil {
+			return err
+		}
 		fmt.Println("Stopping cluster orchestrator…")
 		return shellRun(uninstallSudo, "docker compose -f "+yml+" down")
 	},
@@ -82,4 +80,51 @@ var uninstallWorkerCmd = &cobra.Command{
 		}
 		return nil
 	},
+}
+
+// ─── uninstall cleanup ────────────────────────────────────────────────────────
+
+var uninstallCleanupCmd = &cobra.Command{
+	Use:   "cleanup",
+	Short: "Bruteforce removal of all Oakestra containers, volumes, images, and worker binaries",
+	Long: `Remove all Oakestra artifacts from this machine:
+  - All containers matching Oakestra service name patterns
+  - All Docker volumes whose names start with cluster_orchestrator, oakestra_, or root_orchestrator
+  - All Docker images on this machine
+  - NodeEngine and NetManager binaries (via oak uninstall worker)
+
+Each Docker command is attempted without sudo first; if it fails, it is retried with sudo.
+All errors are ignored — this is a best-effort cleanup.`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println(bold("Removing Oakestra containers…"))
+		tryBestEffort(
+			`docker ps -a --format "{{.Names}}"` +
+				` | grep -E "system_manager|mongo|root_|cluster_|jwt_|grafana|loki|promtail|mqtt|addons|marketplace|oakestra"` +
+				` | xargs -r docker rm -f`,
+		)
+
+		fmt.Println(bold("Removing Oakestra volumes…"))
+		tryBestEffort(
+			`docker volume ls --format "{{.Name}}"` +
+				` | grep -E "^(cluster_orchestrator|oakestra_|root_orchestrator)"` +
+				` | xargs -r docker volume rm`,
+		)
+
+		fmt.Println(bold("Removing all Docker images…"))
+		tryBestEffort(`docker image rm -f $(docker image ls -q)`)
+
+		fmt.Println(bold("Removing worker node…"))
+		_ = uninstallWorkerCmd.RunE(cmd, args)
+
+		fmt.Printf("\n%s Cleanup complete.\n", green("✓"))
+		return nil
+	},
+}
+
+// tryBestEffort runs a shell command without sudo; on failure it retries with sudo.
+// All errors are silently ignored.
+func tryBestEffort(command string) {
+	if runInteractive("sh", "-c", command) != nil {
+		_ = runInteractive("sudo", "sh", "-c", command)
+	}
 }

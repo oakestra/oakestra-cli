@@ -387,6 +387,9 @@ Requires Docker with Compose support.`,
 		if err := doInstall1DOC(version, true, installSudo); err != nil {
 			return fmt.Errorf("root install: %w", err)
 		}
+		// Wait a bit for the orchestrators to be up before installing the worker, so the worker can auto-detect them and configure itself.
+		fmt.Println("Waiting for orchestrators to start…")
+		time.Sleep(15 * time.Second)
 		// Worker start prompt still respects the yes flag.
 		if err := doInstallWorker(version, yes, installSudo); err != nil {
 			return fmt.Errorf("worker install: %w", err)
