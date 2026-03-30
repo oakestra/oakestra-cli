@@ -1,0 +1,13 @@
+{
+    "sla_version": "v2.0",
+    "customerID": "Admin",
+    "applications": [
+        {
+            "applicationID": "",
+            "application_name": "blank",
+            "application_namespace": "blank",
+            "application_desc": "Blank app without any microservices",
+            "microservices": []
+        }
+    ]
+}

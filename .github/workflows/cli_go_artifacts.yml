@@ -1,0 +1,83 @@
+name: Go CLI artifacts
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'alpha-v*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            arch: amd64
+          - goos: linux
+            arch: arm64
+          - goos: darwin
+            arch: amd64
+          - goos: darwin
+            arch: arm64
+          - goos: windows
+            arch: amd64
+          - goos: windows
+            arch: arm64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.25.0
+
+      - name: Build
+        run: |
+          EXT=""
+          if [ "${{ matrix.goos }}" = "windows" ]; then EXT=".exe"; fi
+          cd oak_go_cli
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} go build \
+            -ldflags="-X 'github.com/oakestra/oak-go-cli/cmd.Version=${{ github.ref_name }}'" \
+            -o ../oak${EXT} .
+
+      - name: Package (Unix)
+        if: matrix.goos != 'windows'
+        run: |
+          mkdir -p artifact
+          cp oak artifact/
+          cp oak_go_cli/install.sh artifact/
+          cp -r oak_go_cli/SLAs artifact/
+          tar -czvf oak_cli_${{ matrix.goos }}_${{ matrix.arch }}.tar.gz -C artifact .
+
+      - name: Package (Windows)
+        if: matrix.goos == 'windows'
+        run: |
+          mkdir -p artifact
+          cp oak.exe artifact/
+          cp oak_go_cli/install.ps1 artifact/
+          cp -r oak_go_cli/SLAs artifact/
+          cd artifact && zip -r ../oak_cli_windows_${{ matrix.arch }}.zip .
+
+      - name: Release (Unix)
+        if: startsWith(github.ref, 'refs/tags/') && matrix.goos != 'windows'
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.PACKAGES_TOKEN }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          append_body: true
+          prerelease: ${{ startsWith(github.ref_name, 'alpha-') }}
+          files: oak_cli_${{ matrix.goos }}_${{ matrix.arch }}.tar.gz
+
+      - name: Release (Windows)
+        if: startsWith(github.ref, 'refs/tags/') && matrix.goos == 'windows'
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.PACKAGES_TOKEN }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          append_body: true
+          prerelease: ${{ startsWith(github.ref_name, 'alpha-') }}
+          files: oak_cli_windows_${{ matrix.arch }}.zip
