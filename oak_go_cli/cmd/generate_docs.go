@@ -38,7 +38,7 @@ func GenerateDocs(outputDir string) {
 	}
 	linkHandler := func(name string) string {
 		base := strings.TrimSuffix(name, filepath.Ext(name))
-		return "/" + strings.ToLower(base)
+		return "../" + strings.ToLower(base)
 	}
 	err := doc.GenMarkdownTreeCustom(rootCmd, outputDir, filePrepender, linkHandler)
 	if err != nil {
