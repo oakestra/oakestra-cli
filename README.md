@@ -64,6 +64,15 @@ go build -o oak .
 go install .
 ```
 
+### Check the Documentation 
+check `oak_go_cli/docs`
+
+### Generate or update the documentation
+Run
+```
+go run -tags docs . ./docs
+```
+
 ### Quick start
 
 ```bash
