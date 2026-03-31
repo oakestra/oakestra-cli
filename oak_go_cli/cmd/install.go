@@ -387,9 +387,29 @@ Requires Docker with Compose support.`,
 		if err := doInstall1DOC(version, true, installSudo); err != nil {
 			return fmt.Errorf("root install: %w", err)
 		}
-		// Wait a bit for the orchestrators to be up before installing the worker, so the worker can auto-detect them and configure itself.
+		// Wait untill the orchestrators are up and registered before proceeding with the worker install, otherwise it will fail to auto-configure the cluster.
 		fmt.Println("Waiting for orchestrators to start…")
-		time.Sleep(15 * time.Second)
+		attempt := 0
+		client, err := api.New()
+		if err != nil {
+			return err
+		}
+		for attempt < 5 {
+			clusters, err := client.GetClusters(clusterListAll)
+			if err != nil {
+				return err
+			}
+			if len(clusters) == 0 {
+				attempt++
+				time.Sleep(15 * time.Second)
+			} else {
+				break
+			}
+		}
+		if attempt == 5 {
+			fmt.Println(yellow("Warning: Configuration problem detected. The cluster is not available in the cluster's list. We're aborting the worker installation step to avoid a broken setup. Please check that the cluster orchestrator is running and registered with the root orchestrator, then run 'oak install worker' separately."))
+			return nil
+		}
 		// Worker start prompt still respects the yes flag.
 		if err := doInstallWorker(version, yes, installSudo); err != nil {
 			return fmt.Errorf("worker install: %w", err)
