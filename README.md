@@ -17,7 +17,7 @@ The Go-based CLI is a single self-contained binary with no runtime dependencies.
 **Linux / macOS**
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/main/oak_go_cli/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/refs/heads/master/oak_go_cli/install.sh | bash
 ```
 
 The script auto-detects your OS and architecture (amd64 / arm64), downloads the latest release binary, installs it to `/usr/local/bin/oak`, and registers shell completions for bash and zsh.
