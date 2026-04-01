@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -9,10 +10,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 
+	"github.com/oakestra/oak-go-cli/internal/api"
 	"github.com/oakestra/oak-go-cli/internal/config"
 )
 
@@ -131,14 +134,34 @@ var flopsRestartManagementCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		cfg, err := config.Load()
+		if err != nil {
+			return err
+		}
+		ip := cfg.SystemManagerIP
+		if ip == "" {
+			ip = config.DefaultSystemManagerIP
+		}
+
+		env := append(os.Environ(),
+			"FLOPS_MANAGER_IP="+ip,
+			"FLOPS_MQTT_BROKER_IP="+ip,
+			"SYSTEM_MANAGER_IP="+ip,
+			"FLOPS_IMAGE_REGISTRY_IP="+ip,
+			"ARTIFACT_STORE_IP="+ip,
+			"BACKEND_STORE_IP="+ip,
+		)
+
 		fmt.Println("Restarting FLOps Management (Docker Compose)…")
 		down := exec.Command("docker", "compose", "-f", composePath, "down")
+		down.Env = env
 		down.Stdout = os.Stdout
 		down.Stderr = os.Stderr
 		if err := down.Run(); err != nil {
 			return fmt.Errorf("docker compose down: %w", err)
 		}
 		up := exec.Command("docker", "compose", "-f", composePath, "up", "--build", "-d")
+		up.Env = env
 		up.Stdout = os.Stdout
 		up.Stderr = os.Stderr
 		if err := up.Run(); err != nil {
@@ -188,17 +211,72 @@ func flopsBaseURL() (string, error) {
 }
 
 // flopsComposePath returns the path to the FLOps management docker-compose file.
+// If flops_repo_path is not configured it asks the user whether to clone the
+// repo automatically or set the path manually.
 func flopsComposePath() (string, error) {
 	cfg, err := config.Load()
 	if err != nil {
 		return "", err
 	}
-	if cfg.FlopsRepoPath == "" {
-		return "", fmt.Errorf(
-			"flops_repo_path is not configured.\n" +
-				"Set it with: oak config set flops_repo_path <path-to-flops-repo>")
+	if cfg.FlopsRepoPath != "" {
+		return filepath.Join(cfg.FlopsRepoPath, "docker", "flops_management.docker_compose.yml"), nil
 	}
-	return filepath.Join(cfg.FlopsRepoPath, "docker", "flops_management.docker_compose.yml"), nil
+
+	fmt.Println("flops_repo_path is not configured.")
+	fmt.Println()
+	fmt.Println("  [1] Install FLOps management repo automatically into ~/.oakestra/addon-FLOps")
+	fmt.Println("  [2] I already have it — set the path with: oak config set flops_repo_path <path>")
+	fmt.Print("\nChoose [1/2]: ")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	choice := strings.TrimSpace(scanner.Text())
+	if choice != "1" {
+		return "", fmt.Errorf("set the path with: oak config set flops_repo_path <path-to-flops-repo>")
+	}
+
+	repoPath, err := flopsCloneRepo()
+	if err != nil {
+		return "", err
+	}
+	if err := config.Set("flops_repo_path", repoPath); err != nil {
+		return "", fmt.Errorf("saving flops_repo_path: %w", err)
+	}
+	fmt.Printf("%s flops_repo_path set to %s\n", green("✓"), repoPath)
+	return filepath.Join(repoPath, "docker", "flops_management.docker_compose.yml"), nil
+}
+
+// flopsCloneRepo ensures git is available and clones addon-FLOps into
+// ~/.oakestra/addon-FLOps, returning the local path.
+func flopsCloneRepo() (string, error) {
+	if _, err := exec.LookPath("git"); err != nil {
+		return "", fmt.Errorf("git is not installed — please install git and try again")
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("resolving home directory: %w", err)
+	}
+	destDir := filepath.Join(home, ".oakestra", "addon-FLOps")
+
+	if info, err := os.Stat(destDir); err == nil && info.IsDir() {
+		fmt.Printf("%s Repo already exists at %s — skipping clone.\n", green("✓"), destDir)
+		return destDir, nil
+	}
+
+	if err := os.MkdirAll(filepath.Dir(destDir), 0o755); err != nil {
+		return "", fmt.Errorf("creating ~/.oakestra: %w", err)
+	}
+
+	fmt.Printf("Cloning addon-FLOps into %s…\n", destDir)
+	cmd := exec.Command("git", "clone", "git@github.com:oakestra/addon-FLOps.git", destDir)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("git clone failed: %w", err)
+	}
+	fmt.Printf("%s Clone complete.\n", green("✓"))
+	return destDir, nil
 }
 
 // loadSLA reads a JSON SLA file and returns it as a map.
@@ -240,11 +318,21 @@ func flopsPost(endpoint string, body interface{}, action string) error {
 	if err != nil {
 		return err
 	}
+	token, err := api.GetToken()
+	if err != nil {
+		return err
+	}
 	data, err := json.Marshal(body)
 	if err != nil {
 		return err
 	}
-	resp, err := flopsHTTPClient.Post(baseURL+endpoint, "application/json", bytes.NewReader(data))
+	req, err := http.NewRequest(http.MethodPost, baseURL+endpoint, bytes.NewReader(data))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp, err := flopsHTTPClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("%s: %w", action, err)
 	}
@@ -265,10 +353,15 @@ func flopsGet(endpoint string, params map[string]string) error {
 	if err != nil {
 		return err
 	}
+	token, err := api.GetToken()
+	if err != nil {
+		return err
+	}
 	req, err := http.NewRequest(http.MethodGet, baseURL+endpoint, nil)
 	if err != nil {
 		return err
 	}
+	req.Header.Set("Authorization", "Bearer "+token)
 	if len(params) > 0 {
 		q := req.URL.Query()
 		for k, v := range params {
@@ -294,6 +387,10 @@ func flopsDelete(endpoint string, body map[string]string) error {
 	if err != nil {
 		return err
 	}
+	token, err := api.GetToken()
+	if err != nil {
+		return err
+	}
 	data, err := json.Marshal(body)
 	if err != nil {
 		return err
@@ -303,6 +400,7 @@ func flopsDelete(endpoint string, body map[string]string) error {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := flopsHTTPClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("DELETE %s: %w", endpoint, err)
