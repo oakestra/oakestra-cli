@@ -178,12 +178,7 @@ var flopsClearRegistryCmd = &cobra.Command{
 	Use:   "clear-registry",
 	Short: "Clear the FLOps Docker image registry",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		composePath, err := flopsComposePath()
-		if err != nil {
-			return err
-		}
-		c := exec.Command("docker", "compose", "-f", composePath,
-			"exec", "flops_image_registry",
+		c := exec.Command("docker", "exec", "flops_image_registry",
 			"bash", "-c", "rm -rf /var/lib/registry/*")
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
