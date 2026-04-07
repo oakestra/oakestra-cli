@@ -38,7 +38,7 @@ jobs:
           EXT=""
           if [ "${{ matrix.goos }}" = "windows" ]; then EXT=".exe"; fi
           cd oak_go_cli
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} go build \
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build \
             -ldflags="-X 'github.com/oakestra/oak-go-cli/cmd.Version=${{ github.ref_name }}'" \
             -o ../oak${EXT} .
 
