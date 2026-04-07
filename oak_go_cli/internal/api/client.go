@@ -70,6 +70,16 @@ func fetchToken(baseURL string) (string, error) {
 	return token, nil
 }
 
+// GetToken returns a valid Bearer token for the system manager, fetching a
+// fresh one if the cached token has expired.
+func GetToken() (string, error) {
+	url, err := config.SystemManagerURL()
+	if err != nil {
+		return "", err
+	}
+	return fetchToken(url)
+}
+
 func unreachableError(baseURL string, cause error) error {
 	return fmt.Errorf(
 		"Root Orchestrator not reachable at %s\n"+
