@@ -51,8 +51,8 @@ def generate_current_cluster_table(live: bool, all: bool) -> Table:
         row_items = [
             cluster["cluster_name"],
             cluster["cluster_location"],
-            str(cluster["active_nodes"]),
-            str(cluster["virtualization"]),
+            str(cluster.get("active_nodes", 0)),
+            str(cluster.get("virtualization", "")),
         ] + special_row_items
         add_row_to_table(table=table, row_items=row_items)
 
@@ -76,7 +76,7 @@ def generate_cluster_detail_table(live: bool, name: string) -> Table:
             continue
 
         for key, column_name in cluster_info_to_column_name_map.items():
-            add_row_to_table(table=table, row_items=[key, str(cluster[column_name])])
+            add_row_to_table(table=table, row_items=[key, str(cluster.get(column_name, ""))])
 
         if cluster["active"]:
             add_row_to_table(table=table, row_items=["Status", "Connected 🟢"])
