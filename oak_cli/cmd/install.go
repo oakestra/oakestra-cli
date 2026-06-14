@@ -196,6 +196,7 @@ worker should join and will configure NodeEngine automatically.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return install.DoInstallWorker(cmd.Context(), firstArg(args), installWorkerYes)
 	},
+	SilenceUsage: true,
 }
 
 // ─── install full ─────────────────────────────────────────────────────────────
