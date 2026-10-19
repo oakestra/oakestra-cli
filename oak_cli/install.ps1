@@ -1,6 +1,6 @@
 # install.ps1 — oak CLI installer for Windows
 # Run with:
-#   irm https://raw.githubusercontent.com/oakestra/oakestra-cli/main/oak_go_cli/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/oakestra/oakestra-cli/master/oak_cli/install.ps1 | iex
 
 $ErrorActionPreference = 'Stop'
 

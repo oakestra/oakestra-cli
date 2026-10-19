@@ -3,7 +3,7 @@ set -e
 
 # This script installs the oak CLI tool.
 # It is intended to be run from a one-liner command:
-#   curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/main/oak_go_cli/install.sh | sh
+#   curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/master/oak_cli/install.sh | sh
 
 REPO="oakestra/oakestra-cli"
 BASE_URL="https://github.com/$REPO/releases/download"

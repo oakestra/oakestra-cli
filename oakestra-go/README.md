@@ -6,7 +6,7 @@ service per resource, `context.Context`-first methods, functional options, and t
 errors.
 
 This library is config-agnostic - it never reads files or environment variables. The
-caller supplies a base URL and credentials. The [Oakestra CLI](../oak_go_cli) is built on
+caller supplies a base URL and credentials. The [Oakestra CLI](../oak_cli) is built on
 top of it and is a good reference for a real consumer.
 
 ## Install

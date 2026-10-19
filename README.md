@@ -1,6 +1,4 @@
-[![PyPI - Version](https://img.shields.io/pypi/v/oak-cli)](https://pypi.org/project/oak-cli/)
-[![Codestyle Check](https://github.com/oakestra/oakestra-cli/actions/workflows/python_codestyle_check.yml/badge.svg)](https://github.com/oakestra/oakestra-cli/actions/workflows/python_codestyle_check.yml)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/oak-cli)](https://pypi.org/project/oak-cli/)
+[![Go check](https://github.com/oakestra/oakestra-cli/actions/workflows/go_check.yml/badge.svg)](https://github.com/oakestra/oakestra-cli/actions/workflows/go_check.yml)
 
 The **Oak-CLI** is the command line interface for the [Oakestra](https://github.com/oakestra/oakestra) Edge Computing platform.
 
@@ -8,16 +6,16 @@ The **Oak-CLI** is the command line interface for the [Oakestra](https://github.
 
 ---
 
-## oak (Go CLI) — recommended
+## Overview
 
-The Go-based CLI is a single self-contained binary with no runtime dependencies. It runs on Linux, macOS, and Windows.
+The CLI is a single self-contained binary with no runtime dependencies. It runs on Linux, macOS, and Windows.
 
 ### Install latest release
 
 **Linux / macOS**
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/refs/heads/master/oak_go_cli/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/oakestra/oakestra-cli/refs/heads/master/oak_cli/install.sh | bash
 ```
 
 The script auto-detects your OS and architecture (amd64 / arm64), downloads the latest release binary, installs it to `/usr/local/bin/oak`, and registers shell completions for bash and zsh.
@@ -25,7 +23,7 @@ The script auto-detects your OS and architecture (amd64 / arm64), downloads the 
 **Windows (PowerShell)**
 
 ```powershell
-irm https://raw.githubusercontent.com/oakestra/oakestra-cli/main/oak_go_cli/install.ps1 | iex
+irm https://raw.githubusercontent.com/oakestra/oakestra-cli/master/oak_cli/install.ps1 | iex
 ```
 
 This downloads the latest `oak_cli_windows_amd64.zip`, extracts `oak.exe`, and places it in `$Env:LOCALAPPDATA\Programs\oak\`, adding that directory to your `PATH`.
@@ -35,7 +33,7 @@ This downloads the latest `oak_cli_windows_amd64.zip`, extracts `oak.exe`, and p
 Completions are set up automatically by the install script. To enable them manually:
 
 ```bash
-# zsh — add to ~/.zshrc if not already present
+# zsh - add to ~/.zshrc if not already present
 echo 'eval "$(oak completion zsh)"' >> ~/.zshrc && source ~/.zshrc
 
 # bash
@@ -47,12 +45,12 @@ oak completion fish > ~/.config/fish/completions/oak.fish
 
 ### Build and install from source
 
-Requires **Go 1.21+**.
+Requires **Go 1.25+**.
 
 ```bash
 # Clone the repository
 git clone https://github.com/oakestra/oakestra-cli.git
-cd oakestra-cli/oak_go_cli
+cd oakestra-cli/oak_cli
 
 # Run tests
 go test ./...
@@ -65,7 +63,7 @@ go install .
 ```
 
 ### Check the Documentation 
-check `oak_go_cli/docs`
+check `oak_cli/docs`
 
 ### Generate or update the documentation
 Run
@@ -103,43 +101,3 @@ oak service inspect <service-id-or-name>
 
 Run `oak --help` or `oak <command> --help` for the full command reference.
 
----
-
-## oak-cli (Python CLI) — legacy
-
-The original Python-based CLI. Recommended only if you need features not yet available in the Go version.
-
-### Benefits
-
-- Native interface for the Oakestra APIs
-- Eliminates the need to use external third-party tools
-- Accelerated & simpler workflows
-- The CLI commands can be chained together and used in custom scripts
-- Automates tedious tasks away (e.g. acquiring login token, installing dependencies, and much more!)
-
-### Requirements
-
-- Linux (preferably Debian/Ubuntu)
-- Python **3.10+**
-
-### Install from PyPI
-
-```bash
-pip install oak-cli
-```
-
-### Install from source
-
-```bash
-git clone https://github.com/oakestra/oakestra-cli.git
-cd oakestra-cli
-make install-cli
-```
-
-### Uninstall
-
-```bash
-make uninstall-cli
-# or
-pip uninstall oak-cli
-```

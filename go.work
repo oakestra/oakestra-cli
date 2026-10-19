@@ -1,11 +1,11 @@
 go 1.25.0
 
 use (
-	./oak_go_cli
+	./oak_cli
 	./oakestra-go
 )
 
-// oak_go_cli/go.mod requires oakestra-go v0.1.0, which hasn't been tagged
+// oak_cli/go.mod requires oakestra-go v0.1.0, which hasn't been tagged
 // yet. The `use` directive above should be enough on its own, but Go's
 // module graph loading still reaches out to the network to resolve that
 // version once there's more than one external dependency in the graph.

@@ -134,7 +134,7 @@ Example:
 			return err
 		}
 
-		// Filter to only the newly-created apps (same logic as Python).
+		// The create endpoint returns all of the user's apps, so keep only the ones from this SLA.
 		var newApps []oakestra.Application
 		for _, a := range allApps {
 			for _, name := range appsInSLA {

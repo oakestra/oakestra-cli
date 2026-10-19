@@ -37,7 +37,7 @@ jobs:
         run: |
           EXT=""
           if [ "${{ matrix.goos }}" = "windows" ]; then EXT=".exe"; fi
-          cd oak_go_cli
+          cd oak_cli
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build \
             -ldflags="-X 'github.com/oakestra/oak-go-cli/cmd.Version=${{ github.ref_name }}'" \
             -o ../oak${EXT} .
@@ -47,8 +47,8 @@ jobs:
         run: |
           mkdir -p artifact
           cp oak artifact/
-          cp oak_go_cli/install.sh artifact/
-          cp -r oak_go_cli/SLAs artifact/
+          cp oak_cli/install.sh artifact/
+          cp -r oak_cli/SLAs artifact/
           tar -czvf oak_cli_${{ matrix.goos }}_${{ matrix.arch }}.tar.gz -C artifact .
 
       - name: Package (Windows)
@@ -56,8 +56,8 @@ jobs:
         run: |
           mkdir -p artifact
           cp oak.exe artifact/
-          cp oak_go_cli/install.ps1 artifact/
-          cp -r oak_go_cli/SLAs artifact/
+          cp oak_cli/install.ps1 artifact/
+          cp -r oak_cli/SLAs artifact/
           cd artifact && zip -r ../oak_cli_windows_${{ matrix.arch }}.zip .
 
       - name: Release (Unix)

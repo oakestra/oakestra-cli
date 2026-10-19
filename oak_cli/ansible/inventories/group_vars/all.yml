@@ -1,4 +1,0 @@
-venv_name: evaluation-venv
-venv_python_version: "3.10.4"
-
-eval_oak_cli_dir: "/tmp/eval-oak-cli"
