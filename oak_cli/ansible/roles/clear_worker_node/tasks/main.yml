@@ -1,2 +1,0 @@
-- name: Clear any containerd images (ctr)
-  command: "{{ venv_oak }} w ctr delete-images"

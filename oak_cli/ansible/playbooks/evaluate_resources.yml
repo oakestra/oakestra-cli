@@ -1,4 +1,0 @@
-- name: Evaluate the local host resource metrics.
-  hosts: localhost
-  roles:
-    - evaluate_resources

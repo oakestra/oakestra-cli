@@ -1,2 +1,0 @@
-- name: Make sure no other OAK applications/services are running.
-  command: "{{ venv_oak }} a d"
