@@ -47,7 +47,29 @@ func main() {
 }
 ```
 
-See [`examples/list-apps`](examples/list-apps) for a runnable version.
+## Examples
+
+There are a few small programs under [`examples/`](examples):
+
+- [`list-apps`](examples/list-apps) lists your applications
+- [`deploy-app`](examples/deploy-app) creates apps from an SLA file, deploys their
+  services and waits until they're running
+- [`inspect-service`](examples/inspect-service) looks up a service by name or ID and
+  shows its instances
+- [`cluster-status`](examples/cluster-status) prints CPU and memory usage per cluster
+
+They all take `-host`, `-username` and `-password` (default `127.0.0.1`, `Admin`,
+`Admin`). Run them from this directory:
+
+```sh
+go run ./examples/list-apps -host 192.168.1.10
+go run ./examples/deploy-app -sla ../oak_cli/SLAs/edge_gaming.json
+go run ./examples/inspect-service nginx
+go run ./examples/cluster-status -all
+```
+
+For shorter snippets per method, see [`example_test.go`](example_test.go). Those also
+show up on [pkg.go.dev](https://pkg.go.dev/github.com/oakestra/oakestra-cli/oakestra-go).
 
 ## Authentication
 
@@ -83,3 +105,13 @@ v0.1 covers authentication, applications, services, and clusters - the System Ma
 surface the Oakestra CLI uses today. Cluster-manager endpoints (port 10100), addon APIs
 (e.g. FLOps), retries, and pagination are not covered; use the escape hatch above until
 there's a typed method for them.
+
+## References
+
+- [pkg.go.dev](https://pkg.go.dev/github.com/oakestra/oakestra-cli/oakestra-go)
+- [Oakestra docs](https://www.oakestra.io/docs/)
+- [SLA format](https://www.oakestra.io/docs/reference/app-sla/) (what `Applications.Create` takes)
+- [System Manager API reference](https://www.oakestra.io/docs/reference/api/)
+- [Sample SLAs](../oak_cli/SLAs)
+- [`oak_cli/internal/api`](../oak_cli/internal/api/api.go) for how the CLI wires this up
+  with its own config file
