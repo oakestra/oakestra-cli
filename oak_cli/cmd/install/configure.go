@@ -1,6 +1,7 @@
 package install
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,15 +14,17 @@ import (
 	"github.com/oakestra/oak-go-cli/internal/cmd"
 	"github.com/oakestra/oak-go-cli/internal/config"
 	"github.com/oakestra/oak-go-cli/internal/iotools"
+
+	oakestra "github.com/oakestra/oakestra-cli/oakestra-go"
 )
 
-func configureWorker() error {
+func configureWorker(ctx context.Context) error {
 	client, err := api.New()
 	if err != nil {
 		return err
 	}
 
-	clusters, err := client.GetClusters(false)
+	clusters, _, err := client.Clusters.List(ctx, &oakestra.ClusterListOptions{ActiveOnly: true})
 	if err != nil {
 		return err
 	}
@@ -38,7 +41,7 @@ func configureWorker() error {
 }
 
 // `sudo NodeEngine config cluster <IP>` for the selected one.
-func configureWorkerCluster(clusters []api.Cluster) error {
+func configureWorkerCluster(clusters []oakestra.Cluster) error {
 	var rootIP string
 	if cfg, err := config.Load(); err == nil {
 		rootIP = cfg.SystemManagerIP
@@ -121,7 +124,7 @@ type clusterProbe struct {
 
 // probeAllClusters probes every cluster in parallel.
 // For each one it tries CLUSTER_IP first, then ROOT_IP as a fallback.
-func probeAllClusters(clusters []api.Cluster, rootIP string) []clusterProbe {
+func probeAllClusters(clusters []oakestra.Cluster, rootIP string) []clusterProbe {
 	results := make([]clusterProbe, len(clusters))
 	var wg sync.WaitGroup
 	wg.Add(len(clusters))
@@ -148,7 +151,7 @@ func probeAllClusters(clusters []api.Cluster, rootIP string) []clusterProbe {
 
 // probeCluster GETs <ip>:10100/status with a 3 s timeout and returns true
 // only if the response parses and cluster_id matches the expected value.
-func probeCluster(cluster api.Cluster, ip string) bool {
+func probeCluster(cluster oakestra.Cluster, ip string) bool {
 	type statusResp struct {
 		ClusterID string `json:"cluster_id"`
 	}

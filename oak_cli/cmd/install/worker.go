@@ -1,13 +1,14 @@
 package install
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/charmbracelet/huh"
 	"github.com/oakestra/oak-go-cli/internal/cliout"
 )
 
-func DoInstallWorker(version string, autoConfirm bool) error {
+func DoInstallWorker(ctx context.Context, version string, autoConfirm bool) error {
 	if err := checkPrerequisites(); err != nil {
 		return err
 	}
@@ -39,7 +40,7 @@ func DoInstallWorker(version string, autoConfirm bool) error {
 		return nil
 	}
 
-	if err := configureWorker(); err != nil {
+	if err := configureWorker(ctx); err != nil {
 		cliout.Warnf("Failed to configure cluster for worker: %v", err)
 	}
 

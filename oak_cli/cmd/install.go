@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"bufio"
-	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
