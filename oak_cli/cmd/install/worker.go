@@ -2,7 +2,6 @@ package install
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/charmbracelet/huh"
 	"github.com/oakestra/oak-go-cli/internal/cliout"
@@ -57,7 +56,7 @@ func startWorker(autoConfirm bool) error {
 	if !autoConfirm {
 		var confirmed = true
 		err := huh.NewConfirm().
-			Title(fmt.Sprintf("Start the worker node now?")).
+			Title("Start the worker node now?").
 			Value(&confirmed).
 			Run()
 

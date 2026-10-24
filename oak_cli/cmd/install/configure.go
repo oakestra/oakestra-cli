@@ -74,13 +74,14 @@ func selectCluster(probes []clusterProbe) (*clusterProbe, error) {
 		probe := &probes[i]
 
 		var statusLabel, ipDisplay string
-		if probe.reachability == clusterReachabilityReachable {
+		switch probe.reachability {
+		case clusterReachabilityReachable:
 			statusLabel = cliout.Green("✓ reachable")
 			ipDisplay = cliout.Green(probe.ip)
-		} else if probe.reachability == clusterReachabilityReachableViaRoot {
+		case clusterReachabilityReachableViaRoot:
 			statusLabel = cliout.Yellow("⚠ reachable via root")
 			ipDisplay = cliout.Yellow(probe.ip)
-		} else {
+		default:
 			statusLabel = cliout.Red("✗ unreachable")
 			ipDisplay = cliout.Dim(probe.ip)
 		}
