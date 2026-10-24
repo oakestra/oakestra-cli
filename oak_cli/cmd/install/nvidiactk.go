@@ -86,6 +86,10 @@ func getNvidiaCTKConfigureCommands() []enact.Step {
 			Args:    []string{"runtime", "configure", "--runtime=containerd"},
 		},
 		enact.CommandStep{
+			Command: "nvidia-ctk",
+			Args:    []string{"cdi", "generate", "--output=/etc/cdi/nvidia.yaml"},
+		},
+		enact.CommandStep{
 			Command: "systemctl",
 			Args:    []string{"restart", "containerd"},
 		},
@@ -159,6 +163,10 @@ func getNvidiaCTKInstallCommands(osFamily OSFamily) []enact.Step {
 				Args:    []string{"runtime", "configure", "--runtime=containerd"},
 			},
 			enact.CommandStep{
+				Command: "nvidia-ctk",
+				Args:    []string{"cdi", "generate", "--output=/etc/cdi/nvidia.yaml"},
+			},
+			enact.CommandStep{
 				Command: "systemctl",
 				Args:    []string{"restart", "containerd"},
 			},
@@ -182,6 +190,10 @@ func getNvidiaCTKInstallCommands(osFamily OSFamily) []enact.Step {
 			enact.CommandStep{
 				Command: "nvidia-ctk",
 				Args:    []string{"runtime", "configure", "--runtime=containerd"},
+			},
+			enact.CommandStep{
+				Command: "nvidia-ctk",
+				Args:    []string{"cdi", "generate", "--output=/etc/cdi/nvidia.yaml"},
 			},
 			enact.CommandStep{
 				Command: "systemctl",
