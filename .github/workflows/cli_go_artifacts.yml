@@ -67,7 +67,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/') && matrix.goos != 'windows'
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.PACKAGES_TOKEN }}
           fail_on_unmatched_files: true
           generate_release_notes: true
           append_body: true
