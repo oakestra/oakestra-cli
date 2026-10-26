@@ -18,7 +18,7 @@ func main() {
 	username := flag.String("username", "Admin", "login username")
 	password := flag.String("password", "Admin", "login password")
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s [flags] <service-name-or-id>\n", os.Args[0])
+		_, _ = fmt.Fprintf(flag.CommandLine.Output(), "usage: %s [flags] <service-name-or-id>\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()
