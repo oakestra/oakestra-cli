@@ -4,6 +4,9 @@ The **Oak-CLI** is the command line interface for the [Oakestra](https://github.
 
 📚 Check out the [Oak-CLI Wiki](https://www.oakestra.io/docs/getting-started/deploy-app/with-the-cli/) to get started.
 
+The repo has two Go modules: the CLI itself in [`oak_cli/`](oak_cli), and the
+[Go client library](#go-client-library) it's built on in [`oakestra-go/`](oakestra-go).
+
 ---
 
 ## Overview
@@ -62,12 +65,13 @@ go build -o oak .
 go install .
 ```
 
-### Check the Documentation 
-check `oak_cli/docs`
+### Command reference
 
-### Generate or update the documentation
-Run
-```
+The full command reference is generated from the Cobra command tree and lives in
+[`oak_cli/docs`](oak_cli/docs/oak.md). To regenerate it after changing a command, run
+this from `oak_cli/`:
+
+```bash
 go run -tags docs . ./docs
 ```
 
@@ -101,3 +105,45 @@ oak service inspect <service-id-or-name>
 
 Run `oak --help` or `oak <command> --help` for the full command reference.
 
+---
+
+## Go client library
+
+If you want to talk to Oakestra from Go code instead of shelling out to `oak`, use
+[`oakestra-go`](oakestra-go). It's the same client the CLI uses.
+
+```sh
+go get github.com/oakestra/oakestra-cli/oakestra-go
+```
+
+```go
+client, err := oakestra.NewClient(
+	oakestra.WithBaseURL(oakestra.BaseURLForHost("127.0.0.1")),
+	oakestra.WithBasicLogin("Admin", "Admin"),
+)
+if err != nil {
+	log.Fatal(err)
+}
+apps, _, err := client.Applications.List(ctx)
+```
+
+More in the [library README](oakestra-go/README.md), the [examples](oakestra-go/examples)
+and on [pkg.go.dev](https://pkg.go.dev/github.com/oakestra/oakestra-cli/oakestra-go).
+
+The root [`go.work`](go.work) points the CLI at the local copy of the library, so you can
+change both and build them together:
+
+```bash
+go build ./oak_cli/... ./oakestra-go/...
+go test ./oak_cli/... ./oakestra-go/...
+```
+
+---
+
+## References
+
+- [Oakestra](https://github.com/oakestra/oakestra)
+- [Oakestra docs](https://www.oakestra.io/docs/)
+- [Deploying with the CLI](https://www.oakestra.io/docs/getting-started/deploy-app/with-the-cli/)
+- [SLA format](https://www.oakestra.io/docs/reference/app-sla/) (used by `oak app create` and [`oak_cli/SLAs`](oak_cli/SLAs))
+- [API reference](https://www.oakestra.io/docs/reference/api/)
