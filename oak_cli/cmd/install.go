@@ -470,7 +470,7 @@ func checkFundamentals() error {
 		},
 		{
 			name:    "docker",
-			test:    func() bool { return exec.Command("docker", "info").Run() == nil },
+			test:    func() bool { return exec.Command("sudo", "docker", "info").Run() == nil },
 			install: "https://docs.docker.com/engine/install/",
 		},
 		{
